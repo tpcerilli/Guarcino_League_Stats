@@ -6,6 +6,7 @@
 <title>Guarcino League Stats</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
+  html { color-scheme: dark; }
   body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
   h1, h2 { color: #f8fafc; }
   section { margin-bottom: 3rem; }
@@ -34,13 +35,14 @@
   }
   .sort-indicator { font-size: 0.75em; opacity: 0.8; }
   #season-sort {
+    color-scheme: dark;
     min-height: 44px; max-width: 100%; background-color: #1e293b; color: #e2e8f0;
     border: 1px solid #334155; border-radius: 6px; padding: 4px 28px 4px 8px; font-family: inherit; font-size: 0.9rem;
     -webkit-appearance: none; appearance: none; -webkit-text-fill-color: #e2e8f0; opacity: 1;
     background-image: linear-gradient(45deg, transparent 50%, #e2e8f0 50%), linear-gradient(135deg, #e2e8f0 50%, transparent 50%);
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
-  #season-sort option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
+  #season-sort option { background-color: #1e293b; color: #e2e8f0; }
   #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
   #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
   #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
