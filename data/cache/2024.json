@@ -1,0 +1,2838 @@
+{
+  "teams": [
+    {
+      "year": 2024,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "owner_ids": [
+        "{D3301AF3-E129-4A0F-9D86-ADF8C972DAA8}"
+      ],
+      "owner_names": [
+        "JECerilli"
+      ],
+      "wins": 8,
+      "losses": 6,
+      "ties": 0,
+      "points_for": 1892.82,
+      "points_against": 1997.0,
+      "standing": 4,
+      "final_standing": 2,
+      "made_playoffs": true,
+      "streak_length": 1,
+      "streak_type": "LOSS",
+      "acquisitions": 20,
+      "drops": 20,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 7,
+          "points_for": 146.82,
+          "points_against": 118.44,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 5,
+          "points_for": 134.36,
+          "points_against": 203.34,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 3,
+          "points_for": 160.24,
+          "points_against": 121.62,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 8,
+          "points_for": 136.24,
+          "points_against": 130.78,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 2,
+          "points_for": 118.8,
+          "points_against": 143.16,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 6,
+          "points_for": 175.06,
+          "points_against": 150.3,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 4,
+          "points_for": 119.72,
+          "points_against": 103.44,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 7,
+          "points_for": 148.8,
+          "points_against": 160.48,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 5,
+          "points_for": 125.14,
+          "points_against": 130.04,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 3,
+          "points_for": 116.92,
+          "points_against": 111.2,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 8,
+          "points_for": 161.86,
+          "points_against": 161.32,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 2,
+          "points_for": 128.8,
+          "points_against": 194.02,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 6,
+          "points_for": 132.24,
+          "points_against": 131.7,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 4,
+          "points_for": 87.82,
+          "points_against": 137.16,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 6,
+          "points_for": 149.0,
+          "points_against": 107.06,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 2,
+          "points_for": 155.66,
+          "points_against": 144.36,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 5,
+          "points_for": 120.26,
+          "points_against": 157.26,
+          "result": "L",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "owner_ids": [
+        "{DEA0A0B9-F94E-41C6-9B6E-DBCCDA72D647}"
+      ],
+      "owner_names": [
+        "jbcerilli"
+      ],
+      "wins": 11,
+      "losses": 3,
+      "ties": 0,
+      "points_for": 2081.28,
+      "points_against": 1782.58,
+      "standing": 1,
+      "final_standing": 3,
+      "made_playoffs": true,
+      "streak_length": 4,
+      "streak_type": "WIN",
+      "acquisitions": 32,
+      "drops": 33,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 4,
+          "points_for": 151.44,
+          "points_against": 110.26,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 7,
+          "points_for": 138.22,
+          "points_against": 124.06,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 5,
+          "points_for": 113.82,
+          "points_against": 140.08,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 3,
+          "points_for": 155.52,
+          "points_against": 138.38,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 1,
+          "points_for": 143.16,
+          "points_against": 118.8,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 8,
+          "points_for": 134.46,
+          "points_against": 133.32,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 6,
+          "points_for": 129.96,
+          "points_against": 150.22,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 4,
+          "points_for": 169.84,
+          "points_against": 116.38,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 7,
+          "points_for": 187.1,
+          "points_against": 124.3,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 5,
+          "points_for": 125.82,
+          "points_against": 139.94,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 3,
+          "points_for": 155.88,
+          "points_against": 92.14,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 1,
+          "points_for": 194.02,
+          "points_against": 128.8,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 8,
+          "points_for": 153.12,
+          "points_against": 143.88,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 6,
+          "points_for": 128.92,
+          "points_against": 122.02,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 1,
+          "points_for": 144.36,
+          "points_against": 155.66,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 4,
+          "points_for": 162.06,
+          "points_against": 134.5,
+          "result": "W",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "owner_ids": [
+        "{ABAA9517-ACF5-4651-AA95-17ACF536516E}"
+      ],
+      "owner_names": [
+        "Ecerilli"
+      ],
+      "wins": 3,
+      "losses": 11,
+      "ties": 0,
+      "points_for": 1689.22,
+      "points_against": 2017.12,
+      "standing": 8,
+      "final_standing": 8,
+      "made_playoffs": false,
+      "streak_length": 2,
+      "streak_type": "LOSS",
+      "acquisitions": 6,
+      "drops": 5,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 5,
+          "points_for": 133.38,
+          "points_against": 131.34,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 8,
+          "points_for": 140.72,
+          "points_against": 137.78,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 1,
+          "points_for": 121.62,
+          "points_against": 160.24,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 2,
+          "points_for": 138.38,
+          "points_against": 155.52,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 6,
+          "points_for": 116.32,
+          "points_against": 122.32,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 4,
+          "points_for": 85.64,
+          "points_against": 138.56,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 7,
+          "points_for": 103.46,
+          "points_against": 170.66,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 5,
+          "points_for": 98.26,
+          "points_against": 125.48,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 8,
+          "points_for": 118.6,
+          "points_against": 139.34,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 1,
+          "points_for": 111.2,
+          "points_against": 116.92,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 2,
+          "points_for": 92.14,
+          "points_against": 155.88,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 6,
+          "points_for": 177.46,
+          "points_against": 125.08,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 4,
+          "points_for": 147.98,
+          "points_against": 171.48,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 7,
+          "points_for": 104.06,
+          "points_against": 166.52,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 8,
+          "points_for": 114.2,
+          "points_against": 182.72,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 8,
+          "points_for": 114.78,
+          "points_against": 117.84,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 8,
+          "points_for": 71.08,
+          "points_against": 163.66,
+          "result": "L",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "owner_ids": [
+        "{6922AB1C-D0AA-4FF7-B20F-7D3962A87CC4}"
+      ],
+      "owner_names": [
+        "Wiley Cerilli"
+      ],
+      "wins": 5,
+      "losses": 9,
+      "ties": 0,
+      "points_for": 1711.48,
+      "points_against": 1945.06,
+      "standing": 6,
+      "final_standing": 4,
+      "made_playoffs": true,
+      "streak_length": 4,
+      "streak_type": "WIN",
+      "acquisitions": 88,
+      "drops": 97,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 2,
+          "points_for": 110.26,
+          "points_against": 151.44,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 6,
+          "points_for": 82.02,
+          "points_against": 135.9,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 8,
+          "points_for": 81.28,
+          "points_against": 132.68,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 7,
+          "points_for": 112.6,
+          "points_against": 159.42,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 5,
+          "points_for": 145.56,
+          "points_against": 157.24,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 3,
+          "points_for": 138.56,
+          "points_against": 85.64,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 1,
+          "points_for": 103.44,
+          "points_against": 119.72,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 2,
+          "points_for": 116.38,
+          "points_against": 169.84,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 6,
+          "points_for": 122.4,
+          "points_against": 178.16,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 8,
+          "points_for": 103.36,
+          "points_against": 164.02,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 7,
+          "points_for": 163.64,
+          "points_against": 150.14,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 5,
+          "points_for": 123.34,
+          "points_against": 105.06,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 3,
+          "points_for": 171.48,
+          "points_against": 147.98,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 1,
+          "points_for": 137.16,
+          "points_against": 87.82,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 7,
+          "points_for": 170.1,
+          "points_against": 120.98,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 5,
+          "points_for": 159.68,
+          "points_against": 179.72,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 2,
+          "points_for": 134.5,
+          "points_against": 162.06,
+          "result": "L",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "owner_ids": [
+        "{850C5BAC-38A5-4183-9E71-C8AA0BE7BB0A}"
+      ],
+      "owner_names": [
+        "Kurlie341"
+      ],
+      "wins": 10,
+      "losses": 4,
+      "ties": 0,
+      "points_for": 1933.28,
+      "points_against": 1821.4,
+      "standing": 2,
+      "final_standing": 1,
+      "made_playoffs": true,
+      "streak_length": 1,
+      "streak_type": "LOSS",
+      "acquisitions": 29,
+      "drops": 29,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 3,
+          "points_for": 131.34,
+          "points_against": 133.38,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 1,
+          "points_for": 203.34,
+          "points_against": 134.36,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 2,
+          "points_for": 140.08,
+          "points_against": 113.82,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 6,
+          "points_for": 147.38,
+          "points_against": 87.04,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 4,
+          "points_for": 157.24,
+          "points_against": 145.56,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 7,
+          "points_for": 126.84,
+          "points_against": 104.98,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 8,
+          "points_for": 130.84,
+          "points_against": 122.76,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 3,
+          "points_for": 125.48,
+          "points_against": 98.26,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 1,
+          "points_for": 130.04,
+          "points_against": 125.14,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 2,
+          "points_for": 139.94,
+          "points_against": 125.82,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 6,
+          "points_for": 126.56,
+          "points_against": 156.38,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 4,
+          "points_for": 105.06,
+          "points_against": 123.34,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 7,
+          "points_for": 143.48,
+          "points_against": 110.52,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 8,
+          "points_for": 125.66,
+          "points_against": 240.04,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 4,
+          "points_for": 179.72,
+          "points_against": 159.68,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 1,
+          "points_for": 157.26,
+          "points_against": 120.26,
+          "result": "W",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "owner_ids": [
+        "{6C98970E-2FC3-4A12-B297-8226B3443F98}"
+      ],
+      "owner_names": [
+        "bradcerilli"
+      ],
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1915.32,
+      "points_against": 1912.66,
+      "standing": 5,
+      "final_standing": 6,
+      "made_playoffs": true,
+      "streak_length": 3,
+      "streak_type": "LOSS",
+      "acquisitions": 37,
+      "drops": 38,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 8,
+          "points_for": 163.02,
+          "points_against": 113.34,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 4,
+          "points_for": 135.9,
+          "points_against": 82.02,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 7,
+          "points_for": 78.16,
+          "points_against": 180.64,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 5,
+          "points_for": 87.04,
+          "points_against": 147.38,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 3,
+          "points_for": 122.32,
+          "points_against": 116.32,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 1,
+          "points_for": 150.3,
+          "points_against": 175.06,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 2,
+          "points_for": 150.22,
+          "points_against": 129.96,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 8,
+          "points_for": 178.68,
+          "points_against": 117.58,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 4,
+          "points_for": 178.16,
+          "points_against": 122.4,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 7,
+          "points_for": 136.34,
+          "points_against": 162.78,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 5,
+          "points_for": 156.38,
+          "points_against": 126.56,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 3,
+          "points_for": 125.08,
+          "points_against": 177.46,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 1,
+          "points_for": 131.7,
+          "points_against": 132.24,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 2,
+          "points_for": 122.02,
+          "points_against": 128.92,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 1,
+          "points_for": 107.06,
+          "points_against": 149.0,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 7,
+          "points_for": 153.52,
+          "points_against": 172.28,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 7,
+          "points_for": 93.96,
+          "points_against": 163.22,
+          "result": "L",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "owner_ids": [
+        "{A689970B-0668-469F-B09C-1BC4985BC82E}"
+      ],
+      "owner_names": [
+        "Peter Cerilli"
+      ],
+      "wins": 8,
+      "losses": 6,
+      "ties": 0,
+      "points_for": 2022.74,
+      "points_against": 1838.1,
+      "standing": 3,
+      "final_standing": 5,
+      "made_playoffs": true,
+      "streak_length": 1,
+      "streak_type": "WIN",
+      "acquisitions": 7,
+      "drops": 8,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 1,
+          "points_for": 118.44,
+          "points_against": 146.82,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 2,
+          "points_for": 124.06,
+          "points_against": 138.22,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 6,
+          "points_for": 180.64,
+          "points_against": 78.16,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 4,
+          "points_for": 159.42,
+          "points_against": 112.6,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 8,
+          "points_for": 158.42,
+          "points_against": 138.52,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 5,
+          "points_for": 104.98,
+          "points_against": 126.84,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 3,
+          "points_for": 170.66,
+          "points_against": 103.46,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 1,
+          "points_for": 160.48,
+          "points_against": 148.8,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 2,
+          "points_for": 124.3,
+          "points_against": 187.1,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 6,
+          "points_for": 162.78,
+          "points_against": 136.34,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 4,
+          "points_for": 150.14,
+          "points_against": 163.64,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 8,
+          "points_for": 131.38,
+          "points_against": 110.06,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 5,
+          "points_for": 110.52,
+          "points_against": 143.48,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 3,
+          "points_for": 166.52,
+          "points_against": 104.06,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 4,
+          "points_for": 120.98,
+          "points_against": 170.1,
+          "result": "L",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 6,
+          "points_for": 172.28,
+          "points_against": 153.52,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 6,
+          "points_for": 163.22,
+          "points_against": 93.96,
+          "result": "W",
+          "is_playoff": true
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "owner_ids": [
+        "{91AB270D-14E7-489B-A264-A2A6D446A7B7}"
+      ],
+      "owner_names": [
+        "BCTESTA"
+      ],
+      "wins": 4,
+      "losses": 10,
+      "ties": 0,
+      "points_for": 1985.42,
+      "points_against": 1917.64,
+      "standing": 7,
+      "final_standing": 7,
+      "made_playoffs": false,
+      "streak_length": 1,
+      "streak_type": "WIN",
+      "acquisitions": 23,
+      "drops": 23,
+      "trades": 0,
+      "reg_season_weeks": 14,
+      "playoff_team_count": 6,
+      "weekly": [
+        {
+          "week": 1,
+          "opponent_team_id": 6,
+          "points_for": 113.34,
+          "points_against": 163.02,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 2,
+          "opponent_team_id": 3,
+          "points_for": 137.78,
+          "points_against": 140.72,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 3,
+          "opponent_team_id": 4,
+          "points_for": 132.68,
+          "points_against": 81.28,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 4,
+          "opponent_team_id": 1,
+          "points_for": 130.78,
+          "points_against": 136.24,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 5,
+          "opponent_team_id": 7,
+          "points_for": 138.52,
+          "points_against": 158.42,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 6,
+          "opponent_team_id": 2,
+          "points_for": 133.32,
+          "points_against": 134.46,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 7,
+          "opponent_team_id": 5,
+          "points_for": 122.76,
+          "points_against": 130.84,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 8,
+          "opponent_team_id": 6,
+          "points_for": 117.58,
+          "points_against": 178.68,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 9,
+          "opponent_team_id": 3,
+          "points_for": 139.34,
+          "points_against": 118.6,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 10,
+          "opponent_team_id": 4,
+          "points_for": 164.02,
+          "points_against": 103.36,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 11,
+          "opponent_team_id": 1,
+          "points_for": 161.32,
+          "points_against": 161.86,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 12,
+          "opponent_team_id": 7,
+          "points_for": 110.06,
+          "points_against": 131.38,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 13,
+          "opponent_team_id": 2,
+          "points_for": 143.88,
+          "points_against": 153.12,
+          "result": "L",
+          "is_playoff": false
+        },
+        {
+          "week": 14,
+          "opponent_team_id": 5,
+          "points_for": 240.04,
+          "points_against": 125.66,
+          "result": "W",
+          "is_playoff": false
+        },
+        {
+          "week": 15,
+          "opponent_team_id": 3,
+          "points_for": 182.72,
+          "points_against": 114.2,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 16,
+          "opponent_team_id": 3,
+          "points_for": 117.84,
+          "points_against": 114.78,
+          "result": "W",
+          "is_playoff": true
+        },
+        {
+          "week": 17,
+          "opponent_team_id": 3,
+          "points_for": 163.66,
+          "points_against": 71.08,
+          "result": "W",
+          "is_playoff": true
+        }
+      ]
+    }
+  ],
+  "picks": [
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 1,
+      "overall_pick": 1,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3916387,
+      "player_name": "Lamar Jackson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 2,
+      "overall_pick": 2,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 2577417,
+      "player_name": "Dak Prescott",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 3,
+      "overall_pick": 3,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 3139477,
+      "player_name": "Patrick Mahomes",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 4,
+      "overall_pick": 4,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3915511,
+      "player_name": "Joe Burrow",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 5,
+      "overall_pick": 5,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4040715,
+      "player_name": "Jalen Hurts",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 6,
+      "overall_pick": 6,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4432577,
+      "player_name": "C.J. Stroud",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 7,
+      "overall_pick": 7,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4361741,
+      "player_name": "Brock Purdy",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 1,
+      "round_pick": 8,
+      "overall_pick": 8,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3046779,
+      "player_name": "Jared Goff",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 1,
+      "overall_pick": 9,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 12483,
+      "player_name": "Matthew Stafford",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 2,
+      "overall_pick": 10,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4036378,
+      "player_name": "Jordan Love",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 3,
+      "overall_pick": 11,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 3917315,
+      "player_name": "Kyler Murray",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 4,
+      "overall_pick": 12,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4241479,
+      "player_name": "Tua Tagovailoa",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 5,
+      "overall_pick": 13,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3918298,
+      "player_name": "Josh Allen",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 6,
+      "overall_pick": 14,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4429084,
+      "player_name": "Anthony Richardson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 7,
+      "overall_pick": 15,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 14880,
+      "player_name": "Kirk Cousins",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 2,
+      "round_pick": 8,
+      "overall_pick": 16,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3122840,
+      "player_name": "Deshaun Watson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 1,
+      "overall_pick": 17,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4242335,
+      "player_name": "Jonathan Taylor",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 2,
+      "overall_pick": 18,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4427366,
+      "player_name": "Breece Hall",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 3,
+      "overall_pick": 19,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4361529,
+      "player_name": "Isiah Pacheco",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 4,
+      "overall_pick": 20,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 4241457,
+      "player_name": "Najee Harris",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 5,
+      "overall_pick": 21,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 3929630,
+      "player_name": "Saquon Barkley",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 6,
+      "overall_pick": 22,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 3054850,
+      "player_name": "Alvin Kamara",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 7,
+      "overall_pick": 23,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4429795,
+      "player_name": "Jahmyr Gibbs",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 3,
+      "round_pick": 8,
+      "overall_pick": 24,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3117251,
+      "player_name": "Christian McCaffrey",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 1,
+      "overall_pick": 25,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4362238,
+      "player_name": "Chase Brown",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 2,
+      "overall_pick": 26,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4430737,
+      "player_name": "Kyren Williams",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 3,
+      "overall_pick": 27,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4567048,
+      "player_name": "Kenneth Walker III",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 4,
+      "overall_pick": 28,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4379399,
+      "player_name": "James Cook",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 5,
+      "overall_pick": 29,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3045147,
+      "player_name": "James Conner",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 6,
+      "overall_pick": 30,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 3116385,
+      "player_name": "Joe Mixon",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 7,
+      "overall_pick": 31,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4430807,
+      "player_name": "Bijan Robinson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 4,
+      "round_pick": 8,
+      "overall_pick": 32,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4239996,
+      "player_name": "Travis Etienne Jr.",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 1,
+      "overall_pick": 33,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3915416,
+      "player_name": "DJ Moore",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 2,
+      "overall_pick": 34,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4374302,
+      "player_name": "Amon-Ra St. Brown",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 3,
+      "overall_pick": 35,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 2977187,
+      "player_name": "Cooper Kupp",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 4,
+      "overall_pick": 36,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 4426515,
+      "player_name": "Puka Nacua",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 5,
+      "overall_pick": 37,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4569618,
+      "player_name": "Garrett Wilson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 6,
+      "overall_pick": 38,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4262921,
+      "player_name": "Justin Jefferson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 7,
+      "overall_pick": 39,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4362628,
+      "player_name": "Ja'Marr Chase",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 5,
+      "round_pick": 8,
+      "overall_pick": 40,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3116406,
+      "player_name": "Tyreek Hill",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 1,
+      "overall_pick": 41,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4241389,
+      "player_name": "CeeDee Lamb",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 2,
+      "overall_pick": 42,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4361370,
+      "player_name": "Chris Olave",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 3,
+      "overall_pick": 43,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4047646,
+      "player_name": "A.J. Brown",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 4,
+      "overall_pick": 44,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4258173,
+      "player_name": "Nico Collins",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 5,
+      "overall_pick": 45,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3116165,
+      "player_name": "Chris Godwin",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 6,
+      "overall_pick": 46,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 16800,
+      "player_name": "Davante Adams",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 7,
+      "overall_pick": 47,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 2976212,
+      "player_name": "Stefon Diggs",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 6,
+      "round_pick": 8,
+      "overall_pick": 48,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3128429,
+      "player_name": "Courtland Sutton",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 1,
+      "overall_pick": 49,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4362249,
+      "player_name": "Jayden Reed",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 2,
+      "overall_pick": 50,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4372016,
+      "player_name": "Jaylen Waddle",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 3,
+      "overall_pick": 51,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4035687,
+      "player_name": "Michael Pittman Jr.",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 4,
+      "overall_pick": 52,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 2976499,
+      "player_name": "Amari Cooper",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 5,
+      "overall_pick": 53,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4360438,
+      "player_name": "Brandon Aiyuk",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 6,
+      "overall_pick": 54,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4432708,
+      "player_name": "Marvin Harrison Jr.",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 7,
+      "overall_pick": 55,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4047650,
+      "player_name": "DK Metcalf",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 7,
+      "round_pick": 8,
+      "overall_pick": 56,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 16737,
+      "player_name": "Mike Evans",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 1,
+      "overall_pick": 57,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4242355,
+      "player_name": "Jake Ferguson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 2,
+      "overall_pick": 58,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4360248,
+      "player_name": "Kyle Pitts",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 3,
+      "overall_pick": 59,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 3116365,
+      "player_name": "Mark Andrews",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 4,
+      "overall_pick": 60,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4430027,
+      "player_name": "Sam LaPorta",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 5,
+      "overall_pick": 61,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 15847,
+      "player_name": "Travis Kelce",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 6,
+      "overall_pick": 62,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4361307,
+      "player_name": "Trey McBride",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 7,
+      "overall_pick": 63,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4385690,
+      "player_name": "Dalton Kincaid",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 8,
+      "round_pick": 8,
+      "overall_pick": 64,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3040151,
+      "player_name": "George Kittle",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 1,
+      "overall_pick": 65,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4360234,
+      "player_name": "Evan McPherson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 2,
+      "overall_pick": 66,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 2971573,
+      "player_name": "Ka'imi Fairbairn",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 3,
+      "overall_pick": 67,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 3050478,
+      "player_name": "Jake Elliott",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 4,
+      "overall_pick": 68,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3055899,
+      "player_name": "Harrison Butker",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 5,
+      "overall_pick": 69,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4372066,
+      "player_name": "Jake Moody",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 6,
+      "overall_pick": 70,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 3953687,
+      "player_name": "Brandon Aubrey",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 7,
+      "overall_pick": 71,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 15683,
+      "player_name": "Justin Tucker",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 9,
+      "round_pick": 8,
+      "overall_pick": 72,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3123052,
+      "player_name": "Michael Badgley",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 1,
+      "overall_pick": 73,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3121422,
+      "player_name": "Terry McLaurin",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 2,
+      "overall_pick": 74,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 3043078,
+      "player_name": "Derrick Henry",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 3,
+      "overall_pick": 75,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4426502,
+      "player_name": "Drake London",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 4,
+      "overall_pick": 76,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4047365,
+      "player_name": "Josh Jacobs",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 5,
+      "overall_pick": 77,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3051392,
+      "player_name": "Ezekiel Elliott",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 6,
+      "overall_pick": 78,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4241478,
+      "player_name": "DeVonta Smith",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 7,
+      "overall_pick": 79,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4259545,
+      "player_name": "D'Andre Swift",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 10,
+      "round_pick": 8,
+      "overall_pick": 80,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4429160,
+      "player_name": "De'Von Achane",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 1,
+      "overall_pick": 81,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": -16030,
+      "player_name": "Jaguars D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 2,
+      "overall_pick": 82,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": -16015,
+      "player_name": "Dolphins D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 3,
+      "overall_pick": 83,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": -16033,
+      "player_name": "Ravens D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 4,
+      "overall_pick": 84,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": -16005,
+      "player_name": "Browns D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 5,
+      "overall_pick": 85,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": -16025,
+      "player_name": "49ers D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 6,
+      "overall_pick": 86,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": -16020,
+      "player_name": "Jets D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 7,
+      "overall_pick": 87,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": -16006,
+      "player_name": "Cowboys D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 11,
+      "round_pick": 8,
+      "overall_pick": 88,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": -16023,
+      "player_name": "Steelers D/ST",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 1,
+      "overall_pick": 89,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4361418,
+      "player_name": "Will Levis",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 2,
+      "overall_pick": 90,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 4038941,
+      "player_name": "Justin Herbert",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 3,
+      "overall_pick": 91,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 8439,
+      "player_name": "Aaron Rodgers",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 4,
+      "overall_pick": 92,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4595348,
+      "player_name": "Malik Nabers",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 5,
+      "overall_pick": 93,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 4428331,
+      "player_name": "Rashee Rice",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 6,
+      "overall_pick": 94,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 3126486,
+      "player_name": "Deebo Samuel Sr.",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 7,
+      "overall_pick": 95,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4426348,
+      "player_name": "Jayden Daniels",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 12,
+      "round_pick": 8,
+      "overall_pick": 96,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3051876,
+      "player_name": "Evan Engram",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 1,
+      "overall_pick": 97,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4697815,
+      "player_name": "Rachaad White",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 2,
+      "overall_pick": 98,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4366031,
+      "player_name": "Tank Dell",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 3,
+      "overall_pick": 99,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4569173,
+      "player_name": "Rhamondre Stevenson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 4,
+      "overall_pick": 100,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3932905,
+      "player_name": "Diontae Johnson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 5,
+      "overall_pick": 101,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4431611,
+      "player_name": "Caleb Williams",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 6,
+      "overall_pick": 102,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 3925357,
+      "player_name": "Calvin Ridley",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 7,
+      "overall_pick": 103,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 3068267,
+      "player_name": "Austin Ekeler",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 13,
+      "round_pick": 8,
+      "overall_pick": 104,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4432665,
+      "player_name": "Brock Bowers",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 1,
+      "overall_pick": 105,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 4241416,
+      "player_name": "Chuba Hubbard",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 2,
+      "overall_pick": 106,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 3128720,
+      "player_name": "Nick Chubb",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 3,
+      "overall_pick": 107,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4239993,
+      "player_name": "Tee Higgins",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 4,
+      "overall_pick": 108,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 4683062,
+      "player_name": "Xavier Worthy",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 5,
+      "overall_pick": 109,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 4241474,
+      "player_name": "Brian Robinson Jr.",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 6,
+      "overall_pick": 110,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4429615,
+      "player_name": "Zay Flowers",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 7,
+      "overall_pick": 111,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4035538,
+      "player_name": "David Montgomery",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 14,
+      "round_pick": 8,
+      "overall_pick": 112,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 3042519,
+      "player_name": "Aaron Jones",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 1,
+      "overall_pick": 113,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": 4429205,
+      "player_name": "Jordan Addison",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 2,
+      "overall_pick": 114,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4248528,
+      "player_name": "Christian Watson",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 3,
+      "overall_pick": 115,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4361777,
+      "player_name": "Zamir White",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 4,
+      "overall_pick": 116,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 4035676,
+      "player_name": "Zack Moss",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 5,
+      "overall_pick": 117,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 2576414,
+      "player_name": "Raheem Mostert",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 6,
+      "overall_pick": 118,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4431299,
+      "player_name": "Rome Odunze",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 7,
+      "overall_pick": 119,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": 15818,
+      "player_name": "Keenan Allen",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 15,
+      "round_pick": 8,
+      "overall_pick": 120,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3916148,
+      "player_name": "Tony Pollard",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 1,
+      "overall_pick": 121,
+      "team_id": 4,
+      "team_name": "Azza My Dog",
+      "player_id": 3917792,
+      "player_name": "Daniel Jones",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 2,
+      "overall_pick": 122,
+      "team_id": 7,
+      "team_name": "Team UNCLE",
+      "player_id": -1,
+      "player_name": "",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 3,
+      "overall_pick": 123,
+      "team_id": 5,
+      "team_name": "Wookiee Warriors",
+      "player_id": 4429096,
+      "player_name": "Blake Corum",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 4,
+      "overall_pick": 124,
+      "team_id": 2,
+      "team_name": "Riverside CerilliSorority",
+      "player_id": 3895856,
+      "player_name": "Christian Kirk",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 5,
+      "overall_pick": 125,
+      "team_id": 8,
+      "team_name": "TESTA MANIA",
+      "player_id": 3916433,
+      "player_name": "Jakobi Meyers",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 6,
+      "overall_pick": 126,
+      "team_id": 6,
+      "team_name": "Team  Connor Kitty",
+      "player_id": 4426354,
+      "player_name": "George Pickens",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 7,
+      "overall_pick": 127,
+      "team_id": 1,
+      "team_name": "Awwww Yeahh",
+      "player_id": 4428557,
+      "player_name": "Tyjae Spears",
+      "bid_amount": 0,
+      "keeper_status": false
+    },
+    {
+      "year": 2024,
+      "round_num": 16,
+      "round_pick": 8,
+      "overall_pick": 128,
+      "team_id": 3,
+      "team_name": "\u20bfrookline  \u20bfallers",
+      "player_id": -1,
+      "player_name": "",
+      "bid_amount": 0,
+      "keeper_status": false
+    }
+  ]
+}
