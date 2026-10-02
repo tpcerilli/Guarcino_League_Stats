@@ -1,0 +1,5 @@
+{
+  "_comment": "Optional overrides for manager identity resolution. Two supported keys: 'owner_names' maps an ESPN owner member id to a canonical display name; 'team_overrides' maps 'year:team_id' to a canonical manager key when owner data is missing/ambiguous.",
+  "owner_names": {},
+  "team_overrides": {}
+}

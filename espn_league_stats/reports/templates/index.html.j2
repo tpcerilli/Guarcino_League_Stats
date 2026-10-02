@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guarcino League Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
+  h1, h2 { color: #f8fafc; }
+  section { margin-bottom: 3rem; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
+  th, td { border: 1px solid #334155; padding: 6px 10px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  th { background: #1e293b; }
+  tr:nth-child(even) { background: #1e293b55; }
+  table.sortable thead th { cursor: pointer; user-select: none; }
+  table.sortable thead th:hover { background: #334155; }
+  .sort-indicator { font-size: 0.75em; opacity: 0.8; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .chart-box { background: #1e293b; border-radius: 8px; padding: 1rem; }
+  canvas { max-height: 360px; }
+  .h2h-table td { text-align: center; min-width: 70px; }
+  .table-wrap { max-height: 500px; overflow-y: auto; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+  .tab-button { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; }
+  .tab-button:hover { background: #334155; }
+  .tab-button.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+<h1>Guarcino League Stats</h1>
+<p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
+
+<nav class="tabs">
+  <button class="tab-button active" data-tab="current">Current Season</button>
+  <button class="tab-button" data-tab="alltime">All-Time</button>
+  <button class="tab-button" data-tab="regular">Regular Season</button>
+  <button class="tab-button" data-tab="playoffs">Playoffs</button>
+  <button class="tab-button" data-tab="charts">Charts</button>
+  <button class="tab-button" data-tab="h2h">Head-to-Head</button>
+  <button class="tab-button" data-tab="byseason">Results By Season</button>
+</nav>
+
+<div class="tab-panel active" id="tab-current">
+<section>
+  <h2>Current Season Standings</h2>
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th><th>PF</th><th>PA</th><th>Seed</th></tr>
+    </thead>
+    <tbody>
+    {% for row in current_season %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
+      <td>{{ row.standing }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-alltime">
+<section>
+  <h2>All-Time Summary</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+    <tr>
+      <th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th>
+      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th><th>3rd</th>
+      <th>Playoffs</th><th>Playoff W-L</th><th>Best Season PF</th><th>Best Game</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in all_time %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.seasons_played }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
+      <td>{{ "%.0f"|format(row.points_for) }}</td><td>{{ "%.0f"|format(row.points_against) }}</td>
+      <td>{{ "%.0f"|format(row.point_diff) }}</td>
+      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td><td>{{ row.third_place_finishes }}</td>
+      <td>{{ row.playoff_appearances }}</td>
+      <td data-sort="{{ row.playoff_wins }}">{{ row.playoff_wins }}-{{ row.playoff_losses }}</td>
+      <td>{{ "%.1f"|format(row.best_season_points) }} ({{ row.best_season_points_year }})</td>
+      <td>{{ "%.1f"|format(row.best_game_score) }} ({{ row.best_game_year }} wk{{ row.best_game_week }})</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-regular">
+<section>
+  <h2>Regular Season (all-time)</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>Avg PF</th><th>Avg PA</th></tr>
+    </thead>
+    <tbody>
+    {% for row in regular_season %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.games }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
+      <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-playoffs">
+<section>
+  <h2>Playoffs (all-time, real bracket only)</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Appearances</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>Avg PF</th><th>Avg PA</th></tr>
+    </thead>
+    <tbody>
+    {% for row in playoffs %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.appearances }}</td><td>{{ row.games }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td data-sort="{{ (row.win_pct * 100) if row.win_pct is not none else -1 }}">
+        {% if row.win_pct is not none %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}n/a{% endif %}
+      </td>
+      <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-charts">
+<section>
+  <h2>Charts</h2>
+  <div class="charts-grid">
+    <div class="chart-box"><canvas id="pointsTrend"></canvas></div>
+    <div class="chart-box"><canvas id="championships"></canvas></div>
+    <div class="chart-box"><canvas id="winPct"></canvas></div>
+    <div class="chart-box"><canvas id="pfPa"></canvas></div>
+    <div class="chart-box"><canvas id="standingsOverTime"></canvas></div>
+    <div class="chart-box"><canvas id="playoffsChart"></canvas></div>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-h2h">
+<section>
+  <h2>Head-to-Head (all-time)</h2>
+  <div class="table-wrap">
+  <table class="h2h-table">
+    <tr><th>Manager \ Opponent</th>{% for m in h2h_managers %}<th>{{ m }}</th>{% endfor %}</tr>
+    {% for row_manager in h2h_managers %}
+    <tr>
+      <th>{{ row_manager }}</th>
+      {% for col_manager in h2h_managers %}
+        {% set cell = h2h_cells[row_manager][col_manager] %}
+        {% if row_manager == col_manager %}
+          <td>-</td>
+        {% elif cell %}
+          <td style="background-color: rgba(34,139,34,{{ cell.win_pct }});">
+            {{ cell.wins }}-{{ cell.losses }}{% if cell.ties %}-{{ cell.ties }}{% endif %}
+          </td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-byseason">
+<section>
+  <h2>Results By Season</h2>
+  {% for group in season_groups %}
+  <h3>{{ group.year }}</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in group.rows %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
+      <td data-sort="{{ row.final_standing if row.final_standing else 99 }}">
+        {{ row.final_standing if row.final_standing else "-" }}
+      </td>
+      <td data-sort="{{ 1 if row.made_playoffs else 0 }}">{{ "Yes" if row.made_playoffs else "No" }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endfor %}
+</section>
+</div>
+
+<script>
+const CHARTS = {{ charts_json|safe }};
+const palette = ["#38bdf8","#f472b6","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc"];
+
+function colorize(datasets) {
+  return datasets.map((d, i) => ({...d, borderColor: palette[i % palette.length], backgroundColor: palette[i % palette.length]}));
+}
+
+new Chart(document.getElementById('pointsTrend'), {
+  type: 'line',
+  data: { labels: CHARTS.points_trend.labels, datasets: colorize(CHARTS.points_trend.datasets).map(d => ({...d, fill: false})) },
+  options: { plugins: { title: { display: true, text: 'Points Per Season', color: '#e2e8f0' } } }
+});
+
+new Chart(document.getElementById('championships'), {
+  type: 'bar',
+  data: { labels: CHARTS.championships.labels, datasets: [{ label: 'Championships', data: CHARTS.championships.values, backgroundColor: palette[0] }] },
+  options: { plugins: { title: { display: true, text: 'Championships', color: '#e2e8f0' } } }
+});
+
+new Chart(document.getElementById('winPct'), {
+  type: 'bar',
+  data: { labels: CHARTS.win_pct.labels, datasets: [{ label: 'Win %', data: CHARTS.win_pct.values, backgroundColor: palette[1] }] },
+  options: { scales: { y: { suggestedMax: 100, title: { display: true, text: '%' } } },
+             plugins: { title: { display: true, text: 'All-Time Win %', color: '#e2e8f0' } } }
+});
+
+new Chart(document.getElementById('pfPa'), {
+  type: 'bar',
+  data: { labels: CHARTS.pf_pa.labels, datasets: [
+    { label: 'Avg Points For', data: CHARTS.pf_pa.points_for, backgroundColor: palette[3] },
+    { label: 'Avg Points Against', data: CHARTS.pf_pa.points_against, backgroundColor: palette[6] }
+  ]},
+  options: { plugins: { title: { display: true, text: 'Avg Points For vs Against', color: '#e2e8f0' } } }
+});
+
+new Chart(document.getElementById('standingsOverTime'), {
+  type: 'line',
+  data: { labels: CHARTS.standings_over_time.labels, datasets: colorize(CHARTS.standings_over_time.datasets).map(d => ({...d, fill: false, spanGaps: true})) },
+  options: { scales: { y: { reverse: true, title: { display: true, text: 'Final Standing (1 = best)' } } },
+             plugins: { title: { display: true, text: 'Standings Over Time', color: '#e2e8f0' } } }
+});
+
+new Chart(document.getElementById('playoffsChart'), {
+  type: 'bar',
+  data: { labels: CHARTS.playoffs.labels, datasets: [
+    { label: 'Playoff Appearances', data: CHARTS.playoffs.appearances, backgroundColor: palette[4] },
+    { label: 'Playoff Win %', data: CHARTS.playoffs.win_pct, backgroundColor: palette[5] }
+  ]},
+  options: { plugins: { title: { display: true, text: 'Playoff Appearances & Win % (right axis is % for wins)', color: '#e2e8f0' } } }
+});
+
+// Tab switching: show one panel at a time; Chart.js needs a visible canvas to size itself,
+// so re-trigger a resize on every chart the first time the Charts tab is shown.
+const allCharts = Chart.instances ? Object.values(Chart.instances) : [];
+document.querySelectorAll(".tab-button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    if (btn.dataset.tab === "charts") {
+      allCharts.forEach((c) => c.resize());
+    }
+  });
+});
+
+// Generic click-to-sort for any <table class="sortable"> with a <thead>/<tbody>.
+function cellSortValue(td) {
+  return td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
+}
+
+function sortTableByColumn(table, colIndex, ascending) {
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const allNumeric = rows.every((r) => {
+    const v = cellSortValue(r.cells[colIndex]);
+    return v !== "" && !isNaN(parseFloat(v));
+  });
+  rows.sort((a, b) => {
+    let va = cellSortValue(a.cells[colIndex]);
+    let vb = cellSortValue(b.cells[colIndex]);
+    if (allNumeric) {
+      va = parseFloat(va);
+      vb = parseFloat(vb);
+    } else {
+      va = va.toLowerCase();
+      vb = vb.toLowerCase();
+    }
+    if (va < vb) return ascending ? -1 : 1;
+    if (va > vb) return ascending ? 1 : -1;
+    return 0;
+  });
+  rows.forEach((r) => tbody.appendChild(r));
+}
+
+document.querySelectorAll("table.sortable").forEach((table) => {
+  const headerCells = Array.from(table.tHead.rows[0].cells);
+  headerCells.forEach((th, colIndex) => {
+    th.addEventListener("click", () => {
+      const ascending = th.dataset.sortDir !== "asc";
+      headerCells.forEach((h) => {
+        delete h.dataset.sortDir;
+        const existing = h.querySelector(".sort-indicator");
+        if (existing) existing.remove();
+      });
+      th.dataset.sortDir = ascending ? "asc" : "desc";
+      const indicator = document.createElement("span");
+      indicator.className = "sort-indicator";
+      indicator.textContent = ascending ? " \u25B2" : " \u25BC";
+      th.appendChild(indicator);
+      sortTableByColumn(table, colIndex, ascending);
+    });
+  });
+});
+</script>
+</body>
+</html>
