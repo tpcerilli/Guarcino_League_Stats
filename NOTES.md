@@ -1,37 +1,38 @@
 # Future Considerations
 
-## Best Game stats
-
-Add in a way to view the scores for that team's best games. May require saving all 
-games.
-
-## Current Season Tab ADditions
-
-Could add some of the misc stats to the current season tab. These could be separate 
-tables from the main one.
+- Colors on line graphs are too similar.
+- When the user first clicks the title column, always sort high to low first or (best to worst)
 
 ## Playoff Stats
 
 Add Reg Season finish column. Put this in before Final Standing
 
-## New table/tab
+## Current Season Tab Additions
+
+Could add some of the misc stats to the current season tab. These could be separate 
+tables from the main one.
+
+## Always sort secondarily by PF
+
+Like when wins are tied sorting high to low, sort the person with more PF first.
+
+## Workflow to update gh-pages
+ 
+I dont like that when i change things on main, the gh-pages doesn't update as well. I'd like a better flow than this. I don't want to have to update in two places at once.
+
+## Best Game stats
+
+Add in a way to view the scores for that team's best games. May require saving all 
+games.
+
+## New table/tab General Stats
 
 Add in general stats, such as:
 - Title wins by regular season finish. Could make a table showing reg season finish vs playoff finish.
 - Title wins by PF ranking. Could make a table showing PF season finish vs playoff finish.
 - Could also add title wins by # acquisitions rank by season.
 
-## Always sort secondarily by PF
 
-Like when wins are tied sorting high to low, sort the person with more PF first.
-
-## First click on sorting
-
-When he user first clicks the title column, always sort high to low first or (best to worst)
-
-## Workflow to update gh-pages
- 
-I dont like that when i change things on main, the gh-pages doesn't update as well. I'd like a better flow than this. I don't want to have to update in two places at once.
 
 # Known data quirks
 
