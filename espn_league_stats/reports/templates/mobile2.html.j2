@@ -380,6 +380,9 @@ function colorize(datasets) {
 const allCharts = [];
 if (typeof Chart !== "undefined") {
 try {
+Chart.defaults.color = "#cbd5e1";
+Chart.defaults.borderColor = "#334155";
+Chart.defaults.plugins.legend.labels.color = "#e2e8f0";
 allCharts.push(new Chart(document.getElementById('pointsTrend'), {
   type: 'line',
   data: { labels: CHARTS.points_trend.labels, datasets: colorize(CHARTS.points_trend.datasets).map(d => ({...d, fill: false})) },

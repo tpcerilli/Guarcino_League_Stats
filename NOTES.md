@@ -1,3 +1,35 @@
+# Future Considerations
+
+## Best Game stats
+
+Add in a way to view the scores for that team's best games. May require saving all 
+games.
+
+## Current Season Tab ADditions
+
+Could add some of the misc stats to the current season tab. These could be separate 
+tables from the main one.
+
+## Playoff Stats
+
+Add Reg Season finish column
+
+## New table/tab
+
+Add in general stats, such as:
+- Title wins by regular season finish. Could make a table showing reg season finish vs playoff finish.
+- Title wins by PF ranking. Could make a table showing PF season finish vs playoff finish.
+- Could also add title wins by # acquisitions rank by season.
+
+## Always sort secondarily by PF
+
+Like when wins are tied sorting high to low, sort the person with more PF first.
+
+## First click on sorting
+
+When he user first clicks the title column, always sort high to low first or (best to worst)
+
+
 # Known data quirks
 
 ## 2022 championship override (Bryan Testa) — not reflected in ESPN's own data
