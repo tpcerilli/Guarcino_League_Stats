@@ -33,16 +33,14 @@
     touch-action: manipulation;
   }
   .sort-indicator { font-size: 0.75em; opacity: 0.8; }
-  .table-sort-controls { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; flex-wrap: wrap; }
-  .table-sort-controls label { font-size: 0.85rem; color: #94a3b8; }
-  .table-sort-controls select, #season-sort {
+  #season-sort {
     min-height: 44px; max-width: 100%; background-color: #1e293b; color: #e2e8f0;
     border: 1px solid #334155; border-radius: 6px; padding: 4px 28px 4px 8px; font-family: inherit; font-size: 0.9rem;
     -webkit-appearance: none; appearance: none; -webkit-text-fill-color: #e2e8f0; opacity: 1;
     background-image: linear-gradient(45deg, transparent 50%, #e2e8f0 50%), linear-gradient(135deg, #e2e8f0 50%, transparent 50%);
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
-  .table-sort-controls select option, #season-sort option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
+  #season-sort option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
   #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
   #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
   #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
@@ -515,8 +513,6 @@ function applySortToTable(table, colIndex, ascending) {
   indicator.textContent = ascending ? " \u25B2" : " \u25BC";
   (th.querySelector("button.sort-btn") || th).appendChild(indicator);
   sortTableByColumn(table, colIndex, ascending);
-  const select = table.parentElement.querySelector(".table-sort-controls select");
-  if (select) select.value = colIndex + ":" + (ascending ? "asc" : "desc");
 }
 
 // iOS Safari often ignores taps on bare <th>/<td> elements; wrap header text in a
@@ -535,48 +531,6 @@ function wrapHeaderButton(th) {
   return btn;
 }
 
-function buildSortDropdown(table) {
-  const headerCells = Array.from(table.tHead.rows[0].cells);
-  const firstRow = table.tBodies[0] ? table.tBodies[0].rows[0] : null;
-  const wrap = document.createElement("div");
-  wrap.className = "table-sort-controls";
-  const selectId = "sort-select-" + Math.random().toString(36).slice(2, 9);
-  const label = document.createElement("label");
-  label.textContent = "Sort by:";
-  label.htmlFor = selectId;
-  const select = document.createElement("select");
-  select.id = selectId;
-  select.setAttribute("aria-label", "Sort table by column");
-  const blank = document.createElement("option");
-  blank.value = "";
-  blank.textContent = "Sort by column\u2026";
-  select.appendChild(blank);
-  headerCells.forEach((th, idx) => {
-    const name = th.textContent.trim();
-    if (!name) return;
-    const sample = firstRow ? cellSortValue(firstRow.cells[idx]) : "";
-    const numeric = sample !== "" && !isNaN(parseFloat(sample));
-    const ascLabel = numeric ? "Low to High" : "A to Z";
-    const descLabel = numeric ? "High to Low" : "Z to A";
-    const optAsc = document.createElement("option");
-    optAsc.value = idx + ":asc";
-    optAsc.textContent = name + " \u2013 " + ascLabel;
-    select.appendChild(optAsc);
-    const optDesc = document.createElement("option");
-    optDesc.value = idx + ":desc";
-    optDesc.textContent = name + " \u2013 " + descLabel;
-    select.appendChild(optDesc);
-  });
-  select.addEventListener("change", () => {
-    if (!select.value) return;
-    const [column, direction] = select.value.split(":");
-    applySortToTable(table, Number(column), direction === "asc");
-  });
-  wrap.appendChild(label);
-  wrap.appendChild(select);
-  table.parentElement.insertBefore(wrap, table);
-}
-
 function applySeasonSort() {
   const value = document.getElementById("season-sort").value;
   if (!value) return;
@@ -590,7 +544,6 @@ document.getElementById("season-sort").addEventListener("change", applySeasonSor
 document.getElementById("season-sort-refresh").addEventListener("click", applySeasonSort);
 
 document.querySelectorAll("table.sortable").forEach((table) => {
-  buildSortDropdown(table);
   const headerCells = Array.from(table.tHead.rows[0].cells);
   headerCells.forEach((th, colIndex) => {
     const btn = wrapHeaderButton(th);
