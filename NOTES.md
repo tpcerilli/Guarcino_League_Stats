@@ -29,6 +29,9 @@ Like when wins are tied sorting high to low, sort the person with more PF first.
 
 When he user first clicks the title column, always sort high to low first or (best to worst)
 
+## Workflow to update gh-pages
+ 
+I dont like that when i change things on main, the gh-pages doesn't update as well. I'd like a better flow than this. I don't want to have to update in two places at once.
 
 # Known data quirks
 
