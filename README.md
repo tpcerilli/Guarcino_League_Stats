@@ -3,6 +3,8 @@
 ESPN Fantasy Football league history + current-season stats: console tables, CSV exports, and
 an HTML dashboard with charts.
 
+Go to https://tpcerilli.github.io/Guarcino_League_Stats/ to view current statistics.
+
 ## Setup
 
 1. `python -m venv .venv`
