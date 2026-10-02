@@ -18,7 +18,7 @@ console = Console()
 
 
 def print_all_time_leaderboard(df: pd.DataFrame) -> None:
-    table = Table(title="Combined Leaderboard")
+    table = Table(title="All-Time Leaderboard")
     for col in ("Manager", "W", "L", "T", "Win%", "PF", "PA", "Titles", "2nd", "Playoffs"):
         table.add_column(col)
     for _, row in df.iterrows():
@@ -61,13 +61,23 @@ def _fmt_season(points, year) -> str:
     return f"{points:.1f} ({int(year)})"
 
 
+def _fmt_streak(length, span) -> str:
+    if not length:
+        return "-"
+    start, end = span
+    year_range = str(start) if start == end else f"{start}-{end}"
+    return f"{length} ({year_range})"
+
+
 def print_records(df: pd.DataFrame) -> None:
-    table = Table(title="Combined Records")
+    table = Table(title="All-Time Records")
     table.add_column("Manager")
     table.add_column("Best Season PF (yr)")
     table.add_column("Worst Season PF (yr)")
     table.add_column("Best Game (yr/wk vs)")
     table.add_column("Worst Game (yr/wk)")
+    table.add_column("Longest Win Streak")
+    table.add_column("Longest Loss Streak")
     for _, row in df.iterrows():
         table.add_row(
             row["manager_name"],
@@ -75,6 +85,24 @@ def print_records(df: pd.DataFrame) -> None:
             _fmt_season(row["worst_season_points"], row["worst_season_points_year"]),
             f"{row['best_game_score']:.1f} ({int(row['best_game_year'])} wk{int(row['best_game_week'])} vs {row['best_game_opponent']})",
             f"{row['worst_game_score']:.1f} ({int(row['worst_game_year'])} wk{int(row['worst_game_week'])})",
+            _fmt_streak(row["longest_win_streak"], row["longest_win_streak_span"]),
+            _fmt_streak(row["longest_loss_streak"], row["longest_loss_streak_span"]),
+        )
+    console.print(table)
+
+
+def print_activity(df: pd.DataFrame) -> None:
+    table = Table(title="Waiver & Trade Activity (all-time)")
+    for col in ("Manager", "Acquisitions", "Acquisitions per Season", "Drops", "Trades", "Total Moves"):
+        table.add_column(col)
+    for row in df.sort_values("total_moves", ascending=False).itertuples():
+        table.add_row(
+            row.manager_name,
+            str(row.acquisitions),
+            f"{row.acquisitions_per_season:.1f}",
+            str(row.drops),
+            str(row.trades),
+            str(row.total_moves),
         )
     console.print(table)
 

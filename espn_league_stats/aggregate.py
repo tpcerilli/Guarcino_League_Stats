@@ -101,30 +101,61 @@ def build_weekly_df(seasons: SeasonsData, team_season_df: pd.DataFrame) -> pd.Da
     return df
 
 
+def _longest_streaks(weekly_df: pd.DataFrame) -> pd.DataFrame:
+    """Longest all-time win/loss streaks per manager, in chronological order across seasons
+    (every game actually played counts; a tie breaks both streaks)."""
+    rows = []
+    for manager_key, group in weekly_df.sort_values(["year", "week"]).groupby("manager_key"):
+        best_win = best_loss = cur_win = cur_loss = 0
+        best_win_span = best_loss_span = None
+        win_start = loss_start = None
+        for row in group.itertuples():
+            if row.result == "W":
+                if cur_win == 0:
+                    win_start = row.year
+                cur_win += 1
+                cur_loss = 0
+                if cur_win > best_win:
+                    best_win, best_win_span = cur_win, (win_start, row.year)
+            elif row.result == "L":
+                if cur_loss == 0:
+                    loss_start = row.year
+                cur_loss += 1
+                cur_win = 0
+                if cur_loss > best_loss:
+                    best_loss, best_loss_span = cur_loss, (loss_start, row.year)
+            else:  # tie breaks both streaks
+                cur_win = cur_loss = 0
+        rows.append(
+            {
+                "manager_key": manager_key,
+                "longest_win_streak": best_win,
+                "longest_win_streak_span": best_win_span,
+                "longest_loss_streak": best_loss,
+                "longest_loss_streak_span": best_loss_span,
+            }
+        )
+    return pd.DataFrame(rows).set_index("manager_key")
+
+
 def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.DataFrame:
     completed = team_season_df[team_season_df["final_standing"] > 0]
+    g = team_season_df.groupby("manager_key")
 
-    # ESPN's own season-level wins/losses/points_for/points_against only reflect the regular
-    # season (they never include playoff games), so "all-time" totals are built from the weekly
-    # game log instead: every regular-season game, plus playoff games up through elimination
-    # (consistent with the Playoffs tab — post-elimination placement games don't count).
-    counted_games = weekly_df[
-        ~weekly_df["is_playoff"] | (weekly_df["team_made_playoffs"] & weekly_df["playoff_counted"])
-    ]
-    summary = _record_from_weekly(counted_games)
-    names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
-    summary["manager_name"] = names.reindex(summary.index)
-
-    seasons_played = team_season_df.groupby("manager_key")["year"].nunique()
-    playoff_appearances = team_season_df.groupby("manager_key")["made_playoffs"].sum()
-    acquisitions = team_season_df.groupby("manager_key")["acquisitions"].sum()
-    drops = team_season_df.groupby("manager_key")["drops"].sum()
-    trades = team_season_df.groupby("manager_key")["trades"].sum()
-    summary["seasons_played"] = seasons_played.reindex(summary.index)
-    summary["playoff_appearances"] = playoff_appearances.reindex(summary.index, fill_value=0).astype(int)
-    summary["acquisitions"] = acquisitions.reindex(summary.index, fill_value=0).astype(int)
-    summary["drops"] = drops.reindex(summary.index, fill_value=0).astype(int)
-    summary["trades"] = trades.reindex(summary.index, fill_value=0).astype(int)
+    summary = g.agg(
+        manager_name=("manager_name", "last"),
+        seasons_played=("year", "nunique"),
+        wins=("wins", "sum"),
+        losses=("losses", "sum"),
+        ties=("ties", "sum"),
+        points_for=("points_for", "sum"),
+        points_against=("points_against", "sum"),
+        playoff_appearances=("made_playoffs", "sum"),
+        acquisitions=("acquisitions", "sum"),
+        drops=("drops", "sum"),
+        trades=("trades", "sum"),
+    )
+    summary["win_pct"] = (summary["wins"] / (summary["wins"] + summary["losses"] + summary["ties"])).round(3)
     summary["point_diff"] = (summary["points_for"] - summary["points_against"]).round(2)
 
     champs = completed[completed["final_standing"] == 1].groupby("manager_key").size()
@@ -138,10 +169,10 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     summary["avg_final_standing"] = avg_final_standing.reindex(summary.index)
 
     # Best/worst single season point total (completed seasons only — an in-progress season
-    # would otherwise always look like a "worst" season on a partial point total). Uses ESPN's
-    # own regular-season season total, matching what the league actually displays per season.
+    # would otherwise always look like a "worst" season on a partial point total).
     season_pf = completed.loc[completed.groupby("manager_key")["points_for"].idxmax()]
-    season_pf_min = completed.loc[completed.groupby("manager_key")["points_for"].idxmin()]
+    worst_season_candidates = completed[completed["year"] != 2012]
+    season_pf_min = worst_season_candidates.loc[worst_season_candidates.groupby("manager_key")["points_for"].idxmin()]
     summary["best_season_points"] = season_pf.set_index("manager_key")["points_for"]
     summary["best_season_points_year"] = season_pf.set_index("manager_key")["year"]
     summary["worst_season_points"] = season_pf_min.set_index("manager_key")["points_for"]
@@ -149,7 +180,8 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
 
     # Best/worst single-game score
     best_game = weekly_df.loc[weekly_df.groupby("manager_key")["points_for"].idxmax()]
-    worst_game = weekly_df.loc[weekly_df.groupby("manager_key")["points_for"].idxmin()]
+    worst_game_candidates = weekly_df[weekly_df["year"] != 2012]
+    worst_game = worst_game_candidates.loc[worst_game_candidates.groupby("manager_key")["points_for"].idxmin()]
     summary["best_game_score"] = best_game.set_index("manager_key")["points_for"]
     summary["best_game_year"] = best_game.set_index("manager_key")["year"]
     summary["best_game_week"] = best_game.set_index("manager_key")["week"]
@@ -171,6 +203,16 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     playoff_game_count = (summary["playoff_wins"] + summary["playoff_losses"]).astype(float)
     playoff_game_count = playoff_game_count.replace(0, float("nan"))
     summary["playoff_win_pct"] = (summary["playoff_wins"] / playoff_game_count).round(3)
+
+    games = summary["wins"] + summary["losses"] + summary["ties"]
+    summary["avg_points_for"] = (summary["points_for"] / games).round(2)
+    summary["avg_points_against"] = (summary["points_against"] / games).round(2)
+
+    summary["total_moves"] = summary["acquisitions"] + summary["drops"] + summary["trades"]
+    summary["acquisitions_per_season"] = (summary["acquisitions"] / summary["seasons_played"]).round(1)
+
+    streaks = _longest_streaks(weekly_df)
+    summary = summary.join(streaks)
 
     return summary.reset_index().sort_values("championships", ascending=False)
 
@@ -281,4 +323,8 @@ def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd
     record["appearances"] = appearances.reindex(record.index, fill_value=0).astype(int)
     bye_weeks = _playoff_bye_weeks(team_season_df, weekly_df)
     record["bye_weeks"] = bye_weeks.reindex(record.index, fill_value=0).astype(int)
+    championships = team_season_df[team_season_df["final_standing"] == 1].groupby("manager_key").size()
+    runner_up = team_season_df[team_season_df["final_standing"] == 2].groupby("manager_key").size()
+    record["championships"] = championships.reindex(record.index, fill_value=0).astype(int)
+    record["runner_up_finishes"] = runner_up.reindex(record.index, fill_value=0).astype(int)
     return record.reset_index().sort_values("win_pct", ascending=False)

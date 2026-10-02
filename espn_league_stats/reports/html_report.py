@@ -31,6 +31,21 @@ def _standings_over_time(season_by_season: pd.DataFrame) -> dict:
     return {"labels": years, "datasets": datasets}
 
 
+def _cumulative_over_time(season_by_season: pd.DataFrame, value_col: str) -> dict:
+    """Running career total of `value_col` (e.g. points_for, wins) by year, per manager."""
+    years = sorted(season_by_season["year"].unique().tolist())
+    datasets = []
+    for manager, group in season_by_season.groupby("manager_name"):
+        by_year = group.set_index("year")[value_col].to_dict()
+        running_total = 0
+        data = []
+        for y in years:
+            running_total += by_year.get(y, 0)
+            data.append(running_total)
+        datasets.append({"label": manager, "data": data})
+    return {"labels": years, "datasets": datasets}
+
+
 def _bar(all_time: pd.DataFrame, value_col: str, scale: float = 1) -> dict:
     ordered = all_time.sort_values(value_col, ascending=False)
     values = (ordered[value_col] * scale).tolist()
@@ -123,6 +138,8 @@ def write_html_report(
         "pf_pa": _pf_pa(all_time),
         "standings_over_time": _standings_over_time(season_by_season),
         "playoffs": _playoffs(all_time),
+        "points_cumulative": _cumulative_over_time(season_by_season, "points_for"),
+        "wins_cumulative": _cumulative_over_time(season_by_season, "wins"),
     }
     h2h = _head_to_head_cells(head_to_head)
 
@@ -139,4 +156,31 @@ def write_html_report(
     )
     out_path = OUTPUT_DIR / "Guarcino_Stats.html"
     out_path.write_text(html, encoding="utf-8")
+    test_html = template.render(
+        current_year=current_year,
+        all_time=all_time.to_dict(orient="records"),
+        regular_season=regular_season.to_dict(orient="records"),
+        playoffs=playoffs.to_dict(orient="records"),
+        current_season=current_season.to_dict(orient="records"),
+        season_groups=_season_groups(season_by_season),
+        charts_json=json.dumps(charts),
+        h2h_managers=h2h["managers"],
+        h2h_cells=h2h["cells"],
+        mobile_test=True,
+    )
+    (OUTPUT_DIR / "test_layout.html").write_text(test_html, encoding="utf-8")
+
+    template2 = env.get_template("mobile2.html.j2")
+    test_html2 = template2.render(
+        current_year=current_year,
+        all_time=all_time.to_dict(orient="records"),
+        regular_season=regular_season.to_dict(orient="records"),
+        playoffs=playoffs.to_dict(orient="records"),
+        current_season=current_season.to_dict(orient="records"),
+        season_groups=_season_groups(season_by_season),
+        charts_json=json.dumps(charts),
+        h2h_managers=h2h["managers"],
+        h2h_cells=h2h["cells"],
+    )
+    (OUTPUT_DIR / "test_layout2.html").write_text(test_html2, encoding="utf-8")
     return out_path

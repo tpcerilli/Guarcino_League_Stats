@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-{% if mobile_test %}<meta name="viewport" content="width=device-width, initial-scale=1">{% endif %}
-<title>Guarcino League Stats</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guarcino League Stats (Layout Test 2)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
   body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
@@ -12,7 +12,6 @@
   table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
   th, td { border: 1px solid #334155; padding: 6px 10px; text-align: right; }
   th:first-child, td:first-child { text-align: left; }
-  .cell-detail { display: block; font-size: 0.75em; color: #94a3b8; margin-top: 2px; font-weight: normal; }
   th { background: #1e293b; }
   tr.finish-gold > td { background: linear-gradient(180deg, #c9a34d 0%, #e9cf83 35%, #fff0b8 48%, #dbbb68 62%, #c9a34d 100%); color: #111827; font-weight: bold; }
   tr.finish-silver > td { background: linear-gradient(180deg, #a7adb5 0%, #d9dde2 35%, #f5f6f8 48%, #c6cbd2 62%, #a7adb5 100%); color: #111827; font-weight: bold; }
@@ -20,7 +19,6 @@
   tr:nth-child(even) { background: #1e293b55; }
   table.sortable thead th { cursor: pointer; user-select: none; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   table.sortable thead th:hover { background: #334155; }
-  table.sortable thead th:active { background: #475569; }
   table.sortable thead th button.sort-btn {
     all: unset;
     box-sizing: border-box;
@@ -35,60 +33,35 @@
   .sort-indicator { font-size: 0.75em; opacity: 0.8; }
   .table-sort-controls { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; flex-wrap: wrap; }
   .table-sort-controls label { font-size: 0.85rem; color: #94a3b8; }
-  .table-sort-controls select, #season-sort {
+  .table-sort-controls select {
     min-height: 44px; max-width: 100%; background-color: #1e293b; color: #e2e8f0;
     border: 1px solid #334155; border-radius: 6px; padding: 4px 28px 4px 8px; font-family: inherit; font-size: 0.9rem;
     -webkit-appearance: none; appearance: none; -webkit-text-fill-color: #e2e8f0; opacity: 1;
     background-image: linear-gradient(45deg, transparent 50%, #e2e8f0 50%), linear-gradient(135deg, #e2e8f0 50%, transparent 50%);
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
-  .table-sort-controls select option, #season-sort option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
-  #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
-  #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
-  #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
-  #season-sort-refresh:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+  .table-sort-controls select option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .chart-box { background: #1e293b; border-radius: 8px; padding: 1rem; }
   canvas { max-height: 360px; }
   .h2h-table td { text-align: center; min-width: 70px; color: #111827; }
-  .h2h-corner {
-    position: relative; min-width: 110px; min-height: 48px; padding: 0 !important;
-    background: linear-gradient(to top right, transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px));
-  }
-  .h2h-corner span { position: absolute; font-size: 0.75em; font-weight: normal; color: #e2e8f0; }
-  .h2h-corner .h2h-corner-opponent { top: 4px; right: 8px; }
-  .h2h-corner .h2h-corner-manager { bottom: 4px; left: 8px; }
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap { max-height: none; overflow: visible; }
   .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
   .tab-radio { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .tab-button { display: inline-block; background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; }
+  .tab-button { display: inline-block; background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; min-height: 28px; }
   .tab-button:hover { background: #334155; }
-  #tab-current-choice:checked ~ .tabs label[for="tab-current-choice"],
-  #tab-alltime-choice:checked ~ .tabs label[for="tab-alltime-choice"],
-  #tab-regular-choice:checked ~ .tabs label[for="tab-regular-choice"],
-  #tab-playoffs-choice:checked ~ .tabs label[for="tab-playoffs-choice"],
-  #tab-charts-choice:checked ~ .tabs label[for="tab-charts-choice"],
-  #tab-h2h-choice:checked ~ .tabs label[for="tab-h2h-choice"],
-  #tab-byseason-choice:checked ~ .tabs label[for="tab-byseason-choice"],
-  #tab-misc-choice:checked ~ .tabs label[for="tab-misc-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
   .tab-radio:focus-visible ~ .tabs label { outline: 2px solid #facc15; outline-offset: 2px; }
   .tab-panel { display: none; }
-  #tab-current-choice:checked ~ .tab-panels #tab-current,
-  #tab-alltime-choice:checked ~ .tab-panels #tab-alltime,
-  #tab-regular-choice:checked ~ .tab-panels #tab-regular,
-  #tab-playoffs-choice:checked ~ .tab-panels #tab-playoffs,
-  #tab-charts-choice:checked ~ .tab-panels #tab-charts,
-  #tab-h2h-choice:checked ~ .tab-panels #tab-h2h,
-  #tab-byseason-choice:checked ~ .tab-panels #tab-byseason,
-  #tab-misc-choice:checked ~ .tab-panels #tab-misc { display: block; }
-{% if mobile_test %}
-  .table-wrap { max-height: none; overflow: visible; }
-  .tab-button { min-height: 28px; }
+  {% for id in ["current","record","titles","records","streaks","regular","playoffs","charts","h2h","byseason","activity"] %}
+  #tab-{{ id }}-choice:checked ~ .tabs label[for="tab-{{ id }}-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  #tab-{{ id }}-choice:checked ~ .tab-panels #tab-{{ id }} { display: block; }
+  {% endfor %}
   @media (max-width: 700px) {
     body { margin: 16px; }
-    h1 { font-size: 26px; }
-    h2 { font-size: 20px; }
-    .tabs { gap: 8px; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+    .tabs { gap: 6px; }
+    .tab-button { font-size: 0.8rem; padding: 6px 10px; }
     .charts-grid { grid-template-columns: minmax(0, 1fr); }
     .chart-box { min-width: 0; }
     table, tbody { display: block; width: 100%; }
@@ -103,7 +76,6 @@
     .h2h-table td { flex-direction: row; justify-content: space-between; text-align: left; min-width: 0; margin: 2px 0; }
     .h2h-table td::before { color: #111827; margin: 0; }
   }
-{% endif %}
 </style>
 </head>
 <body>
@@ -116,33 +88,39 @@
 </div>
 </noscript>
 <h1>Guarcino League Stats</h1>
-<p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
+<p>Current season: {{ current_year }}. Layout test 2: more, narrower tabs instead of one wide All-Time table.</p>
 
 <div class="tab-container">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-current-choice" checked>
-<input class="tab-radio" type="radio" name="stats-tab" id="tab-alltime-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-record-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-titles-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-records-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-streaks-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-regular-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-playoffs-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-charts-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-h2h-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-byseason-choice">
-<input class="tab-radio" type="radio" name="stats-tab" id="tab-misc-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-activity-choice">
 <nav class="tabs" role="tablist" aria-label="League statistics">
-  <label class="tab-button" role="tab" for="tab-current-choice">Current Season</label>
-  <label class="tab-button" role="tab" for="tab-alltime-choice">All-Time</label>
+  <label class="tab-button" role="tab" for="tab-current-choice">Current</label>
+  <label class="tab-button" role="tab" for="tab-record-choice">Record</label>
+  <label class="tab-button" role="tab" for="tab-titles-choice">Titles</label>
+  <label class="tab-button" role="tab" for="tab-records-choice">Records</label>
+  <label class="tab-button" role="tab" for="tab-streaks-choice">Streaks</label>
   <label class="tab-button" role="tab" for="tab-regular-choice">Regular Season</label>
   <label class="tab-button" role="tab" for="tab-playoffs-choice">Playoffs</label>
   <label class="tab-button" role="tab" for="tab-charts-choice">Charts</label>
   <label class="tab-button" role="tab" for="tab-h2h-choice">Head-to-Head</label>
-  <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
-  <label class="tab-button" role="tab" for="tab-misc-choice">Misc</label>
+  <label class="tab-button" role="tab" for="tab-byseason-choice">By Season</label>
+  <label class="tab-button" role="tab" for="tab-activity-choice">Activity</label>
 </nav>
 
 <div class="tab-panels">
+
 <div class="tab-panel" id="tab-current" role="tabpanel">
 <section>
   <h2>Current Season Standings</h2>
-  <div class="table-wrap">
   <table class="sortable">
     <thead>
       <tr><th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th><th>PF</th><th>PA</th><th>Seed</th></tr>
@@ -158,21 +136,15 @@
     {% endfor %}
     </tbody>
   </table>
-  </div>
 </section>
 </div>
 
-<div class="tab-panel" id="tab-alltime" role="tabpanel">
+<div class="tab-panel" id="tab-record" role="tabpanel">
 <section>
-  <h2>All-Time Summary</h2>
-  <div class="table-wrap">
+  <h2>All-Time Record</h2>
   <table class="sortable">
     <thead>
-    <tr>
-      <th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th>
-      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th>
-      <th>Playoffs</th>
-    </tr>
+      <tr><th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>+/-</th></tr>
     </thead>
     <tbody>
     {% for row in all_time %}
@@ -182,20 +154,83 @@
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
       <td>{{ "%.0f"|format(row.points_for) }}</td><td>{{ "%.0f"|format(row.points_against) }}</td>
       <td>{{ "%.0f"|format(row.point_diff) }}</td>
-      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
-      <td>{{ row.playoff_appearances }}</td>
     </tr>
     {% endfor %}
     </tbody>
   </table>
-  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-titles" role="tabpanel">
+<section>
+  <h2>Titles &amp; Playoffs</h2>
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Titles</th><th>2nd</th><th>Playoff Apps</th><th>Playoff W-L</th></tr>
+    </thead>
+    <tbody>
+    {% for row in all_time %}
+    <tr>
+      <td>{{ row.manager_name }}</td>
+      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
+      <td>{{ row.playoff_appearances }}</td>
+      <td data-sort="{{ row.playoff_wins }}">{{ row.playoff_wins }}-{{ row.playoff_losses }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-records" role="tabpanel">
+<section>
+  <h2>Season &amp; Game Records</h2>
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Best Season PF</th><th>Worst Season PF</th><th>Best Game</th><th>Worst Game</th></tr>
+    </thead>
+    <tbody>
+    {% for row in all_time %}
+    <tr>
+      <td>{{ row.manager_name }}</td>
+      <td>{{ "%.1f"|format(row.best_season_points) }} ({{ row.best_season_points_year }})</td>
+      <td>{{ "%.1f"|format(row.worst_season_points) }} ({{ row.worst_season_points_year }})</td>
+      <td>{{ "%.1f"|format(row.best_game_score) }} ({{ row.best_game_year }} wk{{ row.best_game_week }})</td>
+      <td>{{ "%.1f"|format(row.worst_game_score) }} ({{ row.worst_game_year }} wk{{ row.worst_game_week }})</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-streaks" role="tabpanel">
+<section>
+  <h2>Longest Streaks</h2>
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Longest Win Streak</th><th>Longest Loss Streak</th></tr>
+    </thead>
+    <tbody>
+    {% for row in all_time %}
+    <tr>
+      <td>{{ row.manager_name }}</td>
+      <td data-sort="{{ row.longest_win_streak }}">
+        {% if row.longest_win_streak %}{{ row.longest_win_streak }} ({{ row.longest_win_streak_span[0] }}{% if row.longest_win_streak_span[0] != row.longest_win_streak_span[1] %}-{{ row.longest_win_streak_span[1] }}{% endif %}){% else %}-{% endif %}
+      </td>
+      <td data-sort="{{ row.longest_loss_streak }}">
+        {% if row.longest_loss_streak %}{{ row.longest_loss_streak }} ({{ row.longest_loss_streak_span[0] }}{% if row.longest_loss_streak_span[0] != row.longest_loss_streak_span[1] %}-{{ row.longest_loss_streak_span[1] }}{% endif %}){% else %}-{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 </section>
 </div>
 
 <div class="tab-panel" id="tab-regular" role="tabpanel">
 <section>
   <h2>Regular Season (all-time)</h2>
-  <div class="table-wrap">
   <table class="sortable">
     <thead>
       <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
@@ -212,14 +247,12 @@
     {% endfor %}
     </tbody>
   </table>
-  </div>
 </section>
 </div>
 
 <div class="tab-panel" id="tab-playoffs" role="tabpanel">
 <section>
   <h2>Playoffs (all-time, real bracket only)</h2>
-  <div class="table-wrap">
   <table class="sortable">
     <thead>
       <tr><th>Manager</th><th>Appearances</th><th>Titles</th><th>2nd Place</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
@@ -238,7 +271,6 @@
     {% endfor %}
     </tbody>
   </table>
-  </div>
 </section>
 </div>
 
@@ -261,9 +293,8 @@
 <div class="tab-panel" id="tab-h2h" role="tabpanel">
 <section>
   <h2>Head-to-Head (all-time)</h2>
-  <div class="table-wrap">
   <table class="h2h-table">
-    <tr><th class="h2h-corner"><span class="h2h-corner-opponent">Opponent</span><span class="h2h-corner-manager">Manager</span></th>{% for m in h2h_managers %}<th>{{ m }}</th>{% endfor %}</tr>
+    <tr><th>Manager \ Opponent</th>{% for m in h2h_managers %}<th>{{ m }}</th>{% endfor %}</tr>
     {% for row_manager in h2h_managers %}
     <tr>
       <th>{{ row_manager }}</th>
@@ -282,26 +313,14 @@
     </tr>
     {% endfor %}
   </table>
-  </div>
 </section>
 </div>
 
 <div class="tab-panel" id="tab-byseason" role="tabpanel">
 <section>
-  <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-    <h2 style="margin: 0;">Results By Season</h2>
-    <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
-      <option value="">Sort all seasons</option>
-      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Final Standing'), (8, 'Made Playoffs')] %}
-      <option value="{{ column }}:asc">{{ name }} - {{ 'A to Z' if column < 2 else 'Low to High' }}</option>
-      <option value="{{ column }}:desc">{{ name }} - {{ 'Z to A' if column < 2 else 'High to Low' }}</option>
-      {% endfor %}
-    </select>
-    <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
-  </div>
+  <h2>Results By Season</h2>
   {% for group in season_groups %}
   <h3>{{ group.year }}</h3>
-  <div class="table-wrap">
   <table class="sortable">
     <thead>
       <tr>
@@ -323,61 +342,33 @@
     {% endfor %}
     </tbody>
   </table>
-  </div>
   {% endfor %}
 </section>
 </div>
 
-<div class="tab-panel" id="tab-misc" role="tabpanel">
+<div class="tab-panel" id="tab-activity" role="tabpanel">
 <section>
-  <h2>Misc</h2>
-  <div class="table-wrap">
+  <h2>Waiver &amp; Trade Activity (all-time)</h2>
   <table class="sortable">
     <thead>
-      <tr>
-        <th>Manager</th><th>Best Season PF</th><th>Worst Season PF</th><th>Best Game</th><th>Worst Game</th>
-        <th>Longest Win Streak</th><th>Longest Loss Streak</th>
-        <th>Acquisitions</th><th>Acquisitions per Season</th><th>Drops</th><th>Trades</th>
-      </tr>
+      <tr><th>Manager</th><th>Acquisitions</th><th>Acquisitions per Season</th><th>Drops</th><th>Trades</th><th>Total Moves</th></tr>
     </thead>
     <tbody>
-    {% for row in all_time %}
+    {% for row in all_time|sort(attribute="total_moves", reverse=True) %}
     <tr>
-      <td>{{ row.manager_name }}</td>
-      <td data-sort="{{ row.best_season_points }}">
-        {{ "%.1f"|format(row.best_season_points) }}<span class="cell-detail">{{ "%.0f"|format(row.best_season_points_year) }}</span>
-      </td>
-      <td data-sort="{{ row.worst_season_points }}">
-        {% if row.worst_season_points == row.worst_season_points %}
-        {{ "%.1f"|format(row.worst_season_points) }}<span class="cell-detail">{{ "%.0f"|format(row.worst_season_points_year) }}</span>
-        {% else %}-{% endif %}
-      </td>
-      <td data-sort="{{ row.best_game_score }}">
-        {{ "%.1f"|format(row.best_game_score) }}<span class="cell-detail">{{ row.best_game_year }} Wk{{ row.best_game_week }}</span>
-      </td>
-      <td data-sort="{{ row.worst_game_score }}">
-        {{ "%.1f"|format(row.worst_game_score) }}<span class="cell-detail">{{ row.worst_game_year }} Wk{{ row.worst_game_week }}</span>
-      </td>
-      <td data-sort="{{ row.longest_win_streak }}">
-        {% if row.longest_win_streak %}{{ row.longest_win_streak }}<span class="cell-detail">{{ row.longest_win_streak_span[0] }}{% if row.longest_win_streak_span[0] != row.longest_win_streak_span[1] %}-{{ row.longest_win_streak_span[1] }}{% endif %}</span>{% else %}-{% endif %}
-      </td>
-      <td data-sort="{{ row.longest_loss_streak }}">
-        {% if row.longest_loss_streak %}{{ row.longest_loss_streak }}<span class="cell-detail">{{ row.longest_loss_streak_span[0] }}{% if row.longest_loss_streak_span[0] != row.longest_loss_streak_span[1] %}-{{ row.longest_loss_streak_span[1] }}{% endif %}</span>{% else %}-{% endif %}
-      </td>
-      <td>{{ row.acquisitions }}</td>
+      <td>{{ row.manager_name }}</td><td>{{ row.acquisitions }}</td>
       <td>{{ "%.1f"|format(row.acquisitions_per_season) }}</td>
-      <td>{{ row.drops }}</td><td>{{ row.trades }}</td>
+      <td>{{ row.drops }}</td><td>{{ row.trades }}</td><td>{{ row.total_moves }}</td>
     </tr>
     {% endfor %}
     </tbody>
   </table>
-  </div>
 </section>
 </div>
+
 </div>
 </div>
 
-{% if mobile_test %}
 <script>
 document.querySelectorAll("table").forEach((table) => {
   const headers = Array.from(table.rows[0].cells).map((cell) => cell.textContent.trim());
@@ -387,9 +378,7 @@ document.querySelectorAll("table").forEach((table) => {
     });
   });
 });
-</script>
-{% endif %}
-<script>
+
 const CHARTS = {{ charts_json|safe }};
 const palette = ["#38bdf8","#f472b6","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc"];
 
@@ -472,7 +461,6 @@ if (chartsTab) {
   });
 }
 
-// Generic click-to-sort for any <table class="sortable"> with a <thead>/<tbody>.
 function cellSortValue(td) {
   return td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
 }
@@ -576,18 +564,6 @@ function buildSortDropdown(table) {
   wrap.appendChild(select);
   table.parentElement.insertBefore(wrap, table);
 }
-
-function applySeasonSort() {
-  const value = document.getElementById("season-sort").value;
-  if (!value) return;
-  const [column, direction] = value.split(":");
-  document.querySelectorAll("#tab-byseason table.sortable").forEach((table) => {
-    applySortToTable(table, Number(column), direction === "asc");
-  });
-}
-
-document.getElementById("season-sort").addEventListener("change", applySeasonSort);
-document.getElementById("season-sort-refresh").addEventListener("click", applySeasonSort);
 
 document.querySelectorAll("table.sortable").forEach((table) => {
   buildSortDropdown(table);

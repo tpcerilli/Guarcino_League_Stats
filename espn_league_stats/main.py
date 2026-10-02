@@ -17,6 +17,7 @@ from .cache import build_all_seasons
 from .config import load_config
 from .identity import build_manager_registry
 from .reports.console import (
+    print_activity,
     print_all_time_leaderboard,
     print_current_season,
     print_records,
@@ -70,6 +71,7 @@ def main() -> None:
     print_current_season(current_season, config.current_year)
     print_records(all_time)
     print_regular_vs_playoff(regular_season, playoffs)
+    print_activity(all_time)
     print_season_by_season(season_table)
 
     if not args.no_csv:
