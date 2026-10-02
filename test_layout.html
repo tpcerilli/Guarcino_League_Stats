@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guarcino League Stats</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
+  h1, h2 { color: #f8fafc; }
+  section { margin-bottom: 3rem; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
+  th, td { border: 1px solid #334155; padding: 6px 10px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  .cell-detail { display: block; font-size: 0.75em; color: #94a3b8; margin-top: 2px; font-weight: normal; }
+  th { background: #1e293b; }
+  tr.finish-gold > td { background: linear-gradient(180deg, #c9a34d 0%, #e9cf83 35%, #fff0b8 48%, #dbbb68 62%, #c9a34d 100%); color: #111827; font-weight: bold; }
+  tr.finish-silver > td { background: linear-gradient(180deg, #a7adb5 0%, #d9dde2 35%, #f5f6f8 48%, #c6cbd2 62%, #a7adb5 100%); color: #111827; font-weight: bold; }
+  tr.finish-gold > td::before, tr.finish-silver > td::before { color: #374151; }
+  tr:nth-child(even) { background: #1e293b55; }
+  table.sortable thead th { cursor: pointer; user-select: none; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  table.sortable thead th:hover { background: #334155; }
+  table.sortable thead th:active { background: #475569; }
+  table.sortable thead th button.sort-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 10px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .sort-indicator { font-size: 0.75em; opacity: 0.8; }
+  .table-sort-controls { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; flex-wrap: wrap; }
+  .table-sort-controls label { font-size: 0.85rem; color: #94a3b8; }
+  .table-sort-controls select, #season-sort {
+    min-height: 44px; max-width: 100%; background-color: #1e293b; color: #e2e8f0;
+    border: 1px solid #334155; border-radius: 6px; padding: 4px 28px 4px 8px; font-family: inherit; font-size: 0.9rem;
+    -webkit-appearance: none; appearance: none; -webkit-text-fill-color: #e2e8f0; opacity: 1;
+    background-image: linear-gradient(45deg, transparent 50%, #e2e8f0 50%), linear-gradient(135deg, #e2e8f0 50%, transparent 50%);
+    background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
+  }
+  .table-sort-controls select option, #season-sort option { color: #0f172a; -webkit-text-fill-color: #0f172a; }
+  #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
+  #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
+  #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
+  #season-sort-refresh:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .chart-box { background: #1e293b; border-radius: 8px; padding: 1rem; }
+  canvas { max-height: 360px; }
+  .h2h-table td { text-align: center; min-width: 70px; color: #111827; }
+  .h2h-corner {
+    position: relative; min-width: 110px; min-height: 48px; padding: 0 !important;
+    background: linear-gradient(to top right, transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px));
+  }
+  .h2h-corner span { position: absolute; font-size: 0.75em; font-weight: normal; color: #e2e8f0; }
+  .h2h-corner .h2h-corner-opponent { top: 4px; right: 8px; }
+  .h2h-corner .h2h-corner-manager { bottom: 4px; left: 8px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+  .tab-radio { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .tab-button { display: inline-block; background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; }
+  .tab-button:hover { background: #334155; }
+  #tab-current-choice:checked ~ .tabs label[for="tab-current-choice"],
+  #tab-alltime-choice:checked ~ .tabs label[for="tab-alltime-choice"],
+  #tab-regular-choice:checked ~ .tabs label[for="tab-regular-choice"],
+  #tab-playoffs-choice:checked ~ .tabs label[for="tab-playoffs-choice"],
+  #tab-charts-choice:checked ~ .tabs label[for="tab-charts-choice"],
+  #tab-h2h-choice:checked ~ .tabs label[for="tab-h2h-choice"],
+  #tab-byseason-choice:checked ~ .tabs label[for="tab-byseason-choice"],
+  #tab-misc-choice:checked ~ .tabs label[for="tab-misc-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  .tab-radio:focus-visible ~ .tabs label { outline: 2px solid #facc15; outline-offset: 2px; }
+  .tab-panel { display: none; }
+  #tab-current-choice:checked ~ .tab-panels #tab-current,
+  #tab-alltime-choice:checked ~ .tab-panels #tab-alltime,
+  #tab-regular-choice:checked ~ .tab-panels #tab-regular,
+  #tab-playoffs-choice:checked ~ .tab-panels #tab-playoffs,
+  #tab-charts-choice:checked ~ .tab-panels #tab-charts,
+  #tab-h2h-choice:checked ~ .tab-panels #tab-h2h,
+  #tab-byseason-choice:checked ~ .tab-panels #tab-byseason,
+  #tab-misc-choice:checked ~ .tab-panels #tab-misc { display: block; }
+
+  .table-wrap { max-height: none; overflow: visible; }
+  .tab-button { min-height: 28px; }
+  @media (max-width: 700px) {
+    body { margin: 16px; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 20px; }
+    .tabs { gap: 8px; }
+    .charts-grid { grid-template-columns: minmax(0, 1fr); }
+    .chart-box { min-width: 0; }
+    table, tbody { display: block; width: 100%; }
+    table thead { display: none; }
+    table tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-bottom: 2px solid #64748b; padding: 12px 0; }
+    table td { display: flex; flex-direction: column; text-align: left; border: 0; min-width: 0; overflow-wrap: anywhere; padding: 8px; }
+    table td::before { content: attr(data-label); color: #94a3b8; font-size: 12px; margin-bottom: 4px; }
+    table td:first-child { grid-column: 1 / -1; font-size: 18px; font-weight: bold; }
+    .h2h-table tr { grid-template-columns: minmax(0, 1fr); }
+    .h2h-table tr:first-child { display: none; }
+    .h2h-table th { text-align: left; border: 0; padding: 12px 8px; }
+    .h2h-table td { flex-direction: row; justify-content: space-between; text-align: left; min-width: 0; margin: 2px 0; }
+    .h2h-table td::before { color: #111827; margin: 0; }
+  }
+
+</style>
+</head>
+<body>
+<noscript>
+<div style="background:#fef3c7; color:#78350f; border:2px solid #d97706; border-radius:8px; padding:14px 18px; margin-bottom:1.5rem; font-size:0.95rem; line-height:1.5;">
+  <strong>Sorting and tabs are disabled.</strong> This page needs JavaScript, which Mail's built-in
+  preview doesn't run. Tap and hold this attachment (or tap the Share icon) and choose
+  <strong>"Open in Safari"</strong> (or save it and open it from the Files app) to use the full
+  interactive version.
+</div>
+</noscript>
+<h1>Guarcino League Stats</h1>
+<p>Current season: 2026. Click any table header to sort by that column.</p>
+
+<div class="tab-container">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-current-choice" checked>
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-alltime-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-regular-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-playoffs-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-charts-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-h2h-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-byseason-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-misc-choice">
+<nav class="tabs" role="tablist" aria-label="League statistics">
+  <label class="tab-button" role="tab" for="tab-current-choice">Current Season</label>
+  <label class="tab-button" role="tab" for="tab-alltime-choice">All-Time</label>
+  <label class="tab-button" role="tab" for="tab-regular-choice">Regular Season</label>
+  <label class="tab-button" role="tab" for="tab-playoffs-choice">Playoffs</label>
+  <label class="tab-button" role="tab" for="tab-charts-choice">Charts</label>
+  <label class="tab-button" role="tab" for="tab-h2h-choice">Head-to-Head</label>
+  <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
+  <label class="tab-button" role="tab" for="tab-misc-choice">Misc</label>
+</nav>
+
+<div class="tab-panels">
+<div class="tab-panel" id="tab-current" role="tabpanel">
+<section>
+  <h2>Current Season Standings</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th><th>PF</th><th>PA</th><th>Seed</th></tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>Bryan Testa</td><td>TESTAMANIA</td>
+      <td>3</td><td>0</td><td>0</td>
+      <td>427.1</td><td>331.0</td>
+      <td>1</td>
+    </tr>
+    
+    <tr>
+      <td>Tyler Cerilli</td><td>Duke of Guarcino</td>
+      <td>3</td><td>0</td><td>0</td>
+      <td>418.9</td><td>335.6</td>
+      <td>2</td>
+    </tr>
+    
+    <tr>
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>2</td><td>1</td><td>0</td>
+      <td>421.7</td><td>422.1</td>
+      <td>3</td>
+    </tr>
+    
+    <tr>
+      <td>John Cerilli</td><td>Awww Yeahhh</td>
+      <td>2</td><td>1</td><td>0</td>
+      <td>408.6</td><td>347.2</td>
+      <td>4</td>
+    </tr>
+    
+    <tr>
+      <td>Wiley Cerilli</td><td>The Tall Cerilli</td>
+      <td>1</td><td>2</td><td>0</td>
+      <td>467.4</td><td>432.7</td>
+      <td>5</td>
+    </tr>
+    
+    <tr>
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>1</td><td>2</td><td>0</td>
+      <td>425.7</td><td>491.5</td>
+      <td>6</td>
+    </tr>
+    
+    <tr>
+      <td>Brad Cerilli</td><td>Bradamania </td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>391.6</td><td>462.5</td>
+      <td>7</td>
+    </tr>
+    
+    <tr>
+      <td>Joey Testa</td><td>Joey's Scary Team</td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>293.3</td><td>431.8</td>
+      <td>8</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-alltime" role="tabpanel">
+<section>
+  <h2>All-Time Summary</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+    <tr>
+      <th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th>
+      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th>
+      <th>Playoffs</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>Justin Cerilli</td><td>15</td>
+      <td>99</td><td>90</td><td>0</td>
+      <td>52.4%</td>
+      <td>24438</td><td>23657</td>
+      <td>781</td>
+      <td>4</td><td>3</td>
+      <td>14</td>
+    </tr>
+    
+    <tr>
+      <td>Wiley Cerilli</td><td>15</td>
+      <td>99</td><td>89</td><td>1</td>
+      <td>52.4%</td>
+      <td>24131</td><td>23539</td>
+      <td>592</td>
+      <td>3</td><td>3</td>
+      <td>14</td>
+    </tr>
+    
+    <tr>
+      <td>Brad Cerilli</td><td>15</td>
+      <td>90</td><td>98</td><td>1</td>
+      <td>47.6%</td>
+      <td>23575</td><td>23911</td>
+      <td>-335</td>
+      <td>2</td><td>2</td>
+      <td>11</td>
+    </tr>
+    
+    <tr>
+      <td>Bryan Testa</td><td>15</td>
+      <td>93</td><td>96</td><td>0</td>
+      <td>49.2%</td>
+      <td>23565</td><td>23874</td>
+      <td>-309</td>
+      <td>1</td><td>2</td>
+      <td>12</td>
+    </tr>
+    
+    <tr>
+      <td>Tyler Cerilli</td><td>15</td>
+      <td>110</td><td>79</td><td>0</td>
+      <td>58.2%</td>
+      <td>23934</td><td>23225</td>
+      <td>708</td>
+      <td>1</td><td>1</td>
+      <td>12</td>
+    </tr>
+    
+    <tr>
+      <td>Evan Cerilli</td><td>14</td>
+      <td>81</td><td>105</td><td>0</td>
+      <td>43.5%</td>
+      <td>21984</td><td>22896</td>
+      <td>-912</td>
+      <td>1</td><td>1</td>
+      <td>8</td>
+    </tr>
+    
+    <tr>
+      <td>Peter Cerilli</td><td>15</td>
+      <td>89</td><td>100</td><td>0</td>
+      <td>47.1%</td>
+      <td>22810</td><td>23339</td>
+      <td>-529</td>
+      <td>1</td><td>1</td>
+      <td>9</td>
+    </tr>
+    
+    <tr>
+      <td>John Cerilli</td><td>15</td>
+      <td>94</td><td>95</td><td>0</td>
+      <td>49.7%</td>
+      <td>23592</td><td>23450</td>
+      <td>142</td>
+      <td>1</td><td>1</td>
+      <td>10</td>
+    </tr>
+    
+    <tr>
+      <td>Joey Testa</td><td>1</td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>0.0%</td>
+      <td>293</td><td>432</td>
+      <td>-138</td>
+      <td>0</td><td>0</td>
+      <td>0</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-regular" role="tabpanel">
+<section>
+  <h2>Regular Season (all-time)</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>Tyler Cerilli</td><td>189</td>
+      <td>110</td><td>79</td><td>0</td>
+      <td>58.2%</td>
+      <td>23940.6</td><td>23231.3</td>
+      <td>126.7</td><td>122.9</td>
+    </tr>
+    
+    <tr>
+      <td>Justin Cerilli</td><td>189</td>
+      <td>99</td><td>90</td><td>0</td>
+      <td>52.4%</td>
+      <td>24445.2</td><td>23663.2</td>
+      <td>129.3</td><td>125.2</td>
+    </tr>
+    
+    <tr>
+      <td>Wiley Cerilli</td><td>189</td>
+      <td>99</td><td>89</td><td>1</td>
+      <td>52.4%</td>
+      <td>24138.4</td><td>23545.5</td>
+      <td>127.7</td><td>124.6</td>
+    </tr>
+    
+    <tr>
+      <td>John Cerilli</td><td>189</td>
+      <td>94</td><td>95</td><td>0</td>
+      <td>49.7%</td>
+      <td>23597.7</td><td>23456.5</td>
+      <td>124.9</td><td>124.1</td>
+    </tr>
+    
+    <tr>
+      <td>Bryan Testa</td><td>189</td>
+      <td>93</td><td>96</td><td>0</td>
+      <td>49.2%</td>
+      <td>23571.0</td><td>23880.7</td>
+      <td>124.7</td><td>126.3</td>
+    </tr>
+    
+    <tr>
+      <td>Brad Cerilli</td><td>189</td>
+      <td>90</td><td>98</td><td>1</td>
+      <td>47.6%</td>
+      <td>23581.4</td><td>23917.7</td>
+      <td>124.8</td><td>126.5</td>
+    </tr>
+    
+    <tr>
+      <td>Peter Cerilli</td><td>189</td>
+      <td>89</td><td>100</td><td>0</td>
+      <td>47.1%</td>
+      <td>22816.0</td><td>23345.9</td>
+      <td>120.7</td><td>123.5</td>
+    </tr>
+    
+    <tr>
+      <td>Evan Cerilli</td><td>186</td>
+      <td>81</td><td>105</td><td>0</td>
+      <td>43.5%</td>
+      <td>21991.5</td><td>22902.5</td>
+      <td>118.2</td><td>123.1</td>
+    </tr>
+    
+    <tr>
+      <td>Joey Testa</td><td>3</td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>0.0%</td>
+      <td>293.3</td><td>431.8</td>
+      <td>97.8</td><td>143.9</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-playoffs" role="tabpanel">
+<section>
+  <h2>Playoffs (all-time, real bracket only)</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Appearances</th><th>Titles</th><th>2nd Place</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>Wiley Cerilli</td><td>14</td><td>3</td><td>3</td><td>4</td><td>27</td>
+      <td>18</td><td>9</td><td>0</td>
+      <td data-sort="66.7">
+        66.7%
+      </td>
+      <td>3705.3</td><td>3513.4</td>
+      <td>137.2</td><td>130.1</td>
+    </tr>
+    
+    <tr>
+      <td>Justin Cerilli</td><td>14</td><td>4</td><td>3</td><td>5</td><td>25</td>
+      <td>16</td><td>9</td><td>0</td>
+      <td data-sort="64.0">
+        64.0%
+      </td>
+      <td>3463.6</td><td>3185.1</td>
+      <td>138.5</td><td>127.4</td>
+    </tr>
+    
+    <tr>
+      <td>Brad Cerilli</td><td>11</td><td>2</td><td>2</td><td>2</td><td>18</td>
+      <td>9</td><td>9</td><td>0</td>
+      <td data-sort="50.0">
+        50.0%
+      </td>
+      <td>2270.4</td><td>2143.6</td>
+      <td>126.1</td><td>119.1</td>
+    </tr>
+    
+    <tr>
+      <td>Peter Cerilli</td><td>9</td><td>1</td><td>1</td><td>1</td><td>13</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td data-sort="46.2">
+        46.2%
+      </td>
+      <td>1618.9</td><td>1676.7</td>
+      <td>124.5</td><td>129.0</td>
+    </tr>
+    
+    <tr>
+      <td>Bryan Testa</td><td>12</td><td>1</td><td>2</td><td>3</td><td>18</td>
+      <td>7</td><td>11</td><td>0</td>
+      <td data-sort="38.9">
+        38.9%
+      </td>
+      <td>2136.2</td><td>2311.2</td>
+      <td>118.7</td><td>128.4</td>
+    </tr>
+    
+    <tr>
+      <td>John Cerilli</td><td>10</td><td>1</td><td>1</td><td>4</td><td>13</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td data-sort="38.5">
+        38.5%
+      </td>
+      <td>1546.8</td><td>1611.7</td>
+      <td>119.0</td><td>124.0</td>
+    </tr>
+    
+    <tr>
+      <td>Evan Cerilli</td><td>8</td><td>1</td><td>1</td><td>2</td><td>11</td>
+      <td>4</td><td>7</td><td>0</td>
+      <td data-sort="36.4">
+        36.4%
+      </td>
+      <td>1318.7</td><td>1313.2</td>
+      <td>119.9</td><td>119.4</td>
+    </tr>
+    
+    <tr>
+      <td>Tyler Cerilli</td><td>12</td><td>1</td><td>1</td><td>7</td><td>15</td>
+      <td>5</td><td>10</td><td>0</td>
+      <td data-sort="33.300000000000004">
+        33.3%
+      </td>
+      <td>1967.0</td><td>2271.8</td>
+      <td>131.1</td><td>151.4</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-charts" role="tabpanel">
+<section>
+  <h2>Charts</h2>
+  <div class="charts-grid">
+    <div class="chart-box"><canvas id="pointsTrend"></canvas></div>
+    <div class="chart-box"><canvas id="championships"></canvas></div>
+    <div class="chart-box"><canvas id="winPct"></canvas></div>
+    <div class="chart-box"><canvas id="pfPa"></canvas></div>
+    <div class="chart-box"><canvas id="standingsOverTime"></canvas></div>
+    <div class="chart-box"><canvas id="playoffsChart"></canvas></div>
+    <div class="chart-box"><canvas id="pointsCumulative"></canvas></div>
+    <div class="chart-box"><canvas id="winsCumulative"></canvas></div>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-h2h" role="tabpanel">
+<section>
+  <h2>Head-to-Head (all-time)</h2>
+  <div class="table-wrap">
+  <table class="h2h-table">
+    <tr><th class="h2h-corner"><span class="h2h-corner-opponent">Opponent</span><span class="h2h-corner-manager">Manager</span></th><th>Brad Cerilli</th><th>Bryan Testa</th><th>Evan Cerilli</th><th>Joey Testa</th><th>John Cerilli</th><th>Justin Cerilli</th><th>Peter Cerilli</th><th>Tyler Cerilli</th><th>Wiley Cerilli</th></tr>
+    
+    <tr>
+      <th>Brad Cerilli</th>
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,238,238);">
+            18-19
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(249,215,215);">
+            11-15
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(250,220,220);">
+            15-19
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(234,246,234);">
+            18-17
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,237,237);">
+            15-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(250,221,221);">
+            16-20
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(255,255,255);">
+            15-14-1
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Bryan Testa</th>
+      
+        
+        
+          <td style="background-color: rgb(234,246,234);">
+            19-18
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(209,234,210);">
+            21-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(129,199,132);">
+            1-0
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(201,231,202);">
+            16-11
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(247,207,207);">
+            12-19
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,237,237);">
+            15-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,237,237);">
+            15-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(233,245,234);">
+            17-16
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Evan Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(206,233,207);">
+            15-11
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(249,218,218);">
+            16-21
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(246,198,198);">
+            12-23
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(245,191,191);">
+            9-21
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,239,239);">
+            19-20
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(250,221,221);">
+            12-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(246,199,199);">
+            11-21
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Joey Testa</th>
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(239,154,154);">
+            0-1
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(239,154,154);">
+            0-1
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(239,154,154);">
+            0-1
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>John Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(212,236,213);">
+            19-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(248,211,211);">
+            11-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(184,224,186);">
+            23-12
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(129,199,132);">
+            1-0
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(250,225,225);">
+            15-18
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(200,231,201);">
+            22-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(247,207,207);">
+            12-19
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(248,213,213);">
+            12-17
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Justin Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(252,238,238);">
+            17-18
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(195,228,197);">
+            19-12
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(175,220,177);">
+            21-9
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(217,238,218);">
+            18-15
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(247,203,203);">
+            10-17
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(248,208,208);">
+            11-17
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(200,231,201);">
+            25-17
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Peter Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(232,245,233);">
+            16-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(232,245,233);">
+            16-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(235,246,235);">
+            20-19
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(248,211,211);">
+            15-22
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(191,226,192);">
+            17-10
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(246,200,200);">
+            13-24
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(245,195,195);">
+            9-19
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Tyler Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(213,236,214);">
+            20-16
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(232,245,233);">
+            16-15
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(213,236,214);">
+            15-12
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(129,199,132);">
+            1-0
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(195,228,197);">
+            19-12
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(197,229,198);">
+            17-11
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(186,224,188);">
+            24-13
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(250,225,225);">
+            15-18
+          </td>
+        
+      
+    </tr>
+    
+    <tr>
+      <th>Wiley Cerilli</th>
+      
+        
+        
+          <td style="background-color: rgb(251,229,229);">
+            14-15-1
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(252,238,238);">
+            16-17
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(185,224,186);">
+            21-11
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+        
+        
+          <td style="background-color: rgb(203,232,204);">
+            17-12
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(248,211,211);">
+            17-25
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(180,221,181);">
+            19-9
+          </td>
+        
+      
+        
+        
+          <td style="background-color: rgb(217,238,218);">
+            18-15
+          </td>
+        
+      
+        
+        
+          <td>-</td>
+        
+      
+    </tr>
+    
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-byseason" role="tabpanel">
+<section>
+  <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+    <h2 style="margin: 0;">Results By Season</h2>
+    <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
+      <option value="">Sort all seasons</option>
+      
+      <option value="0:asc">Manager - A to Z</option>
+      <option value="0:desc">Manager - Z to A</option>
+      
+      <option value="1:asc">Team - A to Z</option>
+      <option value="1:desc">Team - Z to A</option>
+      
+      <option value="2:asc">Wins - Low to High</option>
+      <option value="2:desc">Wins - High to Low</option>
+      
+      <option value="3:asc">Losses - Low to High</option>
+      <option value="3:desc">Losses - High to Low</option>
+      
+      <option value="4:asc">Ties - Low to High</option>
+      <option value="4:desc">Ties - High to Low</option>
+      
+      <option value="5:asc">Points For - Low to High</option>
+      <option value="5:desc">Points For - High to Low</option>
+      
+      <option value="6:asc">Points Against - Low to High</option>
+      <option value="6:desc">Points Against - High to Low</option>
+      
+      <option value="7:asc">Final Standing - Low to High</option>
+      <option value="7:desc">Final Standing - High to Low</option>
+      
+      <option value="8:asc">Made Playoffs - Low to High</option>
+      <option value="8:desc">Made Playoffs - High to Low</option>
+      
+    </select>
+    <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
+  </div>
+  
+  <h3>2026</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awww Yeahhh</td>
+      <td>2</td><td>1</td><td>0</td>
+      <td>408.6</td><td>347.2</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>1</td><td>2</td><td>0</td>
+      <td>425.7</td><td>491.5</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Joey Testa</td><td>Joey's Scary Team</td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>293.3</td><td>431.8</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>The Tall Cerilli</td>
+      <td>1</td><td>2</td><td>0</td>
+      <td>467.4</td><td>432.7</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Duke of Guarcino</td>
+      <td>3</td><td>0</td><td>0</td>
+      <td>418.9</td><td>335.6</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>Bradamania </td>
+      <td>0</td><td>3</td><td>0</td>
+      <td>391.6</td><td>462.5</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>2</td><td>1</td><td>0</td>
+      <td>421.7</td><td>422.1</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTAMANIA</td>
+      <td>3</td><td>0</td><td>0</td>
+      <td>427.1</td><td>331.0</td>
+      <td data-sort="99">
+        -
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2025</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Brad Cerilli</td><td>Team  Connor Kitty</td>
+      <td>10</td><td>4</td><td>0</td>
+      <td>1852.6</td><td>1730.4</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1993.1</td><td>1889.4</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Wookiee Warriors</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1980.2</td><td>2086.5</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>CeeDees 4 Championshiips</td>
+      <td>10</td><td>4</td><td>0</td>
+      <td>2241.1</td><td>1865.9</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTAMANIA</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1891.4</td><td>1926.9</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1873.9</td><td>1858.2</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Ohhhh Noo</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1896.3</td><td>2028.3</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>3</td><td>11</td><td>0</td>
+      <td>1594.6</td><td>1937.8</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2024</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Tyler Cerilli</td><td>Wookiee Warriors</td>
+      <td>10</td><td>4</td><td>0</td>
+      <td>1933.3</td><td>1821.4</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1892.8</td><td>1997.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>11</td><td>3</td><td>0</td>
+      <td>2081.3</td><td>1782.6</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Azza My Dog</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1711.5</td><td>1945.1</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>2022.7</td><td>1838.1</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>Team  Connor Kitty</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1915.3</td><td>1912.7</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>4</td><td>10</td><td>0</td>
+      <td>1985.4</td><td>1917.6</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>3</td><td>11</td><td>0</td>
+      <td>1689.2</td><td>2017.1</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2023</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Wiley Cerilli</td><td>Cerilli Fraternity</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1891.7</td><td>1927.8</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>10</td><td>4</td><td>0</td>
+      <td>2062.4</td><td>1774.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Wookiee Warriors</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>2115.7</td><td>1922.2</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1974.9</td><td>1920.4</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1833.2</td><td>1928.7</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>Team  Connor Kitty</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1840.0</td><td>1933.6</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1830.9</td><td>1985.2</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1730.4</td><td>1887.4</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2022</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1750.8</td><td>1777.5</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Wiley Cerilli</td><td>Cerilli Fraternity</td>
+      <td>11</td><td>3</td><td>0</td>
+      <td>1927.3</td><td>1691.9</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>10</td><td>4</td><td>0</td>
+      <td>1740.2</td><td>1626.5</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1743.7</td><td>1691.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>Team  Connor Kitty</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1768.3</td><td>1712.3</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1842.8</td><td>1707.9</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Wookiee Warriors</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1489.0</td><td>1714.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>4</td><td>10</td><td>0</td>
+      <td>1406.8</td><td>1747.7</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2021</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1824.8</td><td>1636.9</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Wiley Cerilli</td><td>Cerilli Fraternity</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1721.7</td><td>1801.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>13</td><td>1</td><td>0</td>
+      <td>2135.9</td><td>1563.9</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1630.1</td><td>1580.4</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>B-radical Bros  - Connor Kitty</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1711.2</td><td>1855.9</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>_ TanneThrill</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1662.5</td><td>1724.5</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1658.4</td><td>1748.3</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>4</td><td>10</td><td>0</td>
+      <td>1250.4</td><td>1684.1</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2020</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Evan Cerilli</td><td>₿rookline  ₿allers</td>
+      <td>9</td><td>4</td><td>0</td>
+      <td>1783.8</td><td>1617.5</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1671.8</td><td>1677.4</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Cerilli FRATERNITY</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1656.8</td><td>1639.5</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1727.1</td><td>1707.8</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1780.1</td><td>1778.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1589.5</td><td>1666.7</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>_ TanneThrill</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1596.5</td><td>1612.9</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>B-radical Bros  - Connor Kitty</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1687.3</td><td>1793.2</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2019</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Wiley Cerilli</td><td>Azza My team</td>
+      <td>10</td><td>3</td><td>0</td>
+      <td>1930.5</td><td>1528.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1683.5</td><td>1472.6</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Westport Wookiee Warrior</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1610.9</td><td>1648.1</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1553.9</td><td>1559.3</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1626.9</td><td>1758.1</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>2019 Champion</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1606.4</td><td>1572.6</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>B-radical Bros  - Connor Kitty</td>
+      <td>4</td><td>9</td><td>0</td>
+      <td>1551.6</td><td>1633.9</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>3</td><td>10</td><td>0</td>
+      <td>1394.1</td><td>1785.2</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2018</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Justin Cerilli</td><td>Riverside CerilliSorority</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1725.0</td><td>1751.9</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Wiley Cerilli</td><td>Azza My team</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1695.5</td><td>1662.6</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>TESTA MANIA</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1874.7</td><td>1722.1</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Your  Favorite QB</td>
+      <td>11</td><td>2</td><td>0</td>
+      <td>1716.6</td><td>1472.1</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>2019 Champion</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1675.9</td><td>1566.9</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1645.3</td><td>1685.6</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Awwww Yeahh</td>
+      <td>4</td><td>9</td><td>0</td>
+      <td>1660.6</td><td>1756.4</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>B-radical Bros  - Connor Kitty</td>
+      <td>3</td><td>10</td><td>0</td>
+      <td>1465.5</td><td>1841.4</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2017</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Justin Cerilli</td><td>Hingham MA CerilliSorority</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1541.0</td><td>1475.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Bryan Testa</td><td>YOUR  ROYAL HIGHNESS</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1524.0</td><td>1454.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Money Team</td>
+      <td>11</td><td>2</td><td>0</td>
+      <td>1545.0</td><td>1281.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Antonio n Josh Brown</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1491.0</td><td>1499.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>2015 Champion Connor Kitty</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1446.0</td><td>1519.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1279.0</td><td>1351.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>The Mayor of Titty City</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1313.0</td><td>1492.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1334.0</td><td>1402.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2016</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1560.0</td><td>1437.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Evan Cerilli</td><td>The Mayor of Titty City</td>
+      <td>9</td><td>4</td><td>0</td>
+      <td>1561.0</td><td>1414.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>YOUR  ROYAL HIGHNESS</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1506.0</td><td>1539.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Money Team</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1589.0</td><td>1499.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1681.0</td><td>1544.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>2015 Champion Connor Kitty</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1567.0</td><td>1521.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>The 3 GirlsAndChamp</td>
+      <td>1</td><td>12</td><td>0</td>
+      <td>1354.0</td><td>1702.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>The Jags Are Back</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1305.0</td><td>1467.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2015</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Brad Cerilli</td><td>Team Connor Kitty</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1740.0</td><td>1577.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Tyler Cerilli</td><td>Money Team</td>
+      <td>10</td><td>3</td><td>0</td>
+      <td>1709.0</td><td>1541.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>The 3 GirlsAndChamp</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1678.0</td><td>1695.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Brady And The Gronk</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1621.0</td><td>1639.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>The Mayor of Titty City</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1618.0</td><td>1421.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>YOUR ROYAL HIGHNESS</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1617.0</td><td>1681.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>3</td><td>10</td><td>0</td>
+      <td>1371.0</td><td>1713.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1420.0</td><td>1507.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2014</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Justin Cerilli</td><td>The 3 GirlsAndChamp</td>
+      <td>8</td><td>5</td><td>0</td>
+      <td>1609.0</td><td>1515.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Brad Cerilli</td><td>Team Connor Kitty</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1590.0</td><td>1703.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Legendary Comeback</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1527.0</td><td>1606.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Money Team</td>
+      <td>11</td><td>2</td><td>0</td>
+      <td>1828.0</td><td>1525.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>YOUR ROYAL HIGHNESS</td>
+      <td>7</td><td>6</td><td>0</td>
+      <td>1631.0</td><td>1583.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>The Mayor of Titty City</td>
+      <td>6</td><td>7</td><td>0</td>
+      <td>1700.0</td><td>1615.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>5</td><td>8</td><td>0</td>
+      <td>1442.0</td><td>1597.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>3</td><td>10</td><td>0</td>
+      <td>1473.0</td><td>1656.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2013</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1826.0</td><td>1712.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Justin Cerilli</td><td>The 3 GirlsAndChamp</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1769.0</td><td>1754.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>YOUR ROYAL HIGHNESS</td>
+      <td>8</td><td>6</td><td>0</td>
+      <td>1656.0</td><td>1708.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Brad Cerilli</td><td>Team Connor Kitty </td>
+      <td>9</td><td>5</td><td>0</td>
+      <td>1862.0</td><td>1672.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Not Over til its Over...</td>
+      <td>7</td><td>7</td><td>0</td>
+      <td>1757.0</td><td>1795.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Wiley Cerilli</td><td>Dynasty Champ</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1851.0</td><td>1807.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>Cambridge Crimson</td>
+      <td>5</td><td>9</td><td>0</td>
+      <td>1662.0</td><td>1828.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>6</td><td>8</td><td>0</td>
+      <td>1662.0</td><td>1769.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+  <h3>2012</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
+        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="finish-gold">
+      <td>Wiley Cerilli</td><td>U.R.A.P. NESS</td>
+      <td>6</td><td>4</td><td>1</td>
+      <td>1093.0</td><td>1027.0</td>
+      <td data-sort="1" title="Champion">
+        1
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="finish-silver">
+      <td>Brad Cerilli</td><td>Team Connor Kitty </td>
+      <td>6</td><td>4</td><td>1</td>
+      <td>1187.0</td><td>1043.0</td>
+      <td data-sort="2" title="Runner-up">
+        2
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>John Cerilli</td><td>Show me your TDs</td>
+      <td>7</td><td>4</td><td>0</td>
+      <td>1204.0</td><td>1149.0</td>
+      <td data-sort="3">
+        3
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Bryan Testa</td><td>YOUR ROYAL HIGHNESS</td>
+      <td>8</td><td>3</td><td>0</td>
+      <td>1144.0</td><td>1094.0</td>
+      <td data-sort="4">
+        4
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Justin Cerilli</td><td>NY, Larchmont C-Men</td>
+      <td>6</td><td>5</td><td>0</td>
+      <td>1156.0</td><td>1085.0</td>
+      <td data-sort="5">
+        5
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Evan Cerilli</td><td>Team Elite</td>
+      <td>4</td><td>7</td><td>0</td>
+      <td>1056.0</td><td>1152.0</td>
+      <td data-sort="6">
+        6
+      </td>
+      <td data-sort="1">Yes</td>
+    </tr>
+    
+    <tr class="">
+      <td>Tyler Cerilli</td><td>Team Shake N Bake</td>
+      <td>2</td><td>9</td><td>0</td>
+      <td>982.0</td><td>1247.0</td>
+      <td data-sort="7">
+        7
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    <tr class="">
+      <td>Peter Cerilli</td><td>Team UNCLE</td>
+      <td>4</td><td>7</td><td>0</td>
+      <td>1024.0</td><td>1049.0</td>
+      <td data-sort="8">
+        8
+      </td>
+      <td data-sort="0">No</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  
+</section>
+</div>
+
+<div class="tab-panel" id="tab-misc" role="tabpanel">
+<section>
+  <h2>Misc</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Best Season PF</th><th>Worst Season PF</th><th>Best Game</th><th>Worst Game</th>
+        <th>Longest Win Streak</th><th>Longest Loss Streak</th>
+        <th>Acquisitions</th><th>Acquisitions per Season</th><th>Drops</th><th>Trades</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>Justin Cerilli</td>
+      <td data-sort="2081.28">
+        2081.3<span class="cell-detail">2024</span>
+      </td>
+      <td data-sort="1354.0">
+        
+        1354.0<span class="cell-detail">2016</span>
+        
+      </td>
+      <td data-sort="204.0">
+        204.0<span class="cell-detail">2025 Wk15</span>
+      </td>
+      <td data-sort="53.0">
+        53.0<span class="cell-detail">2016 Wk14</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2017</span>
+      </td>
+      <td data-sort="14">
+        14<span class="cell-detail">2016</span>
+      </td>
+      <td>421</td>
+      <td>28.1</td>
+      <td>424</td><td>4</td>
+    </tr>
+    
+    <tr>
+      <td>Wiley Cerilli</td>
+      <td data-sort="2241.12">
+        2241.1<span class="cell-detail">2025</span>
+      </td>
+      <td data-sort="1305.0">
+        
+        1305.0<span class="cell-detail">2016</span>
+        
+      </td>
+      <td data-sort="212.88">
+        212.9<span class="cell-detail">2023 Wk16</span>
+      </td>
+      <td data-sort="34.86">
+        34.9<span class="cell-detail">2018 Wk1</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2022</span>
+      </td>
+      <td data-sort="5">
+        5<span class="cell-detail">2024</span>
+      </td>
+      <td>766</td>
+      <td>51.1</td>
+      <td>785</td><td>5</td>
+    </tr>
+    
+    <tr>
+      <td>Brad Cerilli</td>
+      <td data-sort="1915.32">
+        1915.3<span class="cell-detail">2024</span>
+      </td>
+      <td data-sort="1446.0">
+        
+        1446.0<span class="cell-detail">2017</span>
+        
+      </td>
+      <td data-sort="198.0">
+        198.0<span class="cell-detail">2015 Wk15</span>
+      </td>
+      <td data-sort="18.1">
+        18.1<span class="cell-detail">2018 Wk3</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2015-2016</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2017</span>
+      </td>
+      <td>390</td>
+      <td>26.0</td>
+      <td>389</td><td>1</td>
+    </tr>
+    
+    <tr>
+      <td>Bryan Testa</td>
+      <td data-sort="1985.42">
+        1985.4<span class="cell-detail">2024</span>
+      </td>
+      <td data-sort="1394.14">
+        
+        1394.1<span class="cell-detail">2019</span>
+        
+      </td>
+      <td data-sort="240.04">
+        240.0<span class="cell-detail">2024 Wk14</span>
+      </td>
+      <td data-sort="56.0">
+        56.0<span class="cell-detail">2013 Wk8</span>
+      </td>
+      <td data-sort="6">
+        6<span class="cell-detail">2021-2022</span>
+      </td>
+      <td data-sort="8">
+        8<span class="cell-detail">2019</span>
+      </td>
+      <td>364</td>
+      <td>24.3</td>
+      <td>363</td><td>2</td>
+    </tr>
+    
+    <tr>
+      <td>Tyler Cerilli</td>
+      <td data-sort="2115.66">
+        2115.7<span class="cell-detail">2023</span>
+      </td>
+      <td data-sort="1488.96">
+        
+        1489.0<span class="cell-detail">2022</span>
+        
+      </td>
+      <td data-sort="206.3">
+        206.3<span class="cell-detail">2023 Wk13</span>
+      </td>
+      <td data-sort="64.8">
+        64.8<span class="cell-detail">2018 Wk15</span>
+      </td>
+      <td data-sort="9">
+        9<span class="cell-detail">2024</span>
+      </td>
+      <td data-sort="5">
+        5<span class="cell-detail">2012</span>
+      </td>
+      <td>420</td>
+      <td>28.0</td>
+      <td>421</td><td>0</td>
+    </tr>
+    
+    <tr>
+      <td>Evan Cerilli</td>
+      <td data-sort="1783.82">
+        1783.8<span class="cell-detail">2020</span>
+      </td>
+      <td data-sort="1250.4">
+        
+        1250.4<span class="cell-detail">2021</span>
+        
+      </td>
+      <td data-sort="190.76">
+        190.8<span class="cell-detail">2025 Wk8</span>
+      </td>
+      <td data-sort="27.92">
+        27.9<span class="cell-detail">2021 Wk17</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2020</span>
+      </td>
+      <td data-sort="9">
+        9<span class="cell-detail">2021-2022</span>
+      </td>
+      <td>163</td>
+      <td>11.6</td>
+      <td>155</td><td>0</td>
+    </tr>
+    
+    <tr>
+      <td>Peter Cerilli</td>
+      <td data-sort="2062.44">
+        2062.4<span class="cell-detail">2023</span>
+      </td>
+      <td data-sort="1334.0">
+        
+        1334.0<span class="cell-detail">2017</span>
+        
+      </td>
+      <td data-sort="187.52">
+        187.5<span class="cell-detail">2023 Wk10</span>
+      </td>
+      <td data-sort="43.2">
+        43.2<span class="cell-detail">2021 Wk7</span>
+      </td>
+      <td data-sort="4">
+        4<span class="cell-detail">2023</span>
+      </td>
+      <td data-sort="6">
+        6<span class="cell-detail">2013</span>
+      </td>
+      <td>240</td>
+      <td>16.0</td>
+      <td>240</td><td>2</td>
+    </tr>
+    
+    <tr>
+      <td>John Cerilli</td>
+      <td data-sort="2135.86">
+        2135.9<span class="cell-detail">2021</span>
+      </td>
+      <td data-sort="1279.0">
+        
+        1279.0<span class="cell-detail">2017</span>
+        
+      </td>
+      <td data-sort="221.32">
+        221.3<span class="cell-detail">2021 Wk5</span>
+      </td>
+      <td data-sort="66.0">
+        66.0<span class="cell-detail">2017 Wk1</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2021</span>
+      </td>
+      <td data-sort="7">
+        7<span class="cell-detail">2017-2018</span>
+      </td>
+      <td>321</td>
+      <td>21.4</td>
+      <td>321</td><td>2</td>
+    </tr>
+    
+    <tr>
+      <td>Joey Testa</td>
+      <td data-sort="nan">
+        nan<span class="cell-detail">nan</span>
+      </td>
+      <td data-sort="nan">
+        -
+      </td>
+      <td data-sort="107.28">
+        107.3<span class="cell-detail">2026 Wk1</span>
+      </td>
+      <td data-sort="81.4">
+        81.4<span class="cell-detail">2026 Wk2</span>
+      </td>
+      <td data-sort="0">
+        -
+      </td>
+      <td data-sort="3">
+        3<span class="cell-detail">2026</span>
+      </td>
+      <td>17</td>
+      <td>17.0</td>
+      <td>21</td><td>0</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+</div>
+</div>
+
+
+<script>
+document.querySelectorAll("table").forEach((table) => {
+  const headers = Array.from(table.rows[0].cells).map((cell) => cell.textContent.trim());
+  Array.from(table.rows).slice(1).forEach((row) => {
+    Array.from(row.cells).forEach((cell, index) => {
+      if (cell.tagName === "TD") cell.dataset.label = headers[index];
+    });
+  });
+});
+</script>
+
+<script>
+const CHARTS = {"points_trend": {"labels": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "datasets": [{"label": "Brad Cerilli", "data": [1187.0, 1862.0, 1590.0, 1740.0, 1567.0, 1446.0, 1465.54, 1551.58, 1687.32, 1711.18, 1768.26, 1839.98, 1915.32, 1852.62, 391.62]}, {"label": "Bryan Testa", "data": [1144.0, 1656.0, 1631.0, 1617.0, 1506.0, 1524.0, 1874.72, 1394.14, 1671.8, 1658.38, 1750.78, 1833.16, 1985.42, 1891.42, 427.14]}, {"label": "Evan Cerilli", "data": [1056.0, 1662.0, 1700.0, 1618.0, 1561.0, 1313.0, 1675.86, 1606.42, 1783.82, 1250.4, 1743.7, 1730.44, 1689.22, 1594.64, null]}, {"label": "Joey Testa", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 293.34]}, {"label": "John Cerilli", "data": [1204.0, 1826.0, 1473.0, 1420.0, 1681.0, 1279.0, 1660.6, 1553.88, 1589.48, 2135.86, 1740.2, 1830.86, 1892.82, 1896.34, 408.64]}, {"label": "Justin Cerilli", "data": [1156.0, 1769.0, 1609.0, 1678.0, 1354.0, 1541.0, 1724.96, 1683.52, 1780.1, 1824.82, 1842.82, 1974.92, 2081.28, 1993.1, 425.68]}, {"label": "Peter Cerilli", "data": [1024.0, 1662.0, 1442.0, 1371.0, 1560.0, 1334.0, 1645.3, 1626.88, 1727.12, 1630.08, 1406.82, 2062.44, 2022.74, 1873.94, 421.68]}, {"label": "Tyler Cerilli", "data": [982.0, 1757.0, 1828.0, 1709.0, 1589.0, 1545.0, 1716.62, 1610.9, 1596.52, 1662.5, 1488.96, 2115.66, 1933.28, 1980.18, 418.94]}, {"label": "Wiley Cerilli", "data": [1093.0, 1851.0, 1527.0, 1621.0, 1305.0, 1491.0, 1695.48, 1930.52, 1656.8, 1721.72, 1927.26, 1891.68, 1711.48, 2241.12, 467.36]}]}, "championships": {"labels": ["Justin Cerilli", "Wiley Cerilli", "Brad Cerilli", "Bryan Testa", "Tyler Cerilli", "Evan Cerilli", "Peter Cerilli", "John Cerilli", "Joey Testa"], "values": [4, 3, 2, 1, 1, 1, 1, 1, 0]}, "win_pct": {"labels": ["Tyler Cerilli", "Justin Cerilli", "Wiley Cerilli", "John Cerilli", "Bryan Testa", "Brad Cerilli", "Peter Cerilli", "Evan Cerilli", "Joey Testa"], "values": [58.199999999999996, 52.400000000000006, 52.400000000000006, 49.7, 49.2, 47.599999999999994, 47.099999999999994, 43.5, 0.0]}, "pf_pa": {"labels": ["Justin Cerilli", "Wiley Cerilli", "Tyler Cerilli", "John Cerilli", "Brad Cerilli", "Bryan Testa", "Peter Cerilli", "Evan Cerilli", "Joey Testa"], "points_for": [129.3, 127.68, 126.63, 124.82, 124.74, 124.68, 120.69, 118.2, 97.78], "points_against": [125.17, 124.55, 122.89, 124.07, 126.51, 126.32, 123.49, 123.1, 143.92]}, "standings_over_time": {"labels": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "datasets": [{"label": "Brad Cerilli", "data": [2, 4, 2, 1, 6, 5, 8, 7, 8, 5, 5, 6, 6, 1, null]}, {"label": "Bryan Testa", "data": [4, 3, 5, 6, 3, 2, 3, 8, 2, 7, 1, 5, 7, 5, null]}, {"label": "Evan Cerilli", "data": [6, 7, 6, 5, 2, 7, 5, 6, 1, 8, 4, 8, 8, 8, null]}, {"label": "Joey Testa", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]}, {"label": "John Cerilli", "data": [3, 1, 8, 8, 5, 6, 7, 4, 6, 3, 3, 7, 2, 7, null]}, {"label": "Justin Cerilli", "data": [5, 2, 1, 3, 7, 1, 1, 2, 5, 1, 6, 4, 3, 2, null]}, {"label": "Peter Cerilli", "data": [8, 8, 7, 7, 1, 8, 6, 5, 4, 4, 8, 2, 5, 6, null]}, {"label": "Tyler Cerilli", "data": [7, 5, 4, 2, 4, 3, 4, 3, 7, 6, 7, 3, 1, 3, null]}, {"label": "Wiley Cerilli", "data": [1, 6, 3, 4, 8, 4, 2, 1, 3, 2, 2, 1, 4, 4, null]}]}, "playoffs": {"labels": ["Justin Cerilli", "Wiley Cerilli", "Bryan Testa", "Tyler Cerilli", "Brad Cerilli", "John Cerilli", "Peter Cerilli", "Evan Cerilli", "Joey Testa"], "appearances": [14, 14, 12, 12, 11, 10, 9, 8, 0], "win_pct": [64.0, 66.7, 38.9, 33.300000000000004, 50.0, 38.5, 46.2, 36.4, 0.0]}, "points_cumulative": {"labels": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "datasets": [{"label": "Brad Cerilli", "data": [1187.0, 3049.0, 4639.0, 6379.0, 7946.0, 9392.0, 10857.54, 12409.12, 14096.44, 15807.62, 17575.88, 19415.86, 21331.18, 23183.8, 23575.42]}, {"label": "Bryan Testa", "data": [1144.0, 2800.0, 4431.0, 6048.0, 7554.0, 9078.0, 10952.72, 12346.859999999999, 14018.659999999998, 15677.039999999997, 17427.819999999996, 19260.979999999996, 21246.399999999994, 23137.819999999992, 23564.959999999992]}, {"label": "Evan Cerilli", "data": [1056.0, 2718.0, 4418.0, 6036.0, 7597.0, 8910.0, 10585.86, 12192.28, 13976.1, 15226.5, 16970.2, 18700.64, 20389.86, 21984.5, 21984.5]}, {"label": "Joey Testa", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 293.34]}, {"label": "John Cerilli", "data": [1204.0, 3030.0, 4503.0, 5923.0, 7604.0, 8883.0, 10543.6, 12097.48, 13686.96, 15822.82, 17563.02, 19393.88, 21286.7, 23183.04, 23591.68]}, {"label": "Justin Cerilli", "data": [1156.0, 2925.0, 4534.0, 6212.0, 7566.0, 9107.0, 10831.96, 12515.48, 14295.58, 16120.4, 17963.22, 19938.14, 22019.42, 24012.519999999997, 24438.199999999997]}, {"label": "Peter Cerilli", "data": [1024.0, 2686.0, 4128.0, 5499.0, 7059.0, 8393.0, 10038.3, 11665.18, 13392.3, 15022.38, 16429.2, 18491.64, 20514.38, 22388.32, 22810.0]}, {"label": "Tyler Cerilli", "data": [982.0, 2739.0, 4567.0, 6276.0, 7865.0, 9410.0, 11126.619999999999, 12737.519999999999, 14334.039999999999, 15996.539999999999, 17485.5, 19601.16, 21534.44, 23514.62, 23933.559999999998]}, {"label": "Wiley Cerilli", "data": [1093.0, 2944.0, 4471.0, 6092.0, 7397.0, 8888.0, 10583.48, 12514.0, 14170.8, 15892.519999999999, 17819.78, 19711.46, 21422.94, 23664.059999999998, 24131.42]}]}, "wins_cumulative": {"labels": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "datasets": [{"label": "Brad Cerilli", "data": [6, 15, 22, 29, 36, 41, 44, 48, 53, 59, 65, 73, 80, 90, 90]}, {"label": "Bryan Testa", "data": [8, 16, 23, 28, 36, 42, 50, 53, 61, 67, 72, 79, 83, 90, 93]}, {"label": "Evan Cerilli", "data": [4, 9, 15, 22, 31, 36, 42, 50, 59, 63, 70, 75, 78, 81, 81]}, {"label": "Joey Testa", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, {"label": "John Cerilli", "data": [7, 15, 18, 23, 29, 35, 39, 45, 51, 64, 74, 79, 87, 92, 94]}, {"label": "Justin Cerilli", "data": [6, 13, 21, 29, 30, 36, 43, 51, 57, 65, 73, 80, 91, 98, 99]}, {"label": "Peter Cerilli", "data": [4, 10, 15, 18, 26, 31, 37, 43, 50, 57, 61, 71, 79, 87, 89]}, {"label": "Tyler Cerilli", "data": [2, 9, 20, 30, 38, 49, 60, 67, 72, 78, 83, 91, 101, 107, 110]}, {"label": "Wiley Cerilli", "data": [6, 12, 17, 24, 29, 37, 44, 54, 60, 66, 77, 83, 88, 98, 99]}]}};
+const palette = ["#38bdf8","#f472b6","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc"];
+
+function colorize(datasets) {
+  return datasets.map((d, i) => ({...d, borderColor: palette[i % palette.length], backgroundColor: palette[i % palette.length]}));
+}
+
+const allCharts = [];
+if (typeof Chart !== "undefined") {
+try {
+allCharts.push(new Chart(document.getElementById('pointsTrend'), {
+  type: 'line',
+  data: { labels: CHARTS.points_trend.labels, datasets: colorize(CHARTS.points_trend.datasets).map(d => ({...d, fill: false})) },
+  options: { plugins: { title: { display: true, text: 'Points Per Season', color: '#e2e8f0' } } }
+}));
+
+allCharts.push(new Chart(document.getElementById('championships'), {
+  type: 'bar',
+  data: { labels: CHARTS.championships.labels, datasets: [{ label: 'Championships', data: CHARTS.championships.values, backgroundColor: palette[0] }] },
+  options: { plugins: { title: { display: true, text: 'Championships', color: '#e2e8f0' } } }
+}));
+
+allCharts.push(new Chart(document.getElementById('winPct'), {
+  type: 'bar',
+  data: { labels: CHARTS.win_pct.labels, datasets: [{ label: 'Win %', data: CHARTS.win_pct.values, backgroundColor: palette[1] }] },
+  options: { scales: { y: { suggestedMax: 100, title: { display: true, text: '%' } } },
+             plugins: { title: { display: true, text: 'All-Time Win %', color: '#e2e8f0' } } }
+}));
+
+allCharts.push(new Chart(document.getElementById('pfPa'), {
+  type: 'bar',
+  data: { labels: CHARTS.pf_pa.labels, datasets: [
+    { label: 'Avg Points For', data: CHARTS.pf_pa.points_for, backgroundColor: palette[3] },
+    { label: 'Avg Points Against', data: CHARTS.pf_pa.points_against, backgroundColor: palette[6] }
+  ]},
+  options: { plugins: { title: { display: true, text: 'Avg Points For vs Against', color: '#e2e8f0' } } }
+}));
+
+allCharts.push(new Chart(document.getElementById('standingsOverTime'), {
+  type: 'line',
+  data: { labels: CHARTS.standings_over_time.labels, datasets: colorize(CHARTS.standings_over_time.datasets).map(d => ({...d, fill: false, spanGaps: true})) },
+  options: { scales: { y: { reverse: true, title: { display: true, text: 'Final Standing (1 = best)' } } },
+             plugins: { title: { display: true, text: 'Standings Over Time', color: '#e2e8f0' } } }
+}));
+
+allCharts.push(new Chart(document.getElementById('playoffsChart'), {
+  type: 'bar',
+  data: { labels: CHARTS.playoffs.labels, datasets: [
+    { label: 'Playoff Appearances', data: CHARTS.playoffs.appearances, backgroundColor: palette[4] },
+    { label: 'Playoff Win %', data: CHARTS.playoffs.win_pct, backgroundColor: palette[5] }
+  ]},
+  options: { plugins: { title: { display: true, text: 'Playoff Appearances & Win % (right axis is % for wins)', color: '#e2e8f0' } } }
+}));
+for (const [canvasId, seriesKey, title, unit] of [
+  ['pointsCumulative', 'points_cumulative', 'Total Points Over Time', 'Career Points'],
+  ['winsCumulative', 'wins_cumulative', 'Total Wins Over Time', 'Career Wins']
+]) {
+  const series = CHARTS[seriesKey];
+  allCharts.push(new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: { labels: series.labels, datasets: colorize(series.datasets).map(dataset => ({...dataset, fill: false})) },
+    options: {
+      interaction: { mode: 'index', intersect: false },
+      scales: { x: { title: { display: true, text: 'Season' } }, y: { beginAtZero: true, title: { display: true, text: unit } } },
+      plugins: { title: { display: true, text: title, color: '#e2e8f0' } }
+    }
+  }));
+}
+} catch (err) {
+  console.warn("Chart rendering failed; tabs and tables remain available:", err);
+}
+} else {
+  console.warn("Chart.js is unavailable; tabs and tables remain available.");
+}
+
+const chartsTab = document.getElementById("tab-charts-choice");
+if (chartsTab) {
+  chartsTab.addEventListener("change", () => {
+    window.requestAnimationFrame(() => allCharts.forEach((chart) => chart.resize()));
+  });
+}
+
+// Generic click-to-sort for any <table class="sortable"> with a <thead>/<tbody>.
+function cellSortValue(td) {
+  return td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
+}
+
+function sortTableByColumn(table, colIndex, ascending) {
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const allNumeric = rows.every((r) => {
+    const v = cellSortValue(r.cells[colIndex]);
+    return v !== "" && !isNaN(parseFloat(v));
+  });
+  rows.sort((a, b) => {
+    let va = cellSortValue(a.cells[colIndex]);
+    let vb = cellSortValue(b.cells[colIndex]);
+    if (allNumeric) {
+      va = parseFloat(va);
+      vb = parseFloat(vb);
+    } else {
+      va = va.toLowerCase();
+      vb = vb.toLowerCase();
+    }
+    if (va < vb) return ascending ? -1 : 1;
+    if (va > vb) return ascending ? 1 : -1;
+    return 0;
+  });
+  rows.forEach((r) => tbody.appendChild(r));
+}
+
+function applySortToTable(table, colIndex, ascending) {
+  const headerCells = Array.from(table.tHead.rows[0].cells);
+  headerCells.forEach((h) => {
+    delete h.dataset.sortDir;
+    const existing = h.querySelector(".sort-indicator");
+    if (existing) existing.remove();
+  });
+  const th = headerCells[colIndex];
+  th.dataset.sortDir = ascending ? "asc" : "desc";
+  const indicator = document.createElement("span");
+  indicator.className = "sort-indicator";
+  indicator.textContent = ascending ? " \u25B2" : " \u25BC";
+  (th.querySelector("button.sort-btn") || th).appendChild(indicator);
+  sortTableByColumn(table, colIndex, ascending);
+  const select = table.parentElement.querySelector(".table-sort-controls select");
+  if (select) select.value = colIndex + ":" + (ascending ? "asc" : "desc");
+}
+
+// iOS Safari often ignores taps on bare <th>/<td> elements; wrap header text in a
+// real <button> so taps register reliably.
+function wrapHeaderButton(th) {
+  let btn = th.querySelector("button.sort-btn");
+  if (btn) return btn;
+  const label = th.textContent.trim();
+  th.textContent = "";
+  btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "sort-btn";
+  btn.textContent = label;
+  btn.setAttribute("aria-label", "Sort by " + label);
+  th.appendChild(btn);
+  return btn;
+}
+
+function buildSortDropdown(table) {
+  const headerCells = Array.from(table.tHead.rows[0].cells);
+  const firstRow = table.tBodies[0] ? table.tBodies[0].rows[0] : null;
+  const wrap = document.createElement("div");
+  wrap.className = "table-sort-controls";
+  const selectId = "sort-select-" + Math.random().toString(36).slice(2, 9);
+  const label = document.createElement("label");
+  label.textContent = "Sort by:";
+  label.htmlFor = selectId;
+  const select = document.createElement("select");
+  select.id = selectId;
+  select.setAttribute("aria-label", "Sort table by column");
+  const blank = document.createElement("option");
+  blank.value = "";
+  blank.textContent = "Sort by column\u2026";
+  select.appendChild(blank);
+  headerCells.forEach((th, idx) => {
+    const name = th.textContent.trim();
+    if (!name) return;
+    const sample = firstRow ? cellSortValue(firstRow.cells[idx]) : "";
+    const numeric = sample !== "" && !isNaN(parseFloat(sample));
+    const ascLabel = numeric ? "Low to High" : "A to Z";
+    const descLabel = numeric ? "High to Low" : "Z to A";
+    const optAsc = document.createElement("option");
+    optAsc.value = idx + ":asc";
+    optAsc.textContent = name + " \u2013 " + ascLabel;
+    select.appendChild(optAsc);
+    const optDesc = document.createElement("option");
+    optDesc.value = idx + ":desc";
+    optDesc.textContent = name + " \u2013 " + descLabel;
+    select.appendChild(optDesc);
+  });
+  select.addEventListener("change", () => {
+    if (!select.value) return;
+    const [column, direction] = select.value.split(":");
+    applySortToTable(table, Number(column), direction === "asc");
+  });
+  wrap.appendChild(label);
+  wrap.appendChild(select);
+  table.parentElement.insertBefore(wrap, table);
+}
+
+function applySeasonSort() {
+  const value = document.getElementById("season-sort").value;
+  if (!value) return;
+  const [column, direction] = value.split(":");
+  document.querySelectorAll("#tab-byseason table.sortable").forEach((table) => {
+    applySortToTable(table, Number(column), direction === "asc");
+  });
+}
+
+document.getElementById("season-sort").addEventListener("change", applySeasonSort);
+document.getElementById("season-sort-refresh").addEventListener("click", applySeasonSort);
+
+document.querySelectorAll("table.sortable").forEach((table) => {
+  buildSortDropdown(table);
+  const headerCells = Array.from(table.tHead.rows[0].cells);
+  headerCells.forEach((th, colIndex) => {
+    const btn = wrapHeaderButton(th);
+    btn.addEventListener("click", () => {
+      const ascending = th.dataset.sortDir !== "asc";
+      applySortToTable(table, colIndex, ascending);
+    });
+  });
+});
+</script>
+</body>
+</html>
