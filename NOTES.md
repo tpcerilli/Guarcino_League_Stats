@@ -12,7 +12,7 @@ tables from the main one.
 
 ## Playoff Stats
 
-Add Reg Season finish column
+Add Reg Season finish column. Put this in before Final Standing
 
 ## New table/tab
 
