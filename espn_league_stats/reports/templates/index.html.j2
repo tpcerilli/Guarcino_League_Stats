@@ -19,31 +19,54 @@
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .chart-box { background: #1e293b; border-radius: 8px; padding: 1rem; }
   canvas { max-height: 360px; }
-  .h2h-table td { text-align: center; min-width: 70px; }
+  .h2h-table td { text-align: center; min-width: 70px; color: #111827; }
   .table-wrap { max-height: 500px; overflow-y: auto; }
   .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
-  .tab-button { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; }
+  .tab-radio { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .tab-button { display: inline-block; background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; }
   .tab-button:hover { background: #334155; }
-  .tab-button.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  #tab-current-choice:checked ~ .tabs label[for="tab-current-choice"],
+  #tab-alltime-choice:checked ~ .tabs label[for="tab-alltime-choice"],
+  #tab-regular-choice:checked ~ .tabs label[for="tab-regular-choice"],
+  #tab-playoffs-choice:checked ~ .tabs label[for="tab-playoffs-choice"],
+  #tab-charts-choice:checked ~ .tabs label[for="tab-charts-choice"],
+  #tab-h2h-choice:checked ~ .tabs label[for="tab-h2h-choice"],
+  #tab-byseason-choice:checked ~ .tabs label[for="tab-byseason-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  .tab-radio:focus-visible ~ .tabs label { outline: 2px solid #facc15; outline-offset: 2px; }
   .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+  #tab-current-choice:checked ~ .tab-panels #tab-current,
+  #tab-alltime-choice:checked ~ .tab-panels #tab-alltime,
+  #tab-regular-choice:checked ~ .tab-panels #tab-regular,
+  #tab-playoffs-choice:checked ~ .tab-panels #tab-playoffs,
+  #tab-charts-choice:checked ~ .tab-panels #tab-charts,
+  #tab-h2h-choice:checked ~ .tab-panels #tab-h2h,
+  #tab-byseason-choice:checked ~ .tab-panels #tab-byseason { display: block; }
 </style>
 </head>
 <body>
 <h1>Guarcino League Stats</h1>
 <p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
 
-<nav class="tabs">
-  <button class="tab-button active" data-tab="current">Current Season</button>
-  <button class="tab-button" data-tab="alltime">All-Time</button>
-  <button class="tab-button" data-tab="regular">Regular Season</button>
-  <button class="tab-button" data-tab="playoffs">Playoffs</button>
-  <button class="tab-button" data-tab="charts">Charts</button>
-  <button class="tab-button" data-tab="h2h">Head-to-Head</button>
-  <button class="tab-button" data-tab="byseason">Results By Season</button>
+<div class="tab-container">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-current-choice" checked>
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-alltime-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-regular-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-playoffs-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-charts-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-h2h-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-byseason-choice">
+<nav class="tabs" role="tablist" aria-label="League statistics">
+  <label class="tab-button" role="tab" for="tab-current-choice">Current Season</label>
+  <label class="tab-button" role="tab" for="tab-alltime-choice">Combined</label>
+  <label class="tab-button" role="tab" for="tab-regular-choice">Regular Season</label>
+  <label class="tab-button" role="tab" for="tab-playoffs-choice">Playoffs</label>
+  <label class="tab-button" role="tab" for="tab-charts-choice">Charts</label>
+  <label class="tab-button" role="tab" for="tab-h2h-choice">Head-to-Head</label>
+  <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
 </nav>
 
-<div class="tab-panel active" id="tab-current">
+<div class="tab-panels">
+<div class="tab-panel" id="tab-current" role="tabpanel">
 <section>
   <h2>Current Season Standings</h2>
   <table class="sortable">
@@ -64,15 +87,15 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-alltime">
+<div class="tab-panel" id="tab-alltime" role="tabpanel">
 <section>
-  <h2>All-Time Summary</h2>
+  <h2>Combined Summary (Regular Season + Playoffs)</h2>
   <div class="table-wrap">
   <table class="sortable">
     <thead>
     <tr>
       <th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th>
-      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th><th>3rd</th>
+      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th>
       <th>Playoffs</th><th>Playoff W-L</th><th>Best Season PF</th><th>Best Game</th>
     </tr>
     </thead>
@@ -84,7 +107,7 @@
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
       <td>{{ "%.0f"|format(row.points_for) }}</td><td>{{ "%.0f"|format(row.points_against) }}</td>
       <td>{{ "%.0f"|format(row.point_diff) }}</td>
-      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td><td>{{ row.third_place_finishes }}</td>
+      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
       <td>{{ row.playoff_appearances }}</td>
       <td data-sort="{{ row.playoff_wins }}">{{ row.playoff_wins }}-{{ row.playoff_losses }}</td>
       <td>{{ "%.1f"|format(row.best_season_points) }} ({{ row.best_season_points_year }})</td>
@@ -97,13 +120,13 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-regular">
+<div class="tab-panel" id="tab-regular" role="tabpanel">
 <section>
   <h2>Regular Season (all-time)</h2>
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>Avg PF</th><th>Avg PA</th></tr>
+      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
     </thead>
     <tbody>
     {% for row in regular_season %}
@@ -111,6 +134,7 @@
       <td>{{ row.manager_name }}</td><td>{{ row.games }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
+      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
       <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
     </tr>
     {% endfor %}
@@ -120,22 +144,23 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-playoffs">
+<div class="tab-panel" id="tab-playoffs" role="tabpanel">
 <section>
   <h2>Playoffs (all-time, real bracket only)</h2>
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Manager</th><th>Appearances</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>Avg PF</th><th>Avg PA</th></tr>
+      <tr><th>Manager</th><th>Appearances</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
     </thead>
     <tbody>
     {% for row in playoffs %}
     <tr>
-      <td>{{ row.manager_name }}</td><td>{{ row.appearances }}</td><td>{{ row.games }}</td>
+      <td>{{ row.manager_name }}</td><td>{{ row.appearances }}</td><td>{{ row.bye_weeks }}</td><td>{{ row.games }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td data-sort="{{ (row.win_pct * 100) if row.win_pct is not none else -1 }}">
         {% if row.win_pct is not none %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}n/a{% endif %}
       </td>
+      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
       <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
     </tr>
     {% endfor %}
@@ -145,7 +170,7 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-charts">
+<div class="tab-panel" id="tab-charts" role="tabpanel">
 <section>
   <h2>Charts</h2>
   <div class="charts-grid">
@@ -159,7 +184,7 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-h2h">
+<div class="tab-panel" id="tab-h2h" role="tabpanel">
 <section>
   <h2>Head-to-Head (all-time)</h2>
   <div class="table-wrap">
@@ -173,7 +198,7 @@
         {% if row_manager == col_manager %}
           <td>-</td>
         {% elif cell %}
-          <td style="background-color: rgba(34,139,34,{{ cell.win_pct }});">
+          <td style="background-color: {{ cell.color }};">
             {{ cell.wins }}-{{ cell.losses }}{% if cell.ties %}-{{ cell.ties }}{% endif %}
           </td>
         {% else %}
@@ -187,7 +212,7 @@
 </section>
 </div>
 
-<div class="tab-panel" id="tab-byseason">
+<div class="tab-panel" id="tab-byseason" role="tabpanel">
 <section>
   <h2>Results By Season</h2>
   {% for group in season_groups %}
@@ -218,6 +243,8 @@
   {% endfor %}
 </section>
 </div>
+</div>
+</div>
 
 <script>
 const CHARTS = {{ charts_json|safe }};
@@ -227,64 +254,65 @@ function colorize(datasets) {
   return datasets.map((d, i) => ({...d, borderColor: palette[i % palette.length], backgroundColor: palette[i % palette.length]}));
 }
 
-new Chart(document.getElementById('pointsTrend'), {
+const allCharts = [];
+if (typeof Chart !== "undefined") {
+try {
+allCharts.push(new Chart(document.getElementById('pointsTrend'), {
   type: 'line',
   data: { labels: CHARTS.points_trend.labels, datasets: colorize(CHARTS.points_trend.datasets).map(d => ({...d, fill: false})) },
   options: { plugins: { title: { display: true, text: 'Points Per Season', color: '#e2e8f0' } } }
-});
+}));
 
-new Chart(document.getElementById('championships'), {
+allCharts.push(new Chart(document.getElementById('championships'), {
   type: 'bar',
   data: { labels: CHARTS.championships.labels, datasets: [{ label: 'Championships', data: CHARTS.championships.values, backgroundColor: palette[0] }] },
   options: { plugins: { title: { display: true, text: 'Championships', color: '#e2e8f0' } } }
-});
+}));
 
-new Chart(document.getElementById('winPct'), {
+allCharts.push(new Chart(document.getElementById('winPct'), {
   type: 'bar',
   data: { labels: CHARTS.win_pct.labels, datasets: [{ label: 'Win %', data: CHARTS.win_pct.values, backgroundColor: palette[1] }] },
   options: { scales: { y: { suggestedMax: 100, title: { display: true, text: '%' } } },
-             plugins: { title: { display: true, text: 'All-Time Win %', color: '#e2e8f0' } } }
-});
+             plugins: { title: { display: true, text: 'Combined Win %', color: '#e2e8f0' } } }
+}));
 
-new Chart(document.getElementById('pfPa'), {
+allCharts.push(new Chart(document.getElementById('pfPa'), {
   type: 'bar',
   data: { labels: CHARTS.pf_pa.labels, datasets: [
     { label: 'Avg Points For', data: CHARTS.pf_pa.points_for, backgroundColor: palette[3] },
     { label: 'Avg Points Against', data: CHARTS.pf_pa.points_against, backgroundColor: palette[6] }
   ]},
   options: { plugins: { title: { display: true, text: 'Avg Points For vs Against', color: '#e2e8f0' } } }
-});
+}));
 
-new Chart(document.getElementById('standingsOverTime'), {
+allCharts.push(new Chart(document.getElementById('standingsOverTime'), {
   type: 'line',
   data: { labels: CHARTS.standings_over_time.labels, datasets: colorize(CHARTS.standings_over_time.datasets).map(d => ({...d, fill: false, spanGaps: true})) },
   options: { scales: { y: { reverse: true, title: { display: true, text: 'Final Standing (1 = best)' } } },
              plugins: { title: { display: true, text: 'Standings Over Time', color: '#e2e8f0' } } }
-});
+}));
 
-new Chart(document.getElementById('playoffsChart'), {
+allCharts.push(new Chart(document.getElementById('playoffsChart'), {
   type: 'bar',
   data: { labels: CHARTS.playoffs.labels, datasets: [
     { label: 'Playoff Appearances', data: CHARTS.playoffs.appearances, backgroundColor: palette[4] },
     { label: 'Playoff Win %', data: CHARTS.playoffs.win_pct, backgroundColor: palette[5] }
   ]},
   options: { plugins: { title: { display: true, text: 'Playoff Appearances & Win % (right axis is % for wins)', color: '#e2e8f0' } } }
-});
+}));
+} catch (err) {
+  console.warn("Chart rendering failed; tabs and tables remain available:", err);
+}
+} else {
+  console.warn("Chart.js is unavailable; tabs and tables remain available.");
+}
 
-// Tab switching: show one panel at a time; Chart.js needs a visible canvas to size itself,
-// so re-trigger a resize on every chart the first time the Charts tab is shown.
-const allCharts = Chart.instances ? Object.values(Chart.instances) : [];
-document.querySelectorAll(".tab-button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
-    if (btn.dataset.tab === "charts") {
-      allCharts.forEach((c) => c.resize());
-    }
+const chartsTab = document.getElementById("tab-charts-choice");
+if (chartsTab) {
+  chartsTab.addEventListener("change", () => {
+    window.requestAnimationFrame(() => allCharts.forEach((chart) => chart.resize()));
   });
-});
+}
 
 // Generic click-to-sort for any <table class="sortable"> with a <thead>/<tbody>.
 function cellSortValue(td) {

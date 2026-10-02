@@ -1,5 +1,13 @@
 {
   "_comment": "Optional overrides for manager identity resolution. Two supported keys: 'owner_names' maps an ESPN owner member id to a canonical display name; 'team_overrides' maps 'year:team_id' to a canonical manager key when owner data is missing/ambiguous.",
-  "owner_names": {},
+  "owner_names": {
+    "{D3301AF3-E129-4A0F-9D86-ADF8C972DAA8}": "John Cerilli",
+    "{DEA0A0B9-F94E-41C6-9B6E-DBCCDA72D647}": "Justin Cerilli",
+    "{4A2AA251-C578-48CE-A2C4-978BC9DAEB75}": "Joey Testa",
+    "{850C5BAC-38A5-4183-9E71-C8AA0BE7BB0A}": "Tyler Cerilli",
+    "{6C98970E-2FC3-4A12-B297-8226B3443F98}": "Brad Cerilli",
+    "{91AB270D-14E7-489B-A264-A2A6D446A7B7}": "Bryan Testa",
+    "{ABAA9517-ACF5-4651-AA95-17ACF536516E}": "Evan Cerilli"
+  },
   "team_overrides": {}
 }

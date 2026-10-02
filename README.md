@@ -23,7 +23,7 @@ python -m espn_league_stats.main
 Outputs:
 - Console tables (all-time leaderboard, current standings, records)
 - `output/csv/*.csv`
-- `output/html/index.html` (open in any browser)
+- `output/html/Guarcino_Stats.html` (open in any browser)
 
 Flags: `--refresh` (force re-fetch everything), `--start-year YYYY`, `--no-csv`, `--no-html`.
 

@@ -1,0 +1,9 @@
+{
+  "_comment": "Manual corrections to ESPN's final_standing when a real-world league ruling differs from the platform (e.g. a forfeit). Keyed by year -> team_id -> corrected final_standing (1 = champion).",
+  "final_standing_overrides": {
+    "2022": {
+      "4": 2,
+      "8": 1
+    }
+  }
+}

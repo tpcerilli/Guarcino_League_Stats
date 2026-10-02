@@ -56,6 +56,29 @@ def _playoffs(all_time: pd.DataFrame) -> dict:
     }
 
 
+def _diverging_color(win_pct: float) -> str:
+    """Green for winning, white for .500, red for losing — scaled by how far from .500.
+
+    A small handful of matchups sit at exactly 0.0/1.0 (e.g. a 1-0 all-time record), which would
+    otherwise saturate the color scale and make every more-typical record look washed-out/white
+    by comparison. A sqrt curve pulls moderate records (.6, .7, etc.) much further from white
+    while still capping at full saturation only for true 0/1 records.
+    Endpoints are pastel (not fully saturated) so dark cell text stays readable throughout.
+    """
+    red, green, blue = 255, 255, 255
+    if win_pct > 0.5:
+        t = ((win_pct - 0.5) / 0.5) ** 0.5  # 0..1 toward pastel green
+        red = round(255 - (255 - 129) * t)
+        green = round(255 - (255 - 199) * t)
+        blue = round(255 - (255 - 132) * t)
+    elif win_pct < 0.5:
+        t = ((0.5 - win_pct) / 0.5) ** 0.5  # 0..1 toward pastel red
+        red = round(255 - (255 - 239) * t)
+        green = round(255 - (255 - 154) * t)
+        blue = round(255 - (255 - 154) * t)
+    return f"rgb({red},{green},{blue})"
+
+
 def _head_to_head_cells(head_to_head: pd.DataFrame) -> dict:
     managers = sorted(set(head_to_head["manager_name"]) | set(head_to_head["opponent_name"]))
     cells = {m: {o: None for o in managers} for m in managers}
@@ -65,6 +88,7 @@ def _head_to_head_cells(head_to_head: pd.DataFrame) -> dict:
             "losses": row.losses,
             "ties": row.ties,
             "win_pct": row.win_pct,
+            "color": _diverging_color(row.win_pct),
         }
     return {"managers": managers, "cells": cells}
 
@@ -113,6 +137,6 @@ def write_html_report(
         h2h_managers=h2h["managers"],
         h2h_cells=h2h["cells"],
     )
-    out_path = OUTPUT_DIR / "index.html"
+    out_path = OUTPUT_DIR / "Guarcino_Stats.html"
     out_path.write_text(html, encoding="utf-8")
     return out_path

@@ -18,8 +18,8 @@ console = Console()
 
 
 def print_all_time_leaderboard(df: pd.DataFrame) -> None:
-    table = Table(title="All-Time Leaderboard")
-    for col in ("Manager", "W", "L", "T", "Win%", "PF", "PA", "Titles", "2nd", "3rd", "Playoffs"):
+    table = Table(title="Combined Leaderboard")
+    for col in ("Manager", "W", "L", "T", "Win%", "PF", "PA", "Titles", "2nd", "Playoffs"):
         table.add_column(col)
     for _, row in df.iterrows():
         table.add_row(
@@ -32,7 +32,6 @@ def print_all_time_leaderboard(df: pd.DataFrame) -> None:
             f"{row['points_against']:.1f}",
             str(row["championships"]),
             str(row["runner_up_finishes"]),
-            str(row["third_place_finishes"]),
             str(row["playoff_appearances"]),
         )
     console.print(table)
@@ -63,7 +62,7 @@ def _fmt_season(points, year) -> str:
 
 
 def print_records(df: pd.DataFrame) -> None:
-    table = Table(title="All-Time Records")
+    table = Table(title="Combined Records")
     table.add_column("Manager")
     table.add_column("Best Season PF (yr)")
     table.add_column("Worst Season PF (yr)")
@@ -109,11 +108,15 @@ def print_regular_vs_playoff(regular_df: pd.DataFrame, playoff_df: pd.DataFrame)
         "Manager",
         "Reg W-L-T",
         "Reg Win%",
+        "Reg PF",
+        "Reg PA",
         "Reg Avg PF",
         "Reg Avg PA",
         "Playoff Apps",
         "Playoff W-L-T",
         "Playoff Win%",
+        "Playoff PF",
+        "Playoff PA",
     ):
         table.add_column(col)
     playoff_by_key = playoff_df.set_index("manager_key")
@@ -123,10 +126,14 @@ def print_regular_vs_playoff(regular_df: pd.DataFrame, playoff_df: pd.DataFrame)
             row.manager_name,
             f"{row.wins}-{row.losses}-{row.ties}",
             f"{row.win_pct * 100:.1f}%",
+            f"{row.points_for:.1f}",
+            f"{row.points_against:.1f}",
             f"{row.avg_points_for:.1f}",
             f"{row.avg_points_against:.1f}",
             str(int(p.appearances)) if p is not None else "0",
             f"{int(p.wins)}-{int(p.losses)}-{int(p.ties)}" if p is not None else "0-0-0",
             f"{p.win_pct * 100:.1f}%" if p is not None and pd.notna(p.win_pct) else "n/a",
+            f"{p.points_for:.1f}" if p is not None else "0.0",
+            f"{p.points_against:.1f}" if p is not None else "0.0",
         )
     console.print(table)

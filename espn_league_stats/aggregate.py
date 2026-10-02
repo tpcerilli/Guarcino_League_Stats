@@ -1,6 +1,9 @@
 """Pandas-based aggregation of per-season stats into all-time / current / head-to-head views."""
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pandas as pd
 
 from .identity import _load_overrides, resolve_manager_key
@@ -8,13 +11,25 @@ from .models import TeamSeasonStats
 
 SeasonsData = dict[int, list[TeamSeasonStats]]
 
+STANDINGS_OVERRIDES_PATH = Path("config/standings_overrides.json")
+
+
+def _load_standings_overrides() -> dict:
+    if not STANDINGS_OVERRIDES_PATH.exists():
+        return {}
+    data = json.loads(STANDINGS_OVERRIDES_PATH.read_text())
+    return data.get("final_standing_overrides", {})
+
 
 def build_team_season_df(seasons: SeasonsData, manager_names: dict[str, str]) -> pd.DataFrame:
     rows = []
     overrides = _load_overrides()
+    standing_overrides = _load_standings_overrides()
     for year, teams in seasons.items():
+        year_overrides = standing_overrides.get(str(year), {})
         for team in teams:
             manager_key = resolve_manager_key(team, overrides)
+            final_standing = year_overrides.get(str(team.team_id), team.final_standing)
             rows.append(
                 {
                     "year": year,
@@ -28,7 +43,7 @@ def build_team_season_df(seasons: SeasonsData, manager_names: dict[str, str]) ->
                     "points_for": team.points_for,
                     "points_against": team.points_against,
                     "standing": team.standing,
-                    "final_standing": team.final_standing,
+                    "final_standing": final_standing,
                     "made_playoffs": team.made_playoffs,
                     "acquisitions": team.acquisitions,
                     "drops": team.drops,
@@ -71,27 +86,45 @@ def build_weekly_df(seasons: SeasonsData, team_season_df: pd.DataFrame) -> pd.Da
     df["team_made_playoffs"] = df.apply(
         lambda r: made_playoffs_lookup.get((r["year"], r["team_id"]), False), axis=1
     )
+
+    # Once a team loses a real-playoff-bracket game they're eliminated from the championship;
+    # any later games that season (3rd/5th-place consolation, etc.) don't count toward playoff
+    # stats. The losing game itself still counts — only weeks *after* it are excluded.
+    df["playoff_counted"] = True
+    playoff_mask = df["is_playoff"] & df["team_made_playoffs"]
+    for (_year, _team_id), group in df[playoff_mask].groupby(["year", "team_id"]):
+        losses = group.loc[group["result"] == "L", "week"]
+        if not losses.empty:
+            first_loss_week = losses.min()
+            after_elimination = group[group["week"] > first_loss_week].index
+            df.loc[after_elimination, "playoff_counted"] = False
     return df
 
 
 def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.DataFrame:
     completed = team_season_df[team_season_df["final_standing"] > 0]
-    g = team_season_df.groupby("manager_key")
 
-    summary = g.agg(
-        manager_name=("manager_name", "last"),
-        seasons_played=("year", "nunique"),
-        wins=("wins", "sum"),
-        losses=("losses", "sum"),
-        ties=("ties", "sum"),
-        points_for=("points_for", "sum"),
-        points_against=("points_against", "sum"),
-        playoff_appearances=("made_playoffs", "sum"),
-        acquisitions=("acquisitions", "sum"),
-        drops=("drops", "sum"),
-        trades=("trades", "sum"),
-    )
-    summary["win_pct"] = (summary["wins"] / (summary["wins"] + summary["losses"] + summary["ties"])).round(3)
+    # ESPN's own season-level wins/losses/points_for/points_against only reflect the regular
+    # season (they never include playoff games), so "all-time" totals are built from the weekly
+    # game log instead: every regular-season game, plus playoff games up through elimination
+    # (consistent with the Playoffs tab — post-elimination placement games don't count).
+    counted_games = weekly_df[
+        ~weekly_df["is_playoff"] | (weekly_df["team_made_playoffs"] & weekly_df["playoff_counted"])
+    ]
+    summary = _record_from_weekly(counted_games)
+    names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
+    summary["manager_name"] = names.reindex(summary.index)
+
+    seasons_played = team_season_df.groupby("manager_key")["year"].nunique()
+    playoff_appearances = team_season_df.groupby("manager_key")["made_playoffs"].sum()
+    acquisitions = team_season_df.groupby("manager_key")["acquisitions"].sum()
+    drops = team_season_df.groupby("manager_key")["drops"].sum()
+    trades = team_season_df.groupby("manager_key")["trades"].sum()
+    summary["seasons_played"] = seasons_played.reindex(summary.index)
+    summary["playoff_appearances"] = playoff_appearances.reindex(summary.index, fill_value=0).astype(int)
+    summary["acquisitions"] = acquisitions.reindex(summary.index, fill_value=0).astype(int)
+    summary["drops"] = drops.reindex(summary.index, fill_value=0).astype(int)
+    summary["trades"] = trades.reindex(summary.index, fill_value=0).astype(int)
     summary["point_diff"] = (summary["points_for"] - summary["points_against"]).round(2)
 
     champs = completed[completed["final_standing"] == 1].groupby("manager_key").size()
@@ -105,7 +138,8 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     summary["avg_final_standing"] = avg_final_standing.reindex(summary.index)
 
     # Best/worst single season point total (completed seasons only — an in-progress season
-    # would otherwise always look like a "worst" season on a partial point total).
+    # would otherwise always look like a "worst" season on a partial point total). Uses ESPN's
+    # own regular-season season total, matching what the league actually displays per season.
     season_pf = completed.loc[completed.groupby("manager_key")["points_for"].idxmax()]
     season_pf_min = completed.loc[completed.groupby("manager_key")["points_for"].idxmin()]
     summary["best_season_points"] = season_pf.set_index("manager_key")["points_for"]
@@ -125,8 +159,11 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     summary["worst_game_week"] = worst_game.set_index("manager_key")["week"]
 
     # Playoff win/loss record: only count postseason games for teams that actually made the
-    # real playoff bracket (see note in extract.py about the parallel consolation bracket).
-    playoff_games = weekly_df[weekly_df["is_playoff"] & weekly_df["team_made_playoffs"]]
+    # real playoff bracket (see note in extract.py about the parallel consolation bracket), and
+    # stop counting once a team is eliminated (games after their first playoff loss don't count).
+    playoff_games = weekly_df[
+        weekly_df["is_playoff"] & weekly_df["team_made_playoffs"] & weekly_df["playoff_counted"]
+    ]
     playoff_wins = playoff_games[playoff_games["result"] == "W"].groupby("manager_key").size()
     playoff_losses = playoff_games[playoff_games["result"] == "L"].groupby("manager_key").size()
     summary["playoff_wins"] = playoff_wins.reindex(summary.index, fill_value=0).astype(int)
@@ -134,10 +171,6 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     playoff_game_count = (summary["playoff_wins"] + summary["playoff_losses"]).astype(float)
     playoff_game_count = playoff_game_count.replace(0, float("nan"))
     summary["playoff_win_pct"] = (summary["playoff_wins"] / playoff_game_count).round(3)
-
-    games = summary["wins"] + summary["losses"] + summary["ties"]
-    summary["avg_points_for"] = (summary["points_for"] / games).round(2)
-    summary["avg_points_against"] = (summary["points_against"] / games).round(2)
 
     return summary.reset_index().sort_values("championships", ascending=False)
 
@@ -214,13 +247,38 @@ def regular_season_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame
     return record.reset_index().sort_values("win_pct", ascending=False)
 
 
+def _playoff_bye_weeks(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.Series:
+    """Counts first-round playoff byes (a scheduled playoff week with no game for that team,
+    while the league played other playoff games that same week — i.e. a top seed's round-1 bye).
+    """
+    playoff_rows = weekly_df[weekly_df["is_playoff"]]
+    league_weeks_by_year = playoff_rows.groupby("year")["week"].apply(set)
+    team_weeks = playoff_rows.groupby(["year", "team_id"])["week"].apply(set)
+
+    byes: dict[str, int] = {}
+    made_playoffs = team_season_df[team_season_df["made_playoffs"]]
+    for row in made_playoffs.itertuples():
+        played = team_weeks.get((row.year, row.team_id), set())
+        if not played:
+            continue  # e.g. current season: made the bracket but hasn't played a playoff game yet
+        league_weeks = league_weeks_by_year.get(row.year, set())
+        n_byes = len([w for w in league_weeks if w < max(played) and w not in played])
+        byes[row.manager_key] = byes.get(row.manager_key, 0) + n_byes
+    return pd.Series(byes, name="bye_weeks")
+
+
 def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.DataFrame:
     """All-time record/points using only real-playoff-bracket games (excludes the consolation
-    bracket and regular season — see extract.py note on made_playoffs vs is_playoff)."""
-    playoff_games = weekly_df[weekly_df["is_playoff"] & weekly_df["team_made_playoffs"]]
+    bracket and regular season — see extract.py note on made_playoffs vs is_playoff), and
+    stops counting a team's games once they've been eliminated (first playoff loss)."""
+    playoff_games = weekly_df[
+        weekly_df["is_playoff"] & weekly_df["team_made_playoffs"] & weekly_df["playoff_counted"]
+    ]
     record = _record_from_weekly(playoff_games)
     names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
     record["manager_name"] = names.reindex(record.index)
     appearances = team_season_df[team_season_df["made_playoffs"]].groupby("manager_key").size()
     record["appearances"] = appearances.reindex(record.index, fill_value=0).astype(int)
+    bye_weeks = _playoff_bye_weeks(team_season_df, weekly_df)
+    record["bye_weeks"] = bye_weeks.reindex(record.index, fill_value=0).astype(int)
     return record.reset_index().sort_values("win_pct", ascending=False)
