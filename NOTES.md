@@ -1,24 +1,23 @@
-# Future Considerations
-
-- Colors on line graphs are too similar.
-- When the user first clicks the title column, always sort high to low first or (best to worst)
-
-## Playoff Stats
-
-Add Reg Season finish column. Put this in before Final Standing
+# Things to add with more credits
 
 ## Current Season Tab Additions
 
-Could add some of the misc stats to the current season tab. These could be separate 
-tables from the main one.
+Could add some of the misc stats to the current season tab. These could be 
+separate tables from the main one. exclude best and worst season.
 
-## Always sort secondarily by PF
+## New table/tab General Stats
 
-Like when wins are tied sorting high to low, sort the person with more PF first.
+Add in general stats, such as:
+- Title wins by regular season finish. Could make a table showing reg season finish vs playoff finish.
+- Title wins by PF ranking. Could make a table showing PF season finish vs playoff finish.
+- Could also add title wins by # acquisitions rank by season.
 
-## Workflow to update gh-pages
- 
-I dont like that when i change things on main, the gh-pages doesn't update as well. I'd like a better flow than this. I don't want to have to update in two places at once.
+# Future Considerations
+
+## Current Season Tab Additions
+
+Could add some of the misc stats to the current season tab. These could be 
+separate tables from the main one.
 
 ## Best Game stats
 
@@ -35,6 +34,17 @@ Add in general stats, such as:
 
 
 # Known data quirks
+
+## 2011 championship (John Cerilli) — not in ESPN's data at all
+
+The league existed in 2011, before ESPN's API history starts (2012-2026). John Cerilli
+won that championship, but since there's no 2011 season data to correct, it can't be
+handled the same way as the 2022 override below.
+
+- Manually credited via `config/extra_championships.json` (`extra_championships`, keyed
+  by manager_key/owner-id GUID), added on top of the ESPN-tracked count in `aggregate.py`.
+- Reflected in the All-Time and Playoffs tabs' Titles column. There's no 2011 row/season
+  anywhere else (Results By Season, Regular Season, etc.) since no such data exists.
 
 ## 2022 championship override (Bryan Testa) — not reflected in ESPN's own data
 
@@ -66,3 +76,17 @@ season except **2018**, where they differ by 6-7 points per team (both PF and PA
 - Impact is negligible (~0.03% of career total points) and not worth "fixing" by
   picking one source as authoritative, since both are genuine ESPN-reported numbers —
   just from two different fields that happen to disagree for this one season.
+
+## gh-pages now auto-deploys from main
+
+A GitHub Actions workflow (`.github/workflows/deploy-gh-pages.yml`) rebuilds the
+dashboard and pushes it to `gh-pages` automatically on every push to `main` — no more
+manual branch-switching/copying. One-time setup required in the repo's GitHub Settings:
+
+- Settings → Secrets and variables → Actions → add repo secrets `LEAGUE_ID`, `ESPN_S2`,
+  `SWID` (same values as your local `.env`).
+- Settings → Actions → General → Workflow permissions → set to "Read and write
+  permissions" (needed for the action to push to `gh-pages`).
+- Settings → Pages → Source should already be "Deploy from branch: gh-pages / (root)".
+
+After that, just `git push origin main` and the live site updates within a minute or two.

@@ -7,6 +7,7 @@ from .aggregate import (
     all_time_summary,
     build_team_season_df,
     build_weekly_df,
+    current_season_misc,
     current_season_snapshot,
     head_to_head,
     playoff_summary,
@@ -64,6 +65,7 @@ def main() -> None:
     regular_season = regular_season_summary(team_season_df, weekly_df)
     playoffs = playoff_summary(team_season_df, weekly_df)
     current_season = current_season_snapshot(team_season_df, weekly_df, config.current_year)
+    current_season_activity = current_season_misc(team_season_df, weekly_df, config.current_year)
     season_table = season_by_season(team_season_df)
     h2h = head_to_head(weekly_df)
 
@@ -76,13 +78,20 @@ def main() -> None:
 
     if not args.no_csv:
         paths = write_csv_reports(
-            all_time, regular_season, playoffs, season_table, h2h, current_season
+            all_time, regular_season, playoffs, season_table, h2h, current_season, current_season_activity
         )
         print(f"\nWrote {len(paths)} CSV files to output/csv/")
 
     if not args.no_html:
         html_path = write_html_report(
-            all_time, regular_season, playoffs, season_table, h2h, current_season, config.current_year
+            all_time,
+            regular_season,
+            playoffs,
+            season_table,
+            h2h,
+            current_season,
+            current_season_activity,
+            config.current_year,
         )
         print(f"Wrote HTML dashboard to {html_path}")
 

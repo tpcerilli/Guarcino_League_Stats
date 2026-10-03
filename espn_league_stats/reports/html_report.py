@@ -123,6 +123,7 @@ def write_html_report(
     season_by_season: pd.DataFrame,
     head_to_head: pd.DataFrame,
     current_season: pd.DataFrame,
+    current_season_activity: pd.DataFrame,
     current_year: int,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -149,6 +150,7 @@ def write_html_report(
         regular_season=regular_season.to_dict(orient="records"),
         playoffs=playoffs.to_dict(orient="records"),
         current_season=current_season.to_dict(orient="records"),
+        current_season_activity=current_season_activity.to_dict(orient="records"),
         season_groups=_season_groups(season_by_season),
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
@@ -162,6 +164,7 @@ def write_html_report(
         regular_season=regular_season.to_dict(orient="records"),
         playoffs=playoffs.to_dict(orient="records"),
         current_season=current_season.to_dict(orient="records"),
+        current_season_activity=current_season_activity.to_dict(orient="records"),
         season_groups=_season_groups(season_by_season),
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
@@ -177,6 +180,7 @@ def write_html_report(
         regular_season=regular_season.to_dict(orient="records"),
         playoffs=playoffs.to_dict(orient="records"),
         current_season=current_season.to_dict(orient="records"),
+        current_season_activity=current_season_activity.to_dict(orient="records"),
         season_groups=_season_groups(season_by_season),
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],

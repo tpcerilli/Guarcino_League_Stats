@@ -1,0 +1,6 @@
+{
+  "_comment": "Manual credit for championships won before ESPN's API history starts (2012). Keyed by manager_key, the same owner-id GUID used in manager_map.json's owner_names. Added on top of the ESPN-tracked championship count in the All-Time and Playoffs tabs.",
+  "extra_championships": {
+    "{D3301AF3-E129-4A0F-9D86-ADF8C972DAA8}": 1
+  }
+}

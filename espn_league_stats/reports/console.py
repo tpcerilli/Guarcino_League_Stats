@@ -113,7 +113,7 @@ def print_season_by_season(df: pd.DataFrame) -> None:
     )
     for year, group in ordered.groupby("year", sort=False):
         table = Table(title=f"Results By Season ({year})")
-        for col in ("Manager", "Team", "W", "L", "T", "PF", "PA", "Final Standing", "Playoffs"):
+        for col in ("Manager", "Team", "W", "L", "T", "PF", "PA", "Reg Season Finish", "Final Standing", "Playoffs"):
             table.add_column(col)
         for row in group.itertuples():
             table.add_row(
@@ -124,6 +124,7 @@ def print_season_by_season(df: pd.DataFrame) -> None:
                 str(row.ties),
                 f"{row.points_for:.1f}",
                 f"{row.points_against:.1f}",
+                str(row.standing) if row.standing else "-",
                 str(row.final_standing) if row.final_standing else "-",
                 "Yes" if row.made_playoffs else "No",
             )

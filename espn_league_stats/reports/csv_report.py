@@ -15,6 +15,7 @@ def write_csv_reports(
     season_by_season: pd.DataFrame,
     head_to_head: pd.DataFrame,
     current_season: pd.DataFrame,
+    current_season_activity: pd.DataFrame,
 ) -> list[Path]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     files = {
@@ -24,6 +25,7 @@ def write_csv_reports(
         "season_by_season.csv": season_by_season,
         "head_to_head.csv": head_to_head,
         "current_season_standings.csv": current_season,
+        "current_season_activity.csv": current_season_activity,
     }
     written = []
     for name, df in files.items():

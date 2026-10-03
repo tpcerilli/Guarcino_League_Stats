@@ -1,0 +1,49 @@
+name: Deploy stats dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write .env from secrets
+        run: |
+          cat <<EOF > .env
+          LEAGUE_ID=${{ secrets.LEAGUE_ID }}
+          ESPN_S2=${{ secrets.ESPN_S2 }}
+          SWID=${{ secrets.SWID }}
+          EOF
+
+      - name: Generate HTML dashboard
+        run: python run.py --no-csv
+
+      - name: Prepare publish directory
+        run: |
+          mkdir -p publish
+          cp output/html/Guarcino_Stats.html publish/index.html
+          cp output/html/test_layout.html publish/test_layout.html
+          cp output/html/test_layout2.html publish/test_layout2.html
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./publish
+          publish_branch: gh-pages

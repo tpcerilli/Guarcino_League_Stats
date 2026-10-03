@@ -12,6 +12,7 @@ from .models import TeamSeasonStats
 SeasonsData = dict[int, list[TeamSeasonStats]]
 
 STANDINGS_OVERRIDES_PATH = Path("config/standings_overrides.json")
+EXTRA_CHAMPIONSHIPS_PATH = Path("config/extra_championships.json")
 
 
 def _load_standings_overrides() -> dict:
@@ -19,6 +20,14 @@ def _load_standings_overrides() -> dict:
         return {}
     data = json.loads(STANDINGS_OVERRIDES_PATH.read_text())
     return data.get("final_standing_overrides", {})
+
+
+def _load_extra_championships() -> dict:
+    """Manually-credited championships from before ESPN's tracked history (e.g. 2011)."""
+    if not EXTRA_CHAMPIONSHIPS_PATH.exists():
+        return {}
+    data = json.loads(EXTRA_CHAMPIONSHIPS_PATH.read_text())
+    return data.get("extra_championships", {})
 
 
 def build_team_season_df(seasons: SeasonsData, manager_names: dict[str, str]) -> pd.DataFrame:
@@ -163,7 +172,11 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     third_place = completed[completed["final_standing"] == 3].groupby("manager_key").size()
     avg_final_standing = completed.groupby("manager_key")["final_standing"].mean().round(2)
 
-    summary["championships"] = champs.reindex(summary.index, fill_value=0).astype(int)
+    extra_champs = pd.Series(_load_extra_championships(), dtype=int)
+    summary["championships"] = (
+        champs.reindex(summary.index, fill_value=0).astype(int)
+        + extra_champs.reindex(summary.index, fill_value=0).astype(int)
+    )
     summary["runner_up_finishes"] = runner_up.reindex(summary.index, fill_value=0).astype(int)
     summary["third_place_finishes"] = third_place.reindex(summary.index, fill_value=0).astype(int)
     summary["avg_final_standing"] = avg_final_standing.reindex(summary.index)
@@ -234,6 +247,28 @@ def current_season_snapshot(team_season_df: pd.DataFrame, weekly_df: pd.DataFram
     return season[cols].reset_index(drop=True)
 
 
+def current_season_misc(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame, year: int) -> pd.DataFrame:
+    """Per-manager streak/best-game/activity stats scoped to just this one season (for the
+    Current Season tab) — no best/worst season PF here since there's only one season in view."""
+    season = team_season_df[team_season_df["year"] == year]
+    season_weekly = weekly_df[weekly_df["year"] == year]
+
+    misc = season.set_index("manager_key")[["manager_name", "team_name", "acquisitions", "drops", "trades"]].copy()
+
+    if not season_weekly.empty:
+        best_game = season_weekly.loc[season_weekly.groupby("manager_key")["points_for"].idxmax()]
+        worst_game = season_weekly.loc[season_weekly.groupby("manager_key")["points_for"].idxmin()]
+        misc["best_game_score"] = best_game.set_index("manager_key")["points_for"]
+        misc["best_game_week"] = best_game.set_index("manager_key")["week"]
+        misc["worst_game_score"] = worst_game.set_index("manager_key")["points_for"]
+        misc["worst_game_week"] = worst_game.set_index("manager_key")["week"]
+
+    streaks = _longest_streaks(season_weekly)
+    misc = misc.join(streaks[["longest_win_streak", "longest_loss_streak"]])
+
+    return misc.reset_index(drop=True).sort_values("manager_name")
+
+
 def season_by_season(team_season_df: pd.DataFrame) -> pd.DataFrame:
     cols = [
         "year",
@@ -244,6 +279,7 @@ def season_by_season(team_season_df: pd.DataFrame) -> pd.DataFrame:
         "ties",
         "points_for",
         "points_against",
+        "standing",
         "final_standing",
         "made_playoffs",
     ]
@@ -325,6 +361,10 @@ def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd
     record["bye_weeks"] = bye_weeks.reindex(record.index, fill_value=0).astype(int)
     championships = team_season_df[team_season_df["final_standing"] == 1].groupby("manager_key").size()
     runner_up = team_season_df[team_season_df["final_standing"] == 2].groupby("manager_key").size()
-    record["championships"] = championships.reindex(record.index, fill_value=0).astype(int)
+    extra_champs = pd.Series(_load_extra_championships(), dtype=int)
+    record["championships"] = (
+        championships.reindex(record.index, fill_value=0).astype(int)
+        + extra_champs.reindex(record.index, fill_value=0).astype(int)
+    )
     record["runner_up_finishes"] = runner_up.reindex(record.index, fill_value=0).astype(int)
     return record.reset_index().sort_values("win_pct", ascending=False)

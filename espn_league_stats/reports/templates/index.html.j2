@@ -159,6 +159,35 @@
     </tbody>
   </table>
   </div>
+  <h2>Current Season Activity</h2>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th><th>Team</th><th>Best Game</th><th>Worst Game</th>
+        <th>Longest Win Streak</th><th>Longest Loss Streak</th>
+        <th>Acquisitions</th><th>Drops</th><th>Trades</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in current_season_activity %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td data-sort="{{ row.best_game_score if row.best_game_score == row.best_game_score else -1 }}">
+        {% if row.best_game_score == row.best_game_score %}{{ "%.1f"|format(row.best_game_score) }}<span class="cell-detail">Wk{{ row.best_game_week|int }}</span>{% else %}-{% endif %}
+      </td>
+      <td data-sort="{{ row.worst_game_score if row.worst_game_score == row.worst_game_score else -1 }}">
+        {% if row.worst_game_score == row.worst_game_score %}{{ "%.1f"|format(row.worst_game_score) }}<span class="cell-detail">Wk{{ row.worst_game_week|int }}</span>{% else %}-{% endif %}
+      </td>
+      <td data-sort="{{ row.longest_win_streak }}">{{ row.longest_win_streak if row.longest_win_streak else "-" }}</td>
+      <td data-sort="{{ row.longest_loss_streak }}">{{ row.longest_loss_streak if row.longest_loss_streak else "-" }}</td>
+      <td>{{ row.acquisitions }}</td>
+      <td>{{ row.drops }}</td><td>{{ row.trades }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
 </section>
 </div>
 
@@ -292,9 +321,10 @@
     <h2 style="margin: 0;">Results By Season</h2>
     <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
       <option value="">Sort all seasons</option>
-      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Final Standing'), (8, 'Made Playoffs')] %}
-      <option value="{{ column }}:asc">{{ name }} - {{ 'A to Z' if column < 2 else 'Low to High' }}</option>
-      <option value="{{ column }}:desc">{{ name }} - {{ 'Z to A' if column < 2 else 'High to Low' }}</option>
+      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs')] %}
+      {% set is_standing = column in (7, 8) %}
+      <option value="{{ column }}:asc">{{ name }} - {{ 'A to Z' if column < 2 else ('Best to Worst' if is_standing else 'Low to High') }}</option>
+      <option value="{{ column }}:desc">{{ name }} - {{ 'Z to A' if column < 2 else ('Worst to Best' if is_standing else 'High to Low') }}</option>
       {% endfor %}
     </select>
     <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
@@ -306,7 +336,7 @@
     <thead>
       <tr>
         <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
-        <th>PF</th><th>PA</th><th>Final Standing</th><th>Made Playoffs</th>
+        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Made Playoffs</th>
       </tr>
     </thead>
     <tbody>
@@ -315,6 +345,7 @@
       <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
+      <td data-sort="{{ row.standing if row.standing else 99 }}">{{ row.standing if row.standing else "-" }}</td>
       <td data-sort="{{ row.final_standing if row.final_standing else 99 }}"{% if row.final_standing == 1 %} title="Champion"{% elif row.final_standing == 2 %} title="Runner-up"{% endif %}>
         {{ row.final_standing if row.final_standing else "-" }}
       </td>
@@ -391,7 +422,7 @@ document.querySelectorAll("table").forEach((table) => {
 {% endif %}
 <script>
 const CHARTS = {{ charts_json|safe }};
-const palette = ["#38bdf8","#f472b6","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc"];
+const palette = ["#4cc9f0","#f72585","#ffd60a","#06d6a0","#ff6b35","#9d4edd","#e63946","#1b998b","#ffffff"];
 
 function colorize(datasets) {
   return datasets.map((d, i) => ({...d, borderColor: palette[i % palette.length], backgroundColor: palette[i % palette.length]}));
@@ -487,6 +518,12 @@ function sortTableByColumn(table, colIndex, ascending) {
     const v = cellSortValue(r.cells[colIndex]);
     return v !== "" && !isNaN(parseFloat(v));
   });
+  const headerCells = Array.from(table.tHead.rows[0].cells);
+  const pfColIndex = headerCells.findIndex((th) => th.textContent.trim().toUpperCase() === "PF");
+  const pfIsNumeric = pfColIndex >= 0 && rows.every((r) => {
+    const v = cellSortValue(r.cells[pfColIndex]);
+    return v !== "" && !isNaN(parseFloat(v));
+  });
   rows.sort((a, b) => {
     let va = cellSortValue(a.cells[colIndex]);
     let vb = cellSortValue(b.cells[colIndex]);
@@ -499,6 +536,12 @@ function sortTableByColumn(table, colIndex, ascending) {
     }
     if (va < vb) return ascending ? -1 : 1;
     if (va > vb) return ascending ? 1 : -1;
+    // Tie on the sorted column: fall back to PF in the same direction as the primary sort.
+    if (pfIsNumeric && pfColIndex !== colIndex) {
+      const pfA = parseFloat(cellSortValue(a.cells[pfColIndex]));
+      const pfB = parseFloat(cellSortValue(b.cells[pfColIndex]));
+      if (pfA !== pfB) return ascending ? pfA - pfB : pfB - pfA;
+    }
     return 0;
   });
   rows.forEach((r) => tbody.appendChild(r));
@@ -553,7 +596,8 @@ document.querySelectorAll("table.sortable").forEach((table) => {
   headerCells.forEach((th, colIndex) => {
     const btn = wrapHeaderButton(th);
     btn.addEventListener("click", () => {
-      const ascending = th.dataset.sortDir !== "asc";
+      // First click on a column always sorts high-to-low (best to worst); click again to flip.
+      const ascending = th.dataset.sortDir === "desc";
       applySortToTable(table, colIndex, ascending);
     });
   });
