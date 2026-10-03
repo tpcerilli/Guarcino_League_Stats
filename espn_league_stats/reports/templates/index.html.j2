@@ -149,7 +149,7 @@
   <label class="tab-button" role="tab" for="tab-h2h-choice">Head-to-Head</label>
   <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
   <label class="tab-button" role="tab" for="tab-misc-choice">Misc</label>
-  <label class="tab-button" role="tab" for="tab-general-choice">General Stats</label>
+  <label class="tab-button" role="tab" for="tab-general-choice">General</label>
 </nav>
 
 <div class="tab-panels">
@@ -440,8 +440,9 @@
 
 <div class="tab-panel" id="tab-general" role="tabpanel">
 <section>
-  <h2>General Stats</h2>
+  <h2>General</h2>
   {% if fun_facts %}
+  <h3>Historical Statistics</h3>
   <ul>
     {% for fact in fun_facts %}
     {% set parts = fact.split(': ', 1) %}
