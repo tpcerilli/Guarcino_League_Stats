@@ -43,6 +43,8 @@
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
   #season-sort option { background-color: #1e293b; color: #e2e8f0; }
+  #season-sort optgroup { background-color: #1e293b; color: #94a3b8; border-top: 1px solid #334155; }
+  #season-sort optgroup:first-of-type { border-top: none; }
   #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
   #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
   #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
@@ -1220,44 +1222,94 @@
       <option value="">Sort all seasons</option>
       
       
-      <option value="0:asc">Manager - A to Z</option>
-      <option value="0:desc">Manager - Z to A</option>
+      
+      <optgroup label="Manager">
+      
+        <option value="0:asc">A to Z</option>
+        <option value="0:desc">Z to A</option>
+      
+      </optgroup>
       
       
-      <option value="1:asc">Team - A to Z</option>
-      <option value="1:desc">Team - Z to A</option>
+      
+      <optgroup label="Team">
+      
+        <option value="1:asc">A to Z</option>
+        <option value="1:desc">Z to A</option>
+      
+      </optgroup>
       
       
-      <option value="2:asc">Wins - Low to High</option>
-      <option value="2:desc">Wins - High to Low</option>
+      
+      <optgroup label="Wins">
+      
+        <option value="2:desc">High to Low</option>
+        <option value="2:asc">Low to High</option>
+      
+      </optgroup>
       
       
-      <option value="3:asc">Losses - Low to High</option>
-      <option value="3:desc">Losses - High to Low</option>
+      
+      <optgroup label="Losses">
+      
+        <option value="3:desc">High to Low</option>
+        <option value="3:asc">Low to High</option>
+      
+      </optgroup>
       
       
-      <option value="4:asc">Ties - Low to High</option>
-      <option value="4:desc">Ties - High to Low</option>
+      
+      <optgroup label="Ties">
+      
+        <option value="4:desc">High to Low</option>
+        <option value="4:asc">Low to High</option>
+      
+      </optgroup>
       
       
-      <option value="5:asc">Points For - Low to High</option>
-      <option value="5:desc">Points For - High to Low</option>
+      
+      <optgroup label="Points For">
+      
+        <option value="5:desc">High to Low</option>
+        <option value="5:asc">Low to High</option>
+      
+      </optgroup>
       
       
-      <option value="6:asc">Points Against - Low to High</option>
-      <option value="6:desc">Points Against - High to Low</option>
+      
+      <optgroup label="Points Against">
+      
+        <option value="6:desc">High to Low</option>
+        <option value="6:asc">Low to High</option>
+      
+      </optgroup>
       
       
-      <option value="7:asc">Reg Season Finish - Best to Worst</option>
-      <option value="7:desc">Reg Season Finish - Worst to Best</option>
+      
+      <optgroup label="Reg Season Finish">
+      
+        <option value="7:asc">Best to Worst</option>
+        <option value="7:desc">Worst to Best</option>
+      
+      </optgroup>
       
       
-      <option value="8:asc">Final Standing - Best to Worst</option>
-      <option value="8:desc">Final Standing - Worst to Best</option>
+      
+      <optgroup label="Final Standing">
+      
+        <option value="8:asc">Best to Worst</option>
+        <option value="8:desc">Worst to Best</option>
+      
+      </optgroup>
       
       
-      <option value="9:asc">Made Playoffs - Low to High</option>
-      <option value="9:desc">Made Playoffs - High to Low</option>
+      
+      <optgroup label="Made Playoffs">
+      
+        <option value="9:desc">High to Low</option>
+        <option value="9:asc">Low to High</option>
+      
+      </optgroup>
       
     </select>
     <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
