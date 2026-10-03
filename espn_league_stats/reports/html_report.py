@@ -12,9 +12,21 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 OUTPUT_DIR = Path("output/html")
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 LOGO_CACHE_DIR = OUTPUT_DIR / "assets" / "logos"
+CREST_PATH = TEMPLATE_DIR / "assets" / "bakery_logo.jpg"
 # Custom-uploaded team logos are served from this auth-gated ESPN endpoint (unlike the public
 # logo-pack images on g.espncdn.com) and 403 for visitors without ESPN login cookies.
 GATED_LOGO_PREFIX = "https://mystique-api.fantasy.espn.com/"
+
+
+def _crest_data_uri() -> str:
+    """Embeds the header crest image inline so the HTML stays a single, self-contained file
+    (e.g. still works when opened as a saved email attachment, per the noscript fallback notice)."""
+    if not CREST_PATH.exists():
+        return ""
+    import base64
+
+    encoded = base64.b64encode(CREST_PATH.read_bytes()).decode("ascii")
+    return f"data:image/jpeg;base64,{encoded}"
 
 
 def _localize_gated_logos(dfs: list[pd.DataFrame], espn_s2: str, swid: str) -> dict[str, str]:
@@ -194,6 +206,7 @@ def write_html_report(
 
     html = template.render(
         current_year=current_year,
+        crest_data_uri=_crest_data_uri(),
         all_time=all_time.to_dict(orient="records"),
         regular_season=regular_season.to_dict(orient="records"),
         playoffs=playoffs.to_dict(orient="records"),

@@ -121,7 +121,10 @@
   interactive version.
 </div>
 </noscript>
-<h1>Guarcino League Stats</h1>
+<h1 style="display: flex; align-items: center; gap: 14px;">
+  {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 56px; width: auto; border-radius: 6px;">{% endif %}
+  Guarcino League Stats
+</h1>
 <p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
 
 <div class="tab-container">
