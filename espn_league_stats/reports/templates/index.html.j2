@@ -288,13 +288,13 @@
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Manager</th><th>Appearances</th><th>Championships</th><th>Runner-Up</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
+      <tr><th>Manager</th><th>Appearances</th><th>Championships</th><th>Runner-Up</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
     </thead>
     <tbody>
     {% for row in playoffs %}
     <tr>
       <td>{{ row.manager_name }}</td><td>{{ row.appearances }}</td><td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td><td>{{ row.bye_weeks }}</td><td>{{ row.games }}</td>
-      <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
+      <td>{{ row.wins }}</td><td>{{ row.losses }}</td>
       <td data-sort="{{ (row.win_pct * 100) if row.win_pct is not none else -1 }}">
         {% if row.win_pct is not none %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}n/a{% endif %}
       </td>
