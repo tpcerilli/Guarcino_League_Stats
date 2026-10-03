@@ -43,8 +43,11 @@
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
   #season-sort option { background-color: #1e293b; color: #e2e8f0; }
-  #season-sort optgroup { background-color: #1e293b; color: #94a3b8; border-top: 1px solid #334155; }
-  #season-sort optgroup:first-of-type { border-top: none; }
+  #season-sort-direction {
+    min-height: 44px; background-color: #1e293b; color: #e2e8f0;
+    border: 1px solid #334155; border-radius: 6px; padding: 4px 14px; font-family: inherit; font-size: 0.9rem; cursor: pointer;
+  }
+  #season-sort-direction:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
   #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
   #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
   #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
@@ -324,22 +327,10 @@
     <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
       <option value="">Sort all seasons</option>
       {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs')] %}
-      {% set is_standing = column in (7, 8) %}
-      {% set is_name = column < 2 %}
-      <optgroup label="{{ name }}">
-      {% if is_standing %}
-        <option value="{{ column }}:asc">Best to Worst</option>
-        <option value="{{ column }}:desc">Worst to Best</option>
-      {% elif is_name %}
-        <option value="{{ column }}:asc">A to Z</option>
-        <option value="{{ column }}:desc">Z to A</option>
-      {% else %}
-        <option value="{{ column }}:desc">High to Low</option>
-        <option value="{{ column }}:asc">Low to High</option>
-      {% endif %}
-      </optgroup>
+      <option value="{{ column }}">{{ name }}</option>
       {% endfor %}
     </select>
+    <button id="season-sort-direction" type="button" style="min-height: 44px;">High to Low</button>
     <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
   </div>
   {% for group in season_groups %}
@@ -592,16 +583,39 @@ function wrapHeaderButton(th) {
   return btn;
 }
 
+function seasonSortDirectionLabels(column) {
+  if (column === 7 || column === 8) return { asc: "Best to Worst", desc: "Worst to Best" };
+  if (column === 0 || column === 1) return { asc: "A to Z", desc: "Z to A" };
+  return { asc: "Low to High", desc: "High to Low" };
+}
+
+function seasonSortDefaultDirection(column) {
+  return column === 0 || column === 1 || column === 7 || column === 8 ? "asc" : "desc";
+}
+
+let seasonSortDirection = null;
+
 function applySeasonSort() {
-  const value = document.getElementById("season-sort").value;
-  if (!value) return;
-  const [column, direction] = value.split(":");
+  const select = document.getElementById("season-sort");
+  const directionBtn = document.getElementById("season-sort-direction");
+  const column = select.value;
+  if (column === "") return;
+  if (seasonSortDirection === null) seasonSortDirection = seasonSortDefaultDirection(Number(column));
+  const labels = seasonSortDirectionLabels(Number(column));
+  directionBtn.textContent = labels[seasonSortDirection];
   document.querySelectorAll("#tab-byseason table.sortable").forEach((table) => {
-    applySortToTable(table, Number(column), direction === "asc");
+    applySortToTable(table, Number(column), seasonSortDirection === "asc");
   });
 }
 
-document.getElementById("season-sort").addEventListener("change", applySeasonSort);
+document.getElementById("season-sort").addEventListener("change", () => {
+  seasonSortDirection = null;
+  applySeasonSort();
+});
+document.getElementById("season-sort-direction").addEventListener("click", () => {
+  seasonSortDirection = seasonSortDirection === "asc" ? "desc" : "asc";
+  applySeasonSort();
+});
 document.getElementById("season-sort-refresh").addEventListener("click", applySeasonSort);
 
 document.querySelectorAll("table.sortable").forEach((table) => {
