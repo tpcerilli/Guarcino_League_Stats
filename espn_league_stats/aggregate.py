@@ -563,4 +563,4 @@ def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd
         + extra_champs.reindex(record.index, fill_value=0).astype(int)
     )
     record["runner_up_finishes"] = runner_up.reindex(record.index, fill_value=0).astype(int)
-    return record.reset_index().sort_values("win_pct", ascending=False)
+    return record.reset_index().sort_values("championships", ascending=False)
