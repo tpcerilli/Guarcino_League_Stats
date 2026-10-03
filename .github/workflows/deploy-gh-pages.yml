@@ -38,8 +38,6 @@ jobs:
         run: |
           mkdir -p publish
           cp output/html/Guarcino_Stats.html publish/index.html
-          cp output/html/test_layout.html publish/test_layout.html
-          cp output/html/test_layout2.html publish/test_layout2.html
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

@@ -158,33 +158,4 @@ def write_html_report(
     )
     out_path = OUTPUT_DIR / "Guarcino_Stats.html"
     out_path.write_text(html, encoding="utf-8")
-    test_html = template.render(
-        current_year=current_year,
-        all_time=all_time.to_dict(orient="records"),
-        regular_season=regular_season.to_dict(orient="records"),
-        playoffs=playoffs.to_dict(orient="records"),
-        current_season=current_season.to_dict(orient="records"),
-        current_season_activity=current_season_activity.to_dict(orient="records"),
-        season_groups=_season_groups(season_by_season),
-        charts_json=json.dumps(charts),
-        h2h_managers=h2h["managers"],
-        h2h_cells=h2h["cells"],
-        mobile_test=True,
-    )
-    (OUTPUT_DIR / "test_layout.html").write_text(test_html, encoding="utf-8")
-
-    template2 = env.get_template("mobile2.html.j2")
-    test_html2 = template2.render(
-        current_year=current_year,
-        all_time=all_time.to_dict(orient="records"),
-        regular_season=regular_season.to_dict(orient="records"),
-        playoffs=playoffs.to_dict(orient="records"),
-        current_season=current_season.to_dict(orient="records"),
-        current_season_activity=current_season_activity.to_dict(orient="records"),
-        season_groups=_season_groups(season_by_season),
-        charts_json=json.dumps(charts),
-        h2h_managers=h2h["managers"],
-        h2h_cells=h2h["cells"],
-    )
-    (OUTPUT_DIR / "test_layout2.html").write_text(test_html2, encoding="utf-8")
     return out_path
