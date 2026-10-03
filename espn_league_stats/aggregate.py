@@ -479,6 +479,24 @@ def regular_season_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame
     return record.reset_index().sort_values("win_pct", ascending=False)
 
 
+def regular_season_finish_counts(team_season_df: pd.DataFrame, current_year: int) -> dict:
+    """How many times each manager finished the regular season at each seed/rank."""
+    completed = team_season_df[team_season_df["year"] != current_year]
+    ranks = sorted(completed["standing"].dropna().astype(int).unique().tolist())
+    rows = []
+    for manager_name, grp in completed.groupby("manager_name"):
+        counts = grp["standing"].astype(int).value_counts()
+        rows.append(
+            {
+                "manager_name": manager_name,
+                "counts": [int(counts.get(r, 0)) for r in ranks],
+                "total": int(len(grp)),
+            }
+        )
+    rows.sort(key=lambda r: r["manager_name"])
+    return {"ranks": ranks, "rows": rows}
+
+
 def _playoff_bye_weeks(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.Series:
     """Counts first-round playoff byes (a scheduled playoff week with no game for that team,
     while the league played other playoff games that same week — i.e. a top seed's round-1 bye).

@@ -13,6 +13,7 @@ from .aggregate import (
     general_stats,
     head_to_head,
     playoff_summary,
+    regular_season_finish_counts,
     regular_season_summary,
     season_by_season,
 )
@@ -72,6 +73,7 @@ def main() -> None:
     h2h = head_to_head(weekly_df)
     general = general_stats(team_season_df)
     champ_years = championship_years(team_season_df)
+    finish_counts = regular_season_finish_counts(team_season_df, config.current_year)
 
     print_all_time_leaderboard(all_time)
     print_current_season(current_season, config.current_year)
@@ -100,6 +102,7 @@ def main() -> None:
             config.swid,
             general,
             champ_years,
+            finish_counts,
         )
         print(f"Wrote HTML dashboard to {html_path}")
 

@@ -18,6 +18,14 @@ CREST_PATH = TEMPLATE_DIR / "assets" / "bakery_logo.jpg"
 GATED_LOGO_PREFIX = "https://mystique-api.fantasy.espn.com/"
 
 
+def _ordinal(n: int) -> str:
+    if 11 <= (n % 100) <= 13:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
 def _crest_data_uri() -> str:
     """Embeds the header crest image inline so the HTML stays a single, self-contained file
     (e.g. still works when opened as a saved email attachment, per the noscript fallback notice)."""
@@ -191,6 +199,7 @@ def write_html_report(
     swid: str,
     general: dict,
     champ_years: pd.DataFrame,
+    finish_counts: dict,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logo_mapping = _localize_gated_logos(
@@ -202,6 +211,7 @@ def write_html_report(
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=select_autoescape(["html"])
     )
+    env.filters["ordinal"] = _ordinal
     template = env.get_template("index.html.j2")
 
     charts = {
@@ -229,6 +239,8 @@ def write_html_report(
         rank_titles=general["rank_titles"].to_dict(orient="records"),
         fun_facts=general["fun_facts"],
         champ_years=champ_years.to_dict(orient="records"),
+        finish_ranks=finish_counts["ranks"],
+        finish_counts=finish_counts["rows"],
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
         h2h_cells=h2h["cells"],

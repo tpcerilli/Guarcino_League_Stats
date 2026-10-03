@@ -257,6 +257,28 @@
     </tbody>
   </table>
   </div>
+
+  <h3>Regular Season Finish History</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Manager</th>
+        {% for rank in finish_ranks %}<th>{{ rank|ordinal }}</th>{% endfor %}
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in finish_counts %}
+    <tr>
+      <td>{{ row.manager_name }}</td>
+      {% for count in row.counts %}<td>{{ count }}</td>{% endfor %}
+      <td>{{ row.total }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
 </section>
 </div>
 
