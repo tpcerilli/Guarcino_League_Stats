@@ -198,21 +198,21 @@
   <table class="sortable">
     <thead>
     <tr>
-      <th>Manager</th><th>Seasons</th><th>W</th><th>L</th><th>T</th><th>Win%</th>
-      <th>PF</th><th>PA</th><th>+/-</th><th>Titles</th><th>2nd</th>
-      <th>Playoffs</th>
+      <th>Manager</th><th>Seasons</th><th>Playoffs</th><th>Titles</th><th>2nd</th>
+      <th>W</th><th>L</th><th>T</th><th>Win%</th>
+      <th>PF</th><th>PA</th><th>+/-</th>
     </tr>
     </thead>
     <tbody>
     {% for row in all_time %}
     <tr>
       <td>{{ row.manager_name }}</td><td>{{ row.seasons_played }}</td>
+      <td>{{ row.playoff_appearances }}</td>
+      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
       <td>{{ "%.0f"|format(row.points_for) }}</td><td>{{ "%.0f"|format(row.points_against) }}</td>
       <td>{{ "%.0f"|format(row.point_diff) }}</td>
-      <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
-      <td>{{ row.playoff_appearances }}</td>
     </tr>
     {% endfor %}
     </tbody>
