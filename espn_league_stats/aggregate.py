@@ -394,6 +394,30 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
         )
 
     if not completed.empty:
+        # 2012 was an anomalous shortened season, so it's excluded from these single-season extremes.
+        no_2012_records = completed[completed["year"] != 2012].copy()
+        games_played = no_2012_records["wins"] + no_2012_records["losses"] + no_2012_records["ties"]
+        no_2012_records["season_win_pct"] = (
+            no_2012_records["wins"] + 0.5 * no_2012_records["ties"]
+        ) / games_played
+
+        def _record_str(row: pd.Series) -> str:
+            ties = int(row["ties"])
+            record = f"{int(row['wins'])}-{int(row['losses'])}"
+            return f"{record}-{ties}" if ties else record
+
+        best_record = no_2012_records.loc[no_2012_records["season_win_pct"].idxmax()]
+        fun_facts.append(
+            f"Best season record: {best_record['manager_name']} went "
+            f"{_record_str(best_record)} in {int(best_record['year'])}."
+        )
+        worst_record = no_2012_records.loc[no_2012_records["season_win_pct"].idxmin()]
+        fun_facts.append(
+            f"Worst season record: {worst_record['manager_name']} went "
+            f"{_record_str(worst_record)} in {int(worst_record['year'])}."
+        )
+
+    if not completed.empty:
         completed["pf_pa_diff"] = completed["points_for"] - completed["points_against"]
         # 2012 was an anomalous shortened season, so it's excluded from these single-season extremes.
         no_2012 = completed[completed["year"] != 2012]
