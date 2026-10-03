@@ -1,10 +1,5 @@
 # Things to add with more credits
 
-## Current Season Tab Additions
-
-Could add some of the misc stats to the current season tab. These could be 
-separate tables from the main one. exclude best and worst season.
-
 ## New table/tab General Stats
 
 Add in general stats, such as:
@@ -13,11 +8,6 @@ Add in general stats, such as:
 - Could also add title wins by # acquisitions rank by season.
 
 # Future Considerations
-
-## Current Season Tab Additions
-
-Could add some of the misc stats to the current season tab. These could be 
-separate tables from the main one.
 
 ## Best Game stats
 

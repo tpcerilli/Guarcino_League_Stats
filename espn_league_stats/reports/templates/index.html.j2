@@ -43,6 +43,8 @@
     background-position: right 14px center, right 8px center; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
   }
   #season-sort option { background-color: #1e293b; color: #e2e8f0; }
+  #season-sort optgroup { background-color: #1e293b; color: #94a3b8; border-top: 1px solid #334155; }
+  #season-sort optgroup:first-of-type { border-top: none; }
   #season-sort-refresh { appearance: none; -webkit-appearance: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #38bdf8; cursor: pointer; font-family: inherit; }
   #season-sort-refresh .refresh-arrow { font-size: 26px; line-height: 28px; }
   #season-sort-refresh .refresh-label { font-size: 11px; line-height: 14px; }
@@ -323,8 +325,19 @@
       <option value="">Sort all seasons</option>
       {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs')] %}
       {% set is_standing = column in (7, 8) %}
-      <option value="{{ column }}:asc">{{ name }} - {{ 'A to Z' if column < 2 else ('Best to Worst' if is_standing else 'Low to High') }}</option>
-      <option value="{{ column }}:desc">{{ name }} - {{ 'Z to A' if column < 2 else ('Worst to Best' if is_standing else 'High to Low') }}</option>
+      {% set is_name = column < 2 %}
+      <optgroup label="{{ name }}">
+      {% if is_standing %}
+        <option value="{{ column }}:asc">Best to Worst</option>
+        <option value="{{ column }}:desc">Worst to Best</option>
+      {% elif is_name %}
+        <option value="{{ column }}:asc">A to Z</option>
+        <option value="{{ column }}:desc">Z to A</option>
+      {% else %}
+        <option value="{{ column }}:desc">High to Low</option>
+        <option value="{{ column }}:asc">Low to High</option>
+      {% endif %}
+      </optgroup>
       {% endfor %}
     </select>
     <button id="season-sort-refresh" type="button" title="Reapply selected sort to all seasons" aria-label="Reapply selected sort to all seasons"><span class="refresh-arrow" aria-hidden="true">&#8635;</span><span class="refresh-label">refresh</span></button>
