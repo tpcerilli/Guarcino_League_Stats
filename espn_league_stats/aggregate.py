@@ -23,7 +23,8 @@ def _load_standings_overrides() -> dict:
 
 
 def _load_extra_championships() -> dict:
-    """Manually-credited championships from before ESPN's tracked history (e.g. 2011)."""
+    """Manually-credited championship years from before ESPN's tracked history (e.g. 2011),
+    keyed by manager_key -> list of years."""
     if not EXTRA_CHAMPIONSHIPS_PATH.exists():
         return {}
     data = json.loads(EXTRA_CHAMPIONSHIPS_PATH.read_text())
@@ -148,6 +149,32 @@ def _longest_streaks(weekly_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("manager_key")
 
 
+def championship_years(team_season_df: pd.DataFrame) -> pd.DataFrame:
+    """One row per manager who has won at least one title, listing which years (including
+    manually-credited pre-ESPN-history championships from extra_championships.json)."""
+    champs = team_season_df[team_season_df["final_standing"] == 1]
+    names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
+    years_by_manager: dict[str, set[int]] = {}
+    for manager_key, seasons in champs.groupby("manager_key"):
+        years_by_manager.setdefault(manager_key, set()).update(int(y) for y in seasons["year"])
+    for manager_key, extra_years in _load_extra_championships().items():
+        years_by_manager.setdefault(manager_key, set()).update(int(y) for y in extra_years)
+
+    rows = []
+    for manager_key, years in years_by_manager.items():
+        if manager_key not in names.index:
+            continue
+        sorted_years = sorted(years)
+        rows.append(
+            {
+                "manager_name": names[manager_key],
+                "championships": len(sorted_years),
+                "years": ", ".join(str(y) for y in sorted_years),
+            }
+        )
+    return pd.DataFrame(rows).sort_values(["championships", "manager_name"], ascending=[False, True]).reset_index(drop=True)
+
+
 def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.DataFrame:
     completed = team_season_df[team_season_df["final_standing"] > 0]
     g = team_season_df.groupby("manager_key")
@@ -174,7 +201,7 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
     third_place = completed[completed["final_standing"] == 3].groupby("manager_key").size()
     avg_final_standing = completed.groupby("manager_key")["final_standing"].mean().round(2)
 
-    extra_champs = pd.Series(_load_extra_championships(), dtype=int)
+    extra_champs = pd.Series({k: len(v) for k, v in _load_extra_championships().items()}, dtype=int)
     summary["championships"] = (
         champs.reindex(summary.index, fill_value=0).astype(int)
         + extra_champs.reindex(summary.index, fill_value=0).astype(int)
@@ -336,6 +363,13 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
     champs = completed[completed["final_standing"] == 1]
     fun_facts = []
     if not champs.empty:
+        title_counts = champs.groupby("manager_name")["year"].count()
+        most_titles_count = title_counts.max()
+        most_titles_managers = sorted(title_counts[title_counts == most_titles_count].index)
+        fun_facts.append(
+            f"Most championships: {', '.join(most_titles_managers)} with {int(most_titles_count)}."
+        )
+
         cinderella = champs.loc[champs["standing"].idxmax()]
         fun_facts.append(
             f"Biggest Cinderella: {cinderella['manager_name']} won it all in {int(cinderella['year'])} "
@@ -361,11 +395,40 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
 
     if not completed.empty:
         completed["pf_pa_diff"] = completed["points_for"] - completed["points_against"]
-        best_diff = completed.loc[completed["pf_pa_diff"].idxmax()]
+        # 2012 was an anomalous shortened season, so it's excluded from these single-season extremes.
+        no_2012 = completed[completed["year"] != 2012]
+        best_diff = no_2012.loc[no_2012["pf_pa_diff"].idxmax()]
         fun_facts.append(
             f"Biggest PF/PA differential: {best_diff['manager_name']} outscored opponents by "
             f"{best_diff['pf_pa_diff']:.1f} points in {int(best_diff['year'])} "
             f"({best_diff['points_for']:.1f} PF vs {best_diff['points_against']:.1f} PA)."
+        )
+        worst_diff = no_2012.loc[no_2012["pf_pa_diff"].idxmin()]
+        fun_facts.append(
+            f"Worst PF/PA differential: {worst_diff['manager_name']} was outscored by "
+            f"{abs(worst_diff['pf_pa_diff']):.1f} points in {int(worst_diff['year'])} "
+            f"({worst_diff['points_for']:.1f} PF vs {worst_diff['points_against']:.1f} PA)."
+        )
+
+        most_pf = no_2012.loc[no_2012["points_for"].idxmax()]
+        fun_facts.append(
+            f"Most PF in a season: {most_pf['manager_name']} scored {most_pf['points_for']:.1f} points "
+            f"in {int(most_pf['year'])}."
+        )
+        least_pf = no_2012.loc[no_2012["points_for"].idxmin()]
+        fun_facts.append(
+            f"Least PF in a season: {least_pf['manager_name']} scored just {least_pf['points_for']:.1f} points "
+            f"in {int(least_pf['year'])}."
+        )
+        most_pa = no_2012.loc[no_2012["points_against"].idxmax()]
+        fun_facts.append(
+            f"Most PA in a season: {most_pa['manager_name']} allowed {most_pa['points_against']:.1f} points "
+            f"in {int(most_pa['year'])}."
+        )
+        least_pa = no_2012.loc[no_2012["points_against"].idxmin()]
+        fun_facts.append(
+            f"Least PA in a season: {least_pa['manager_name']} allowed just {least_pa['points_against']:.1f} points "
+            f"in {int(least_pa['year'])}."
         )
 
     return {
@@ -452,7 +515,7 @@ def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd
     record["bye_weeks"] = bye_weeks.reindex(record.index, fill_value=0).astype(int)
     championships = team_season_df[team_season_df["final_standing"] == 1].groupby("manager_key").size()
     runner_up = team_season_df[team_season_df["final_standing"] == 2].groupby("manager_key").size()
-    extra_champs = pd.Series(_load_extra_championships(), dtype=int)
+    extra_champs = pd.Series({k: len(v) for k, v in _load_extra_championships().items()}, dtype=int)
     record["championships"] = (
         championships.reindex(record.index, fill_value=0).astype(int)
         + extra_champs.reindex(record.index, fill_value=0).astype(int)

@@ -89,6 +89,7 @@
   #tab-byseason-choice:checked ~ .tab-panels #tab-byseason,
   #tab-misc-choice:checked ~ .tab-panels #tab-misc,
   #tab-general-choice:checked ~ .tab-panels #tab-general { display: block; }
+  #tab-general li { margin-bottom: 0.5em; }
 {% if mobile_test %}
   .table-wrap { max-height: none; overflow: visible; }
   .tab-button { min-height: 28px; }
@@ -418,6 +419,22 @@
     </tbody>
   </table>
   </div>
+
+  <h3>Championships by Year</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Manager</th><th>Championships</th><th>Years</th></tr>
+    </thead>
+    <tbody>
+    {% for row in champ_years %}
+    <tr>
+      <td>{{ row.manager_name }}</td><td>{{ row.championships }}</td><td>{{ row.years }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
 </section>
 </div>
 
@@ -672,8 +689,19 @@ document.querySelectorAll("table.sortable").forEach((table) => {
   headerCells.forEach((th, colIndex) => {
     const btn = wrapHeaderButton(th);
     btn.addEventListener("click", () => {
-      // First click on a column always sorts high-to-low (best to worst); click again to flip.
-      const ascending = th.dataset.sortDir === "desc";
+      // First click sorts high-to-low for numeric columns (best to worst), but A-to-Z for
+      // text columns (e.g. Manager, Team). Click again to flip either way.
+      let ascending;
+      if (th.dataset.sortDir === undefined) {
+        const rows = Array.from(table.tBodies[0].rows);
+        const allNumeric = rows.every((r) => {
+          const v = cellSortValue(r.cells[colIndex]);
+          return v !== "" && !isNaN(parseFloat(v));
+        });
+        ascending = !allNumeric;
+      } else {
+        ascending = th.dataset.sortDir === "desc";
+      }
       applySortToTable(table, colIndex, ascending);
     });
   });

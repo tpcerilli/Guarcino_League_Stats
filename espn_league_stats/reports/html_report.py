@@ -180,6 +180,7 @@ def write_html_report(
     espn_s2: str,
     swid: str,
     general: dict,
+    champ_years: pd.DataFrame,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logo_mapping = _localize_gated_logos(
@@ -216,6 +217,7 @@ def write_html_report(
         season_groups=_season_groups(season_by_season),
         rank_titles=general["rank_titles"].to_dict(orient="records"),
         fun_facts=general["fun_facts"],
+        champ_years=champ_years.to_dict(orient="records"),
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
         h2h_cells=h2h["cells"],
