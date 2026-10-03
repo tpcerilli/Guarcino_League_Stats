@@ -452,6 +452,7 @@
   {% endif %}
 
   <h3>Championships by Rank</h3>
+  <div class="chart-box" style="margin-bottom: 1.5rem;"><canvas id="rankTitlesChart"></canvas></div>
   <div class="table-wrap">
   <table class="sortable">
     <thead>
@@ -548,6 +549,22 @@ allCharts.push(new Chart(document.getElementById('playoffsChart'), {
   ]},
   options: { plugins: { title: { display: true, text: 'Playoff Appearances & Win % (right axis is % for wins)', color: '#e2e8f0' } } }
 }));
+
+const rankTitlesCanvas = document.getElementById('rankTitlesChart');
+if (rankTitlesCanvas) {
+  allCharts.push(new Chart(rankTitlesCanvas, {
+    type: 'bar',
+    data: { labels: CHARTS.rank_titles.labels, datasets: [
+      { label: 'Reg Season Finish', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
+      { label: 'PF Rank', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
+      { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
+    ]},
+    options: {
+      scales: { x: { title: { display: true, text: 'Rank' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Championships' } } },
+      plugins: { title: { display: true, text: 'Championships by Rank', color: '#e2e8f0' } }
+    }
+  }));
+}
 for (const [canvasId, seriesKey, title, unit] of [
   ['pointsCumulative', 'points_cumulative', 'Total Points Over Time', 'Career Points'],
   ['winsCumulative', 'wins_cumulative', 'Total Wins Over Time', 'Career Wins']
@@ -573,6 +590,13 @@ for (const [canvasId, seriesKey, title, unit] of [
 const chartsTab = document.getElementById("tab-charts-choice");
 if (chartsTab) {
   chartsTab.addEventListener("change", () => {
+    window.requestAnimationFrame(() => allCharts.forEach((chart) => chart.resize()));
+  });
+}
+
+const generalTab = document.getElementById("tab-general-choice");
+if (generalTab) {
+  generalTab.addEventListener("change", () => {
     window.requestAnimationFrame(() => allCharts.forEach((chart) => chart.resize()));
   });
 }

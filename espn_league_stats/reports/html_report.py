@@ -123,6 +123,16 @@ def _playoffs(all_time: pd.DataFrame) -> dict:
     }
 
 
+def _rank_titles_chart(rank_titles: pd.DataFrame) -> dict:
+    ordered = rank_titles.sort_values("rank")
+    return {
+        "labels": ordered["rank"].tolist(),
+        "reg": ordered["reg_championships"].tolist(),
+        "pf": ordered["pf_championships"].tolist(),
+        "acq": ordered["acq_championships"].tolist(),
+    }
+
+
 def _diverging_color(win_pct: float) -> str:
     """Green for winning, white for .500, red for losing — scaled by how far from .500.
 
@@ -203,6 +213,7 @@ def write_html_report(
         "playoffs": _playoffs(all_time),
         "points_cumulative": _cumulative_over_time(season_by_season, "points_for"),
         "wins_cumulative": _cumulative_over_time(season_by_season, "wins"),
+        "rank_titles": _rank_titles_chart(general["rank_titles"]),
     }
     h2h = _head_to_head_cells(head_to_head)
 
