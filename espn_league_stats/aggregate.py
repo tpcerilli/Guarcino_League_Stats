@@ -44,6 +44,7 @@ def build_team_season_df(seasons: SeasonsData, manager_names: dict[str, str]) ->
                     "year": year,
                     "team_id": team.team_id,
                     "team_name": team.team_name,
+                    "logo_url": team.logo_url,
                     "manager_key": manager_key,
                     "manager_name": manager_names.get(manager_key, team.team_name),
                     "wins": team.wins,
@@ -153,6 +154,7 @@ def all_time_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> p
 
     summary = g.agg(
         manager_name=("manager_name", "last"),
+        logo_url=("logo_url", "last"),
         seasons_played=("year", "nunique"),
         wins=("wins", "sum"),
         losses=("losses", "sum"),
@@ -237,6 +239,7 @@ def current_season_snapshot(team_season_df: pd.DataFrame, weekly_df: pd.DataFram
     cols = [
         "manager_name",
         "team_name",
+        "logo_url",
         "wins",
         "losses",
         "ties",
@@ -253,7 +256,7 @@ def current_season_misc(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame, y
     season = team_season_df[team_season_df["year"] == year]
     season_weekly = weekly_df[weekly_df["year"] == year]
 
-    misc = season.set_index("manager_key")[["manager_name", "team_name", "acquisitions", "drops", "trades"]].copy()
+    misc = season.set_index("manager_key")[["manager_name", "team_name", "logo_url", "acquisitions", "drops", "trades"]].copy()
 
     if not season_weekly.empty:
         best_game = season_weekly.loc[season_weekly.groupby("manager_key")["points_for"].idxmax()]
@@ -274,6 +277,7 @@ def season_by_season(team_season_df: pd.DataFrame) -> pd.DataFrame:
         "year",
         "manager_name",
         "team_name",
+        "logo_url",
         "wins",
         "losses",
         "ties",

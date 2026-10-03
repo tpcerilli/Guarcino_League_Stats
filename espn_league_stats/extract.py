@@ -46,6 +46,7 @@ def extract_team_season(team, year: int, reg_season_weeks: int, playoff_team_cou
         year=year,
         team_id=team.team_id,
         team_name=team.team_name,
+        logo_url=getattr(team, "logo_url", "") or "",
         owner_ids=[o.get("id", "") for o in owners],
         owner_names=[o.get("displayName", "") for o in owners],
         wins=team.wins,

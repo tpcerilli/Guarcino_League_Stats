@@ -38,6 +38,7 @@ jobs:
         run: |
           mkdir -p publish
           cp output/html/Guarcino_Stats.html publish/index.html
+          if [ -d output/html/assets ]; then cp -r output/html/assets publish/assets; fi
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

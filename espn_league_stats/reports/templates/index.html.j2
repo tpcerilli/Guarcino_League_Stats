@@ -34,6 +34,7 @@
     touch-action: manipulation;
   }
   .sort-indicator { font-size: 0.75em; opacity: 0.8; }
+  .team-logo { width: 20px; height: 20px; border-radius: 4px; margin-left: 6px; vertical-align: middle; object-fit: cover; }
   #season-sort {
     color-scheme: dark;
     min-height: 44px; max-width: 100%; background-color: #1e293b; color: #e2e8f0;
@@ -155,7 +156,7 @@
     <tbody>
     {% for row in current_season %}
     <tr>
-      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
       <td>{{ row.standing }}</td>
@@ -177,7 +178,7 @@
     <tbody>
     {% for row in current_season_activity %}
     <tr>
-      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td data-sort="{{ row.best_game_score if row.best_game_score == row.best_game_score else -1 }}">
         {% if row.best_game_score == row.best_game_score %}{{ "%.1f"|format(row.best_game_score) }}<span class="cell-detail">Wk{{ row.best_game_week|int }}</span>{% else %}-{% endif %}
       </td>
@@ -346,7 +347,7 @@
     <tbody>
     {% for row in group.rows %}
     <tr class="{% if row.final_standing == 1 %}finish-gold{% elif row.final_standing == 2 %}finish-silver{% endif %}">
-      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}</td>
+      <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
       <td data-sort="{{ row.standing if row.standing else 99 }}">{{ row.standing if row.standing else "-" }}</td>

@@ -92,6 +92,8 @@ def main() -> None:
             current_season,
             current_season_activity,
             config.current_year,
+            config.espn_s2,
+            config.swid,
         )
         print(f"Wrote HTML dashboard to {html_path}")
 

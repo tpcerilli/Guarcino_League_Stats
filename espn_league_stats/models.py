@@ -19,6 +19,7 @@ class TeamSeasonStats:
     year: int
     team_id: int
     team_name: str
+    logo_url: str
     owner_ids: list[str]
     owner_names: list[str]
     wins: int
@@ -44,4 +45,5 @@ class TeamSeasonStats:
     @staticmethod
     def from_dict(data: dict) -> "TeamSeasonStats":
         weekly = [WeeklyResult(**w) for w in data.pop("weekly", [])]
+        data.setdefault("logo_url", "")
         return TeamSeasonStats(weekly=weekly, **data)

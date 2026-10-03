@@ -1,14 +1,54 @@
 """Builds the static HTML dashboard: summary tables + Chart.js charts, no build step."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
 import pandas as pd
+import requests
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 OUTPUT_DIR = Path("output/html")
 TEMPLATE_DIR = Path(__file__).parent / "templates"
+LOGO_CACHE_DIR = OUTPUT_DIR / "assets" / "logos"
+# Custom-uploaded team logos are served from this auth-gated ESPN endpoint (unlike the public
+# logo-pack images on g.espncdn.com) and 403 for visitors without ESPN login cookies.
+GATED_LOGO_PREFIX = "https://mystique-api.fantasy.espn.com/"
+
+
+def _localize_gated_logos(dfs: list[pd.DataFrame], espn_s2: str, swid: str) -> dict[str, str]:
+    """Downloads any auth-gated custom team logos found in `dfs` to a local assets folder
+    (using our own ESPN cookies) and returns a mapping of original url -> local relative path."""
+    urls: set[str] = set()
+    for df in dfs:
+        if "logo_url" in df.columns:
+            urls.update(u for u in df["logo_url"].dropna().unique() if u.startswith(GATED_LOGO_PREFIX))
+    if not urls:
+        return {}
+
+    LOGO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    mapping: dict[str, str] = {}
+    for url in urls:
+        digest = hashlib.sha1(url.encode()).hexdigest()[:16]
+        local_path = LOGO_CACHE_DIR / f"{digest}.png"
+        if not local_path.exists():
+            try:
+                resp = requests.get(url, cookies={"espn_s2": espn_s2, "SWID": swid}, timeout=10)
+                resp.raise_for_status()
+                local_path.write_bytes(resp.content)
+            except requests.RequestException:
+                continue
+        mapping[url] = f"assets/logos/{digest}.png"
+    return mapping
+
+
+def _apply_logo_mapping(df: pd.DataFrame, mapping: dict[str, str]) -> pd.DataFrame:
+    if not mapping or "logo_url" not in df.columns:
+        return df
+    df = df.copy()
+    df["logo_url"] = df["logo_url"].map(lambda u: mapping.get(u, u))
+    return df
 
 
 def _points_trend(season_by_season: pd.DataFrame) -> dict:
@@ -125,8 +165,16 @@ def write_html_report(
     current_season: pd.DataFrame,
     current_season_activity: pd.DataFrame,
     current_year: int,
+    espn_s2: str,
+    swid: str,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    logo_mapping = _localize_gated_logos(
+        [current_season, current_season_activity, season_by_season], espn_s2, swid
+    )
+    current_season = _apply_logo_mapping(current_season, logo_mapping)
+    current_season_activity = _apply_logo_mapping(current_season_activity, logo_mapping)
+    season_by_season = _apply_logo_mapping(season_by_season, logo_mapping)
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=select_autoescape(["html"])
     )
