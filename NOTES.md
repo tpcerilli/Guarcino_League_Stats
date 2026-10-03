@@ -1,26 +1,23 @@
 # Things to add with more credits
 
-## New table/tab General Stats
+in reporting points, there should be commas for the thousands (e.g. 2,453 or 23,451 or 1,455,667.) Do not do this for years.
 
-Add in general stats, such as:
-- Title wins by regular season finish. Could make a table showing reg season finish vs playoff finish.
-- Title wins by PF ranking. Could make a table showing PF season finish vs playoff finish.
-- Could also add title wins by # acquisitions rank by season.
+Additionally, take out "Championships" in the column titles of championships by rank. Then go back to how the table and bar chart were formatted, half table and half bar on either side.
+
+Add in historical stats, the highest scoring season of all time. this means everyones points added up, which year has the most.
+
+
 
 # Future Considerations
+
+## Hover Effects
+- When your cursor goes over a row and column, highlight that row and column.
+- Maybe even add a functionthat will highlight that row when clicked.
 
 ## Best Game stats
 
 Add in a way to view the scores for that team's best games. May require saving all 
 games.
-
-## New table/tab General Stats
-
-Add in general stats, such as:
-- Title wins by regular season finish. Could make a table showing reg season finish vs playoff finish.
-- Title wins by PF ranking. Could make a table showing PF season finish vs playoff finish.
-- Could also add title wins by # acquisitions rank by season.
-
 
 
 # Known data quirks
