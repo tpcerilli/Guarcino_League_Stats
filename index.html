@@ -3180,8 +3180,8 @@
   
 
   <h3>Championships by Rank</h3>
-  <div class="chart-box" style="margin-bottom: 1.5rem;"><canvas id="rankTitlesChart"></canvas></div>
-  <div class="table-wrap">
+  <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: stretch;">
+  <div class="table-wrap" style="flex: 1 1 320px; overflow: hidden;">
   <table class="sortable">
     <thead>
       <tr>
@@ -3251,6 +3251,8 @@
     
     </tbody>
   </table>
+  </div>
+  <div class="chart-box" style="flex: 1 1 320px; min-width: 0; position: relative;"><canvas id="rankTitlesChart"></canvas></div>
   </div>
 </section>
 </div>
@@ -3326,6 +3328,7 @@ if (rankTitlesCanvas) {
       { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
     ]},
     options: {
+      maintainAspectRatio: false,
       scales: { x: { title: { display: true, text: 'Rank' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Championships' } } },
       plugins: { title: { display: true, text: 'Championships by Rank', color: '#e2e8f0' } }
     }
