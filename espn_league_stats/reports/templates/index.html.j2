@@ -76,7 +76,8 @@
   #tab-charts-choice:checked ~ .tabs label[for="tab-charts-choice"],
   #tab-h2h-choice:checked ~ .tabs label[for="tab-h2h-choice"],
   #tab-byseason-choice:checked ~ .tabs label[for="tab-byseason-choice"],
-  #tab-misc-choice:checked ~ .tabs label[for="tab-misc-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  #tab-misc-choice:checked ~ .tabs label[for="tab-misc-choice"],
+  #tab-general-choice:checked ~ .tabs label[for="tab-general-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
   .tab-radio:focus-visible ~ .tabs label { outline: 2px solid #facc15; outline-offset: 2px; }
   .tab-panel { display: none; }
   #tab-current-choice:checked ~ .tab-panels #tab-current,
@@ -86,7 +87,8 @@
   #tab-charts-choice:checked ~ .tab-panels #tab-charts,
   #tab-h2h-choice:checked ~ .tab-panels #tab-h2h,
   #tab-byseason-choice:checked ~ .tab-panels #tab-byseason,
-  #tab-misc-choice:checked ~ .tab-panels #tab-misc { display: block; }
+  #tab-misc-choice:checked ~ .tab-panels #tab-misc,
+  #tab-general-choice:checked ~ .tab-panels #tab-general { display: block; }
 {% if mobile_test %}
   .table-wrap { max-height: none; overflow: visible; }
   .tab-button { min-height: 28px; }
@@ -136,6 +138,7 @@
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-h2h-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-byseason-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-misc-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-general-choice">
 <nav class="tabs" role="tablist" aria-label="League statistics">
   <label class="tab-button" role="tab" for="tab-current-choice">Current Season</label>
   <label class="tab-button" role="tab" for="tab-alltime-choice">All-Time</label>
@@ -145,6 +148,7 @@
   <label class="tab-button" role="tab" for="tab-h2h-choice">Head-to-Head</label>
   <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
   <label class="tab-button" role="tab" for="tab-misc-choice">Misc</label>
+  <label class="tab-button" role="tab" for="tab-general-choice">General Stats</label>
 </nav>
 
 <div class="tab-panels">
@@ -236,7 +240,7 @@
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
+      <tr><th>Manager</th><th>Games</th><th>W</th><th>L</th><th>T</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th><th>Avg Seed</th></tr>
     </thead>
     <tbody>
     {% for row in regular_season %}
@@ -246,6 +250,7 @@
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
       <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
       <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
+      <td>{% if row.avg_seed == row.avg_seed %}{{ "%.2f"|format(row.avg_seed) }}{% else %}-{% endif %}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -384,7 +389,9 @@
     <tr>
       <td>{{ row.manager_name }}</td>
       <td data-sort="{{ row.best_season_points }}">
+        {% if row.best_season_points == row.best_season_points %}
         {{ "%.1f"|format(row.best_season_points) }}<span class="cell-detail">{{ "%.0f"|format(row.best_season_points_year) }}</span>
+        {% else %}-{% endif %}
       </td>
       <td data-sort="{{ row.worst_season_points }}">
         {% if row.worst_season_points == row.worst_season_points %}
@@ -406,6 +413,44 @@
       <td>{{ row.acquisitions }}</td>
       <td>{{ "%.1f"|format(row.acquisitions_per_season) }}</td>
       <td>{{ row.drops }}</td><td>{{ row.trades }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+</div>
+
+<div class="tab-panel" id="tab-general" role="tabpanel">
+<section>
+  <h2>General Stats</h2>
+  {% if fun_facts %}
+  <ul>
+    {% for fact in fun_facts %}
+    {% set parts = fact.split(': ', 1) %}
+    <li>{% if parts|length == 2 %}<strong>{{ parts[0] }}:</strong> {{ parts[1] }}{% else %}{{ fact }}{% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>Championships by Rank</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Reg Season Finish Titles</th>
+        <th>PF Rank Titles</th>
+        <th>Acquisitions Rank Titles</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in rank_titles %}
+    <tr>
+      <td>{{ row.rank }}</td>
+      <td>{{ row.reg_championships }} ({{ "%.1f"|format(row.reg_win_pct) }}%)</td>
+      <td>{{ row.pf_championships }} ({{ "%.1f"|format(row.pf_win_pct) }}%)</td>
+      <td>{{ row.acq_championships }} ({{ "%.1f"|format(row.acq_win_pct) }}%)</td>
     </tr>
     {% endfor %}
     </tbody>

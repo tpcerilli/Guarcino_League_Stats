@@ -179,6 +179,7 @@ def write_html_report(
     current_year: int,
     espn_s2: str,
     swid: str,
+    general: dict,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logo_mapping = _localize_gated_logos(
@@ -213,6 +214,8 @@ def write_html_report(
         current_season=current_season.to_dict(orient="records"),
         current_season_activity=current_season_activity.to_dict(orient="records"),
         season_groups=_season_groups(season_by_season),
+        rank_titles=general["rank_titles"].to_dict(orient="records"),
+        fun_facts=general["fun_facts"],
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
         h2h_cells=h2h["cells"],

@@ -9,6 +9,7 @@ from .aggregate import (
     build_weekly_df,
     current_season_misc,
     current_season_snapshot,
+    general_stats,
     head_to_head,
     playoff_summary,
     regular_season_summary,
@@ -62,12 +63,13 @@ def main() -> None:
     weekly_df = build_weekly_df(seasons, team_season_df)
 
     all_time = all_time_summary(team_season_df, weekly_df)
-    regular_season = regular_season_summary(team_season_df, weekly_df)
+    regular_season = regular_season_summary(team_season_df, weekly_df, config.current_year)
     playoffs = playoff_summary(team_season_df, weekly_df)
     current_season = current_season_snapshot(team_season_df, weekly_df, config.current_year)
     current_season_activity = current_season_misc(team_season_df, weekly_df, config.current_year)
     season_table = season_by_season(team_season_df)
     h2h = head_to_head(weekly_df)
+    general = general_stats(team_season_df)
 
     print_all_time_leaderboard(all_time)
     print_current_season(current_season, config.current_year)
@@ -94,6 +96,7 @@ def main() -> None:
             config.current_year,
             config.espn_s2,
             config.swid,
+            general,
         )
         print(f"Wrote HTML dashboard to {html_path}")
 

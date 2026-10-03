@@ -290,6 +290,90 @@ def season_by_season(team_season_df: pd.DataFrame) -> pd.DataFrame:
     return team_season_df[cols].sort_values(["year", "final_standing"]).reset_index(drop=True)
 
 
+def _rank_vs_title_table(df: pd.DataFrame, rank_col: str, prefix: str) -> pd.DataFrame:
+    """For a given per-season rank column (e.g. regular season seed, PF rank), counts how many
+    team-seasons landed at each rank value and how many of those went on to win it all."""
+    g = df.groupby(rank_col)
+    table = g.agg(
+        appearances=(rank_col, "size"),
+        championships=("final_standing", lambda s: int((s == 1).sum())),
+    ).reset_index().rename(columns={rank_col: "rank"})
+    table["win_pct"] = (table["championships"] / table["appearances"] * 100).round(1)
+    return table.rename(
+        columns={
+            "appearances": f"{prefix}_appearances",
+            "championships": f"{prefix}_championships",
+            "win_pct": f"{prefix}_win_pct",
+        }
+    )
+
+
+def general_stats(team_season_df: pd.DataFrame) -> dict:
+    """Cross-references regular season finish, PF ranking, and acquisitions activity against
+    who actually won the title each year — plus a few 'fun fact' highlights."""
+    completed = team_season_df[team_season_df["final_standing"] > 0].copy()
+    completed["pf_rank"] = completed.groupby("year")["points_for"].rank(ascending=False, method="min").astype(int)
+    completed["acquisitions_rank"] = (
+        completed.groupby("year")["acquisitions"].rank(ascending=False, method="min").astype(int)
+    )
+
+    reg_finish_titles = _rank_vs_title_table(completed, "standing", "reg")
+    pf_rank_titles = _rank_vs_title_table(completed, "pf_rank", "pf")
+    acquisitions_rank_titles = _rank_vs_title_table(completed, "acquisitions_rank", "acq")
+
+    rank_titles = (
+        reg_finish_titles.merge(pf_rank_titles, on="rank", how="outer")
+        .merge(acquisitions_rank_titles, on="rank", how="outer")
+        .sort_values("rank")
+        .reset_index(drop=True)
+    )
+    count_cols = [c for c in rank_titles.columns if c.endswith("_appearances") or c.endswith("_championships")]
+    rank_titles[count_cols] = rank_titles[count_cols].fillna(0).astype(int)
+    pct_cols = [c for c in rank_titles.columns if c.endswith("_win_pct")]
+    rank_titles[pct_cols] = rank_titles[pct_cols].fillna(0.0)
+    rank_titles["rank"] = rank_titles["rank"].astype(int)
+
+    champs = completed[completed["final_standing"] == 1]
+    fun_facts = []
+    if not champs.empty:
+        cinderella = champs.loc[champs["standing"].idxmax()]
+        fun_facts.append(
+            f"Biggest Cinderella: {cinderella['manager_name']} won it all in {int(cinderella['year'])} "
+            f"as the #{int(cinderella['standing'])} seed."
+        )
+        worst_pf_champ = champs.loc[champs["pf_rank"].idxmax()]
+        if worst_pf_champ["pf_rank"] > 1:
+            fun_facts.append(
+                f"Least dominant champion: {worst_pf_champ['manager_name']} won the {int(worst_pf_champ['year'])} "
+                f"title despite ranking #{int(worst_pf_champ['pf_rank'])} in points for that season."
+            )
+        most_moves_champ = champs.loc[champs["acquisitions_rank"].idxmin()]
+        fun_facts.append(
+            f"Most active champion: {most_moves_champ['manager_name']} won the {int(most_moves_champ['year'])} "
+            f"title with {int(most_moves_champ['acquisitions'])} acquisitions (#{int(most_moves_champ['acquisitions_rank'])} "
+            "in the league that season)."
+        )
+        least_moves_champ = champs.loc[champs["acquisitions_rank"].idxmax()]
+        fun_facts.append(
+            f"Least active champion: {least_moves_champ['manager_name']} won the {int(least_moves_champ['year'])} "
+            f"title with just {int(least_moves_champ['acquisitions'])} acquisitions."
+        )
+
+    if not completed.empty:
+        completed["pf_pa_diff"] = completed["points_for"] - completed["points_against"]
+        best_diff = completed.loc[completed["pf_pa_diff"].idxmax()]
+        fun_facts.append(
+            f"Biggest PF/PA differential: {best_diff['manager_name']} outscored opponents by "
+            f"{best_diff['pf_pa_diff']:.1f} points in {int(best_diff['year'])} "
+            f"({best_diff['points_for']:.1f} PF vs {best_diff['points_against']:.1f} PA)."
+        )
+
+    return {
+        "rank_titles": rank_titles,
+        "fun_facts": fun_facts,
+    }
+
+
 def head_to_head(weekly_df: pd.DataFrame) -> pd.DataFrame:
     played = weekly_df[weekly_df["opponent_key"].notna() & (weekly_df["opponent_key"] != weekly_df["manager_key"])]
     grouped = played.groupby(["manager_name", "opponent_name", "result"]).size().unstack(fill_value=0)
@@ -321,11 +405,14 @@ def _record_from_weekly(weekly_df: pd.DataFrame) -> pd.DataFrame:
     return record
 
 
-def regular_season_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd.DataFrame:
+def regular_season_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame, current_year: int) -> pd.DataFrame:
     """All-time record/points using only regular-season games (excludes all postseason weeks)."""
     record = _record_from_weekly(weekly_df[~weekly_df["is_playoff"]])
     names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
     record["manager_name"] = names.reindex(record.index)
+    completed_seasons = team_season_df[team_season_df["year"] != current_year]
+    avg_seed = completed_seasons.groupby("manager_key")["standing"].mean().round(2)
+    record["avg_seed"] = avg_seed.reindex(record.index)
     return record.reset_index().sort_values("win_pct", ascending=False)
 
 
