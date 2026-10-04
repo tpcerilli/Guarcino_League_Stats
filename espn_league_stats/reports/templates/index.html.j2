@@ -56,9 +56,11 @@
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .chart-box { background: #1e293b; border-radius: 8px; padding: 1rem; }
   canvas { max-height: 360px; }
-  .h2h-table td { text-align: center; min-width: 70px; color: #111827; }
+  .h2h-table { font-size: 0.78rem; }
+  .h2h-table th, .h2h-table td { padding: 4px 6px; }
+  .h2h-table td { text-align: center; min-width: 44px; color: #111827; }
   .h2h-corner {
-    position: relative; min-width: 110px; min-height: 48px; padding: 0 !important;
+    position: relative; min-width: 80px; min-height: 40px; padding: 0 !important;
     background: linear-gradient(to top right, transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px));
   }
   .h2h-corner span { position: absolute; font-size: 0.75em; font-weight: normal; color: #e2e8f0; }
@@ -505,18 +507,18 @@
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Year</th><th>Champion</th><th>Team Name</th><th>Teams</th><th>Total PF</th><th>Avg PF/Team</th><th>Total Acquisitions</th></tr>
+      <tr><th>Year</th><th>Teams</th><th>Total PF</th><th>Avg PF/Team</th><th>Total Acquisitions</th><th>Champion</th><th>Team Name</th></tr>
     </thead>
     <tbody>
     {% for row in season_scoring_totals %}
     <tr>
       <td>{{ row.year }}</td>
-      <td>{{ row.winner }}</td>
-      <td>{{ row.winner_team }}{% if row.winner_logo_url %}<img class="team-logo" src="{{ row.winner_logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.teams }}</td>
       <td>{{ row.total_points_for|commas(1) }}</td>
       <td>{{ row.avg_points_for|commas(1) }}</td>
       <td>{{ row.total_acquisitions }}</td>
+      <td>{{ row.winner }}</td>
+      <td>{{ row.winner_team }}{% if row.winner_logo_url %}<img class="team-logo" src="{{ row.winner_logo_url }}" alt="">{% endif %}</td>
     </tr>
     {% endfor %}
     </tbody>
