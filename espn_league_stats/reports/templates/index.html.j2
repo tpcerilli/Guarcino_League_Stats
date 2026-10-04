@@ -130,6 +130,13 @@
   {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 56px; width: auto; border-radius: 6px;">{% endif %}
   Guarcino League Stats
 </h1>
+{% if season_scoring_totals %}
+<p style="display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">
+  <strong>Current Champion ({{ season_scoring_totals[0].year }}):</strong>
+  {{ season_scoring_totals[0].winner }} - {{ season_scoring_totals[0].winner_team }}
+  {% if season_scoring_totals[0].winner_logo_url %}<img class="team-logo" src="{{ season_scoring_totals[0].winner_logo_url }}" alt="" style="width: 28px; height: 28px;">{% endif %}
+</p>
+{% endif %}
 <p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
 
 <div class="tab-container">
