@@ -26,6 +26,13 @@ def _ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
+def _commas(value, decimals: int = 1) -> str:
+    """Formats a point total with thousands separators, e.g. 2453.0 -> '2,453.0'."""
+    if value is None or value != value:  # NaN check
+        return "-"
+    return f"{value:,.{decimals}f}"
+
+
 def _crest_data_uri() -> str:
     """Embeds the header crest image inline so the HTML stays a single, self-contained file
     (e.g. still works when opened as a saved email attachment, per the noscript fallback notice)."""
@@ -200,6 +207,7 @@ def write_html_report(
     general: dict,
     champ_years: pd.DataFrame,
     finish_counts: dict,
+    season_scoring_totals: pd.DataFrame,
 ) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     logo_mapping = _localize_gated_logos(
@@ -212,6 +220,7 @@ def write_html_report(
         loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=select_autoescape(["html"])
     )
     env.filters["ordinal"] = _ordinal
+    env.filters["commas"] = _commas
     template = env.get_template("index.html.j2")
 
     charts = {
@@ -241,6 +250,7 @@ def write_html_report(
         champ_years=champ_years.to_dict(orient="records"),
         finish_ranks=finish_counts["ranks"],
         finish_counts=finish_counts["rows"],
+        season_scoring_totals=season_scoring_totals.to_dict(orient="records"),
         charts_json=json.dumps(charts),
         h2h_managers=h2h["managers"],
         h2h_cells=h2h["cells"],

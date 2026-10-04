@@ -16,6 +16,7 @@ from .aggregate import (
     regular_season_finish_counts,
     regular_season_summary,
     season_by_season,
+    season_totals,
 )
 from .cache import build_all_seasons
 from .config import load_config
@@ -74,6 +75,7 @@ def main() -> None:
     general = general_stats(team_season_df)
     champ_years = championship_years(team_season_df)
     finish_counts = regular_season_finish_counts(team_season_df, config.current_year)
+    season_scoring_totals = season_totals(team_season_df)
 
     print_all_time_leaderboard(all_time)
     print_current_season(current_season, config.current_year)
@@ -103,6 +105,7 @@ def main() -> None:
             general,
             champ_years,
             finish_counts,
+            season_scoring_totals,
         )
         print(f"Wrote HTML dashboard to {html_path}")
 

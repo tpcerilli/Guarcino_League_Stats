@@ -166,7 +166,7 @@
     <tr>
       <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
-      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
+      <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
       <td>{{ row.standing }}</td>
     </tr>
     {% endfor %}
@@ -188,10 +188,10 @@
     <tr>
       <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td data-sort="{{ row.best_game_score if row.best_game_score == row.best_game_score else -1 }}">
-        {% if row.best_game_score == row.best_game_score %}{{ "%.1f"|format(row.best_game_score) }}<span class="cell-detail">Wk{{ row.best_game_week|int }}</span>{% else %}-{% endif %}
+        {% if row.best_game_score == row.best_game_score %}{{ row.best_game_score|commas(1) }}<span class="cell-detail">Wk{{ row.best_game_week|int }}</span>{% else %}-{% endif %}
       </td>
       <td data-sort="{{ row.worst_game_score if row.worst_game_score == row.worst_game_score else -1 }}">
-        {% if row.worst_game_score == row.worst_game_score %}{{ "%.1f"|format(row.worst_game_score) }}<span class="cell-detail">Wk{{ row.worst_game_week|int }}</span>{% else %}-{% endif %}
+        {% if row.worst_game_score == row.worst_game_score %}{{ row.worst_game_score|commas(1) }}<span class="cell-detail">Wk{{ row.worst_game_week|int }}</span>{% else %}-{% endif %}
       </td>
       <td data-sort="{{ row.longest_win_streak }}">{{ row.longest_win_streak if row.longest_win_streak else "-" }}</td>
       <td data-sort="{{ row.longest_loss_streak }}">{{ row.longest_loss_streak if row.longest_loss_streak else "-" }}</td>
@@ -225,8 +225,8 @@
       <td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
-      <td>{{ "%.0f"|format(row.points_for) }}</td><td>{{ "%.0f"|format(row.points_against) }}</td>
-      <td>{{ "%.0f"|format(row.point_diff) }}</td>
+      <td>{{ row.points_for|commas(0) }}</td><td>{{ row.points_against|commas(0) }}</td>
+      <td>{{ row.point_diff|commas(0) }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -249,8 +249,8 @@
       <td>{{ row.manager_name }}</td><td>{{ row.games }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
-      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
-      <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
+      <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
+      <td>{{ row.avg_points_for|commas(1) }}</td><td>{{ row.avg_points_against|commas(1) }}</td>
       <td>{% if row.avg_seed == row.avg_seed %}{{ "%.2f"|format(row.avg_seed) }}{% else %}-{% endif %}</td>
     </tr>
     {% endfor %}
@@ -298,8 +298,8 @@
       <td data-sort="{{ (row.win_pct * 100) if row.win_pct is not none else -1 }}">
         {% if row.win_pct is not none %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}n/a{% endif %}
       </td>
-      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
-      <td>{{ "%.1f"|format(row.avg_points_for) }}</td><td>{{ "%.1f"|format(row.avg_points_against) }}</td>
+      <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
+      <td>{{ row.avg_points_for|commas(1) }}</td><td>{{ row.avg_points_against|commas(1) }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -358,7 +358,7 @@
     <h2 style="margin: 0;">Results By Season</h2>
     <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
       <option value="">Sort all seasons</option>
-      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs')] %}
+      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs'), (10, 'Acquisitions')] %}
       <option value="{{ column }}">{{ name }}</option>
       {% endfor %}
     </select>
@@ -372,7 +372,7 @@
     <thead>
       <tr>
         <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
-        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Made Playoffs</th>
+        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Made Playoffs</th><th>Acquisitions</th>
       </tr>
     </thead>
     <tbody>
@@ -380,12 +380,13 @@
     <tr class="{% if row.final_standing == 1 %}finish-gold{% elif row.final_standing == 2 %}finish-silver{% endif %}">
       <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
-      <td>{{ "%.1f"|format(row.points_for) }}</td><td>{{ "%.1f"|format(row.points_against) }}</td>
+      <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
       <td data-sort="{{ row.standing if row.standing else 99 }}">{{ row.standing if row.standing else "-" }}</td>
       <td data-sort="{{ row.final_standing if row.final_standing else 99 }}"{% if row.final_standing == 1 %} title="Champion"{% elif row.final_standing == 2 %} title="Runner-up"{% endif %}>
         {{ row.final_standing if row.final_standing else "-" }}
       </td>
       <td data-sort="{{ 1 if row.made_playoffs else 0 }}">{{ "Yes" if row.made_playoffs else "No" }}</td>
+      <td>{{ row.acquisitions }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -413,19 +414,19 @@
       <td>{{ row.manager_name }}</td>
       <td data-sort="{{ row.best_season_points }}">
         {% if row.best_season_points == row.best_season_points %}
-        {{ "%.1f"|format(row.best_season_points) }}<span class="cell-detail">{{ "%.0f"|format(row.best_season_points_year) }}</span>
+        {{ row.best_season_points|commas(1) }}<span class="cell-detail">{{ "%.0f"|format(row.best_season_points_year) }}</span>
         {% else %}-{% endif %}
       </td>
       <td data-sort="{{ row.worst_season_points }}">
         {% if row.worst_season_points == row.worst_season_points %}
-        {{ "%.1f"|format(row.worst_season_points) }}<span class="cell-detail">{{ "%.0f"|format(row.worst_season_points_year) }}</span>
+        {{ row.worst_season_points|commas(1) }}<span class="cell-detail">{{ "%.0f"|format(row.worst_season_points_year) }}</span>
         {% else %}-{% endif %}
       </td>
       <td data-sort="{{ row.best_game_score }}">
-        {{ "%.1f"|format(row.best_game_score) }}<span class="cell-detail">{{ row.best_game_year }} Wk{{ row.best_game_week }}</span>
+        {{ row.best_game_score|commas(1) }}<span class="cell-detail">{{ row.best_game_year }} Wk{{ row.best_game_week }}</span>
       </td>
       <td data-sort="{{ row.worst_game_score }}">
-        {{ "%.1f"|format(row.worst_game_score) }}<span class="cell-detail">{{ row.worst_game_year }} Wk{{ row.worst_game_week }}</span>
+        {{ row.worst_game_score|commas(1) }}<span class="cell-detail">{{ row.worst_game_year }} Wk{{ row.worst_game_week }}</span>
       </td>
       <td data-sort="{{ row.longest_win_streak }}">
         {% if row.longest_win_streak %}{{ row.longest_win_streak }}<span class="cell-detail">{{ row.longest_win_streak_span[0] }}{% if row.longest_win_streak_span[0] != row.longest_win_streak_span[1] %}-{{ row.longest_win_streak_span[1] }}{% endif %}</span>{% else %}-{% endif %}
@@ -498,6 +499,27 @@
   </table>
   </div>
   <div class="chart-box" style="flex: 1 1 240px; min-width: 0; position: relative;"><canvas id="rankTitlesChart"></canvas></div>
+  </div>
+
+  <h3>Season Totals (all teams combined)</h3>
+  <div class="table-wrap">
+  <table class="sortable">
+    <thead>
+      <tr><th>Year</th><th>Champion</th><th>Teams</th><th>Total PF</th><th>Avg PF/Team</th><th>Total Acquisitions</th></tr>
+    </thead>
+    <tbody>
+    {% for row in season_scoring_totals %}
+    <tr>
+      <td>{{ row.year }}</td>
+      <td>{{ row.winner }}</td>
+      <td>{{ row.teams }}</td>
+      <td>{{ row.total_points_for|commas(1) }}</td>
+      <td>{{ row.avg_points_for|commas(1) }}</td>
+      <td>{{ row.total_acquisitions }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
   </div>
 </section>
 </div>

@@ -313,8 +313,29 @@ def season_by_season(team_season_df: pd.DataFrame) -> pd.DataFrame:
         "standing",
         "final_standing",
         "made_playoffs",
+        "acquisitions",
     ]
     return team_season_df[cols].sort_values(["year", "final_standing"]).reset_index(drop=True)
+
+
+def season_totals(team_season_df: pd.DataFrame) -> pd.DataFrame:
+    """League-wide per-season sums (all teams combined) - total points scored, total
+    acquisitions, etc - for spotting the highest/lowest scoring seasons at a glance."""
+    completed = team_season_df[team_season_df["final_standing"] > 0]
+    totals = completed.groupby("year").agg(
+        teams=("manager_key", "size"),
+        total_points_for=("points_for", "sum"),
+        total_points_against=("points_against", "sum"),
+        total_acquisitions=("acquisitions", "sum"),
+    )
+    totals["avg_points_for"] = totals["total_points_for"] / totals["teams"]
+    winners = (
+        completed[completed["final_standing"] == 1]
+        .set_index("year")["manager_name"]
+        .rename("winner")
+    )
+    totals = totals.join(winners)
+    return totals.reset_index().sort_values("year", ascending=False)
 
 
 def _rank_vs_title_table(df: pd.DataFrame, rank_col: str, prefix: str) -> pd.DataFrame:
@@ -424,34 +445,34 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
         best_diff = no_2012.loc[no_2012["pf_pa_diff"].idxmax()]
         fun_facts.append(
             f"Biggest PF/PA differential: {best_diff['manager_name']} outscored opponents by "
-            f"{best_diff['pf_pa_diff']:.1f} points in {int(best_diff['year'])} "
-            f"({best_diff['points_for']:.1f} PF vs {best_diff['points_against']:.1f} PA)."
+            f"{best_diff['pf_pa_diff']:,.1f} points in {int(best_diff['year'])} "
+            f"({best_diff['points_for']:,.1f} PF vs {best_diff['points_against']:,.1f} PA)."
         )
         worst_diff = no_2012.loc[no_2012["pf_pa_diff"].idxmin()]
         fun_facts.append(
             f"Worst PF/PA differential: {worst_diff['manager_name']} was outscored by "
-            f"{abs(worst_diff['pf_pa_diff']):.1f} points in {int(worst_diff['year'])} "
-            f"({worst_diff['points_for']:.1f} PF vs {worst_diff['points_against']:.1f} PA)."
+            f"{abs(worst_diff['pf_pa_diff']):,.1f} points in {int(worst_diff['year'])} "
+            f"({worst_diff['points_for']:,.1f} PF vs {worst_diff['points_against']:,.1f} PA)."
         )
 
         most_pf = no_2012.loc[no_2012["points_for"].idxmax()]
         fun_facts.append(
-            f"Most PF in a season: {most_pf['manager_name']} scored {most_pf['points_for']:.1f} points "
+            f"Most PF in a season: {most_pf['manager_name']} scored {most_pf['points_for']:,.1f} points "
             f"in {int(most_pf['year'])}."
         )
         least_pf = no_2012.loc[no_2012["points_for"].idxmin()]
         fun_facts.append(
-            f"Least PF in a season: {least_pf['manager_name']} scored just {least_pf['points_for']:.1f} points "
+            f"Least PF in a season: {least_pf['manager_name']} scored just {least_pf['points_for']:,.1f} points "
             f"in {int(least_pf['year'])}."
         )
         most_pa = no_2012.loc[no_2012["points_against"].idxmax()]
         fun_facts.append(
-            f"Most PA in a season: {most_pa['manager_name']} allowed {most_pa['points_against']:.1f} points "
+            f"Most PA in a season: {most_pa['manager_name']} allowed {most_pa['points_against']:,.1f} points "
             f"in {int(most_pa['year'])}."
         )
         least_pa = no_2012.loc[no_2012["points_against"].idxmin()]
         fun_facts.append(
-            f"Least PA in a season: {least_pa['manager_name']} allowed just {least_pa['points_against']:.1f} points "
+            f"Least PA in a season: {least_pa['manager_name']} allowed just {least_pa['points_against']:,.1f} points "
             f"in {int(least_pa['year'])}."
         )
 
