@@ -358,7 +358,7 @@
     <h2 style="margin: 0;">Results By Season</h2>
     <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
       <option value="">Sort all seasons</option>
-      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Made Playoffs'), (10, 'Acquisitions')] %}
+      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Acquisitions'), (10, 'Made Playoffs')] %}
       <option value="{{ column }}">{{ name }}</option>
       {% endfor %}
     </select>
@@ -372,7 +372,7 @@
     <thead>
       <tr>
         <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
-        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Made Playoffs</th><th>Acquisitions</th>
+        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Acquisitions</th><th>Made Playoffs</th>
       </tr>
     </thead>
     <tbody>
@@ -385,8 +385,8 @@
       <td data-sort="{{ row.final_standing if row.final_standing else 99 }}"{% if row.final_standing == 1 %} title="Champion"{% elif row.final_standing == 2 %} title="Runner-up"{% endif %}>
         {{ row.final_standing if row.final_standing else "-" }}
       </td>
-      <td data-sort="{{ 1 if row.made_playoffs else 0 }}">{{ "Yes" if row.made_playoffs else "No" }}</td>
       <td>{{ row.acquisitions }}</td>
+      <td data-sort="{{ 1 if row.made_playoffs else 0 }}">{{ "Yes" if row.made_playoffs else "No" }}</td>
     </tr>
     {% endfor %}
     </tbody>
