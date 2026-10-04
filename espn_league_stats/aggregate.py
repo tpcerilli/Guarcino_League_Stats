@@ -329,12 +329,11 @@ def season_totals(team_season_df: pd.DataFrame) -> pd.DataFrame:
         total_acquisitions=("acquisitions", "sum"),
     )
     totals["avg_points_for"] = totals["total_points_for"] / totals["teams"]
-    winners = (
-        completed[completed["final_standing"] == 1]
-        .set_index("year")["manager_name"]
-        .rename("winner")
-    )
-    totals = totals.join(winners)
+    champs = completed[completed["final_standing"] == 1].set_index("year")
+    winners = champs["manager_name"].rename("winner")
+    winner_teams = champs["team_name"].rename("winner_team")
+    winner_logos = champs["logo_url"].rename("winner_logo_url")
+    totals = totals.join(winners).join(winner_teams).join(winner_logos)
     return totals.reset_index().sort_values("year", ascending=False)
 
 

@@ -505,13 +505,14 @@
   <div class="table-wrap">
   <table class="sortable">
     <thead>
-      <tr><th>Year</th><th>Champion</th><th>Teams</th><th>Total PF</th><th>Avg PF/Team</th><th>Total Acquisitions</th></tr>
+      <tr><th>Year</th><th>Champion</th><th>Team Name</th><th>Teams</th><th>Total PF</th><th>Avg PF/Team</th><th>Total Acquisitions</th></tr>
     </thead>
     <tbody>
     {% for row in season_scoring_totals %}
     <tr>
       <td>{{ row.year }}</td>
       <td>{{ row.winner }}</td>
+      <td>{{ row.winner_team }}{% if row.winner_logo_url %}<img class="team-logo" src="{{ row.winner_logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.teams }}</td>
       <td>{{ row.total_points_for|commas(1) }}</td>
       <td>{{ row.avg_points_for|commas(1) }}</td>
