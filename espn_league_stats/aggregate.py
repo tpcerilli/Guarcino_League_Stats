@@ -150,11 +150,11 @@ def _longest_streaks(weekly_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def championship_years(team_season_df: pd.DataFrame) -> pd.DataFrame:
-    """One row per manager who has won at least one title, listing which years (including
-    manually-credited pre-ESPN-history championships from extra_championships.json)."""
+    """One row per manager (including manual pre-ESPN-history championships from
+    extra_championships.json), listing which years they won it all - zero/blank if none."""
     champs = team_season_df[team_season_df["final_standing"] == 1]
     names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
-    years_by_manager: dict[str, set[int]] = {}
+    years_by_manager: dict[str, set[int]] = {key: set() for key in names.index}
     for manager_key, seasons in champs.groupby("manager_key"):
         years_by_manager.setdefault(manager_key, set()).update(int(y) for y in seasons["year"])
     for manager_key, extra_years in _load_extra_championships().items():
@@ -169,7 +169,7 @@ def championship_years(team_season_df: pd.DataFrame) -> pd.DataFrame:
             {
                 "manager_name": names[manager_key],
                 "championships": len(sorted_years),
-                "years": ", ".join(str(y) for y in sorted_years),
+                "years": ", ".join(str(y) for y in sorted_years) if sorted_years else "-",
             }
         )
     return pd.DataFrame(rows).sort_values(["championships", "manager_name"], ascending=[False, True]).reset_index(drop=True)
@@ -334,7 +334,33 @@ def season_totals(team_season_df: pd.DataFrame) -> pd.DataFrame:
     winner_teams = champs["team_name"].rename("winner_team")
     winner_logos = champs["logo_url"].rename("winner_logo_url")
     totals = totals.join(winners).join(winner_teams).join(winner_logos)
-    return totals.reset_index().sort_values("year", ascending=False)
+    totals = totals.reset_index()
+
+    # Manually-credited pre-ESPN-history championships (e.g. 2011) have no team-season rows at
+    # all, so there's no points/acquisitions data for that year - just add a row for the title
+    # itself, using the manager's earliest known team name/logo as a stand-in.
+    names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
+    earliest_rows = team_season_df.sort_values("year").drop_duplicates("manager_key", keep="first")
+    earliest_rows = earliest_rows.set_index("manager_key")
+    extra_rows = []
+    for manager_key, extra_years in _load_extra_championships().items():
+        if manager_key not in names.index:
+            continue
+        for year in extra_years:
+            if year in totals["year"].values:
+                continue
+            stand_in = earliest_rows.loc[manager_key]
+            extra_rows.append(
+                {
+                    "year": int(year),
+                    "winner": names[manager_key],
+                    "winner_team": stand_in["team_name"],
+                    "winner_logo_url": stand_in["logo_url"],
+                }
+            )
+    if extra_rows:
+        totals = pd.concat([totals, pd.DataFrame(extra_rows)], ignore_index=True)
+    return totals.sort_values("year", ascending=False)
 
 
 def _rank_vs_title_table(df: pd.DataFrame, rank_col: str, prefix: str) -> pd.DataFrame:
@@ -475,6 +501,28 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
             f"in {int(least_pa['year'])}."
         )
 
+    if not completed.empty:
+        # "Boom-or-bust" finisher: whoever has spent the largest share of their seasons at the
+        # extremes (a top- or bottom-third reg season finish, rather than the middle of the pack).
+        teams_per_year = completed.groupby("year")["manager_name"].transform("size")
+        top_cut = -(-teams_per_year // 3)  # ceil division
+        is_top = completed["standing"] <= top_cut
+        is_bottom = completed["standing"] > teams_per_year - top_cut
+        top_counts = is_top.groupby(completed["manager_name"]).sum()
+        bottom_counts = is_bottom.groupby(completed["manager_name"]).sum()
+        edge_share = (is_top | is_bottom).groupby(completed["manager_name"]).mean()
+        seasons_played = completed.groupby("manager_name").size()
+        eligible = seasons_played[seasons_played >= 10].index
+        if len(eligible):
+            polarized_manager = edge_share.loc[eligible].idxmax()
+            fun_facts.append(
+                f"Boom-or-bust finisher: {polarized_manager} has finished in the top or bottom third "
+                f"of the standings in {edge_share.loc[polarized_manager]:.0%} of their "
+                f"{int(seasons_played.loc[polarized_manager])} seasons "
+                f"({int(top_counts.loc[polarized_manager])} top-third finishes vs. "
+                f"{int(bottom_counts.loc[polarized_manager])} bottom-third finishes)."
+            )
+
     return {
         "rank_titles": rank_titles,
         "fun_facts": fun_facts,
@@ -527,14 +575,17 @@ def regular_season_finish_counts(team_season_df: pd.DataFrame, current_year: int
     """How many times each manager finished the regular season at each seed/rank."""
     completed = team_season_df[team_season_df["year"] != current_year]
     ranks = sorted(completed["standing"].dropna().astype(int).unique().tolist())
+    names = team_season_df.drop_duplicates("manager_name")["manager_name"]
+    counts_by_manager = {name: grp["standing"].astype(int).value_counts() for name, grp in completed.groupby("manager_name")}
+    totals_by_manager = completed.groupby("manager_name").size()
     rows = []
-    for manager_name, grp in completed.groupby("manager_name"):
-        counts = grp["standing"].astype(int).value_counts()
+    for manager_name in names:
+        counts = counts_by_manager.get(manager_name)
         rows.append(
             {
                 "manager_name": manager_name,
-                "counts": [int(counts.get(r, 0)) for r in ranks],
-                "total": int(len(grp)),
+                "counts": [int(counts.get(r, 0)) for r in ranks] if counts is not None else [0] * len(ranks),
+                "total": int(totals_by_manager.get(manager_name, 0)),
             }
         )
     rows.sort(key=lambda r: r["manager_name"])
@@ -568,8 +619,11 @@ def playoff_summary(team_season_df: pd.DataFrame, weekly_df: pd.DataFrame) -> pd
     playoff_games = weekly_df[
         weekly_df["is_playoff"] & weekly_df["team_made_playoffs"] & weekly_df["playoff_counted"]
     ]
-    record = _record_from_weekly(playoff_games)
     names = team_season_df.drop_duplicates("manager_key").set_index("manager_key")["manager_name"]
+    record = _record_from_weekly(playoff_games).reindex(names.index)
+    # Managers with no real-playoff-bracket games (e.g. never made the playoffs) get zero
+    # counts, but rate stats like win% and PF/PA stay blank rather than showing as 0.
+    record[["games", "wins", "losses", "ties"]] = record[["games", "wins", "losses", "ties"]].fillna(0).astype(int)
     record["manager_name"] = names.reindex(record.index)
     appearances = team_season_df[team_season_df["made_playoffs"]].groupby("manager_key").size()
     record["appearances"] = appearances.reindex(record.index, fill_value=0).astype(int)

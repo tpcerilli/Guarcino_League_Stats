@@ -19,6 +19,7 @@ GATED_LOGO_PREFIX = "https://mystique-api.fantasy.espn.com/"
 
 
 def _ordinal(n: int) -> str:
+    n = int(n)
     if 11 <= (n % 100) <= 13:
         suffix = "th"
     else:
@@ -187,10 +188,13 @@ def _head_to_head_cells(head_to_head: pd.DataFrame) -> dict:
 
 def _season_groups(season_by_season: pd.DataFrame) -> list[dict]:
     ordered = season_by_season.sort_values(["year", "final_standing"], ascending=[False, True])
-    return [
-        {"year": int(year), "rows": group.to_dict(orient="records")}
-        for year, group in ordered.groupby("year", sort=False)
-    ]
+    groups = []
+    for year, group in ordered.groupby("year", sort=False):
+        # In-progress seasons have no final_standing yet, so fall back to reg season standing.
+        if group["final_standing"].isna().all() or (group["final_standing"] <= 0).all():
+            group = group.sort_values("standing")
+        groups.append({"year": int(year), "rows": group.to_dict(orient="records")})
+    return groups
 
 
 def write_html_report(

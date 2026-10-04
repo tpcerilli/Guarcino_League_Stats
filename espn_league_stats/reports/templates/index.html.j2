@@ -339,8 +339,8 @@
     <tr>
       <td>{{ row.manager_name }}</td><td>{{ row.appearances }}</td><td>{{ row.championships }}</td><td>{{ row.runner_up_finishes }}</td><td>{{ row.bye_weeks }}</td><td>{{ row.games }}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td>
-      <td data-sort="{{ (row.win_pct * 100) if row.win_pct is not none else -1 }}">
-        {% if row.win_pct is not none %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}n/a{% endif %}
+      <td data-sort="{{ (row.win_pct * 100) if (row.win_pct is not none and row.win_pct == row.win_pct) else -1 }}">
+        {% if row.win_pct is not none and row.win_pct == row.win_pct %}{{ "%.1f"|format(row.win_pct * 100) }}%{% else %}-{% endif %}
       </td>
       <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
       <td>{{ row.avg_points_for|commas(1) }}</td><td>{{ row.avg_points_against|commas(1) }}</td>
@@ -402,7 +402,7 @@
     <h2 style="margin: 0;">Results By Season</h2>
     <select id="season-sort" aria-label="Sort all season tables" style="max-width: 100%; min-height: 44px;">
       <option value="">Sort all seasons</option>
-      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Finish'), (8, 'Final Standing'), (9, 'Acquisitions'), (10, 'Made Playoffs')] %}
+      {% for column, name in [(0, 'Manager'), (1, 'Team'), (2, 'Wins'), (3, 'Losses'), (4, 'Ties'), (5, 'Points For'), (6, 'Points Against'), (7, 'Reg Season Standing'), (8, 'Final Standing'), (9, 'Acquisitions'), (10, 'Made Playoffs')] %}
       <option value="{{ column }}">{{ name }}</option>
       {% endfor %}
     </select>
@@ -416,7 +416,7 @@
     <thead>
       <tr>
         <th>Manager</th><th>Team</th><th>W</th><th>L</th><th>T</th>
-        <th>PF</th><th>PA</th><th>Reg Season Finish</th><th>Final Standing</th><th>Acquisitions</th><th>Made Playoffs</th>
+        <th>PF</th><th>PA</th><th>Reg Season Standing</th><th>Final Standing</th><th>Acquisitions</th><th>Made Playoffs</th>
       </tr>
     </thead>
     <tbody>
@@ -425,9 +425,9 @@
       <td>{{ row.manager_name }}</td><td>{{ row.team_name }}{% if row.logo_url %}<img class="team-logo" src="{{ row.logo_url }}" alt="">{% endif %}</td>
       <td>{{ row.wins }}</td><td>{{ row.losses }}</td><td>{{ row.ties }}</td>
       <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
-      <td data-sort="{{ row.standing if row.standing else 99 }}">{{ row.standing if row.standing else "-" }}</td>
+      <td data-sort="{{ row.standing if row.standing else 99 }}">{{ row.standing|ordinal if row.standing else "-" }}</td>
       <td data-sort="{{ row.final_standing if row.final_standing else 99 }}"{% if row.final_standing == 1 %} title="Champion"{% elif row.final_standing == 2 %} title="Runner-up"{% endif %}>
-        {{ row.final_standing if row.final_standing else "-" }}
+        {{ row.final_standing|ordinal if row.final_standing else "-" }}
       </td>
       <td>{{ row.acquisitions }}</td>
       <td data-sort="{{ 1 if row.made_playoffs else 0 }}">{{ "Yes" if row.made_playoffs else "No" }}</td>
@@ -509,7 +509,7 @@
     <thead>
       <tr>
         <th>Rank</th>
-        <th>Reg Season Finish</th>
+        <th>Reg Season Standing</th>
         <th>PF</th>
         <th>Acquisitions</th>
       </tr>
@@ -541,8 +541,8 @@
       <td>{{ row.year }}</td>
       <td>{{ row.total_points_for|commas(1) }}</td>
       <td>{{ row.avg_points_for|commas(1) }}</td>
-      <td>{{ row.total_acquisitions }}</td>
-      <td>{{ row.teams }}</td>
+      <td>{{ row.total_acquisitions|int if row.total_acquisitions == row.total_acquisitions else "-" }}</td>
+      <td>{{ row.teams|int if row.teams == row.teams else "-" }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -628,7 +628,7 @@ if (rankTitlesCanvas) {
   allCharts.push(new Chart(rankTitlesCanvas, {
     type: 'bar',
     data: { labels: CHARTS.rank_titles.labels, datasets: [
-      { label: 'Reg Season Finish', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
+      { label: 'Reg Season Standing', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
       { label: 'PF Rank', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
       { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
     ]},
@@ -680,6 +680,15 @@ function cellSortValue(td) {
   return td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
 }
 
+// Header text with the sort-direction arrow (added before sorting runs) stripped out,
+// so matching against a fixed label (e.g. "PF") still works on the actively sorted column.
+function headerLabel(th) {
+  const clone = th.cloneNode(true);
+  const indicator = clone.querySelector(".sort-indicator");
+  if (indicator) indicator.remove();
+  return clone.textContent.trim();
+}
+
 function sortTableByColumn(table, colIndex, ascending) {
   const tbody = table.tBodies[0];
   const rows = Array.from(tbody.rows);
@@ -688,9 +697,19 @@ function sortTableByColumn(table, colIndex, ascending) {
     return v !== "" && !isNaN(parseFloat(v));
   });
   const headerCells = Array.from(table.tHead.rows[0].cells);
-  const pfColIndex = headerCells.findIndex((th) => th.textContent.trim().toUpperCase() === "PF");
+  const pfColIndex = headerCells.findIndex((th) => headerLabel(th).toUpperCase() === "PF");
   const pfIsNumeric = pfColIndex >= 0 && rows.every((r) => {
     const v = cellSortValue(r.cells[pfColIndex]);
+    return v !== "" && !isNaN(parseFloat(v));
+  });
+  // When sorting by Final Standing (which is blank for an in-progress season), break ties
+  // using Reg Season Standing before falling back to PF.
+  const isFinalStandingCol = headerCells[colIndex] && headerLabel(headerCells[colIndex]) === "Final Standing";
+  const regColIndex = isFinalStandingCol
+    ? headerCells.findIndex((th) => headerLabel(th) === "Reg Season Standing")
+    : -1;
+  const regIsNumeric = regColIndex >= 0 && rows.every((r) => {
+    const v = cellSortValue(r.cells[regColIndex]);
     return v !== "" && !isNaN(parseFloat(v));
   });
   rows.sort((a, b) => {
@@ -705,7 +724,13 @@ function sortTableByColumn(table, colIndex, ascending) {
     }
     if (va < vb) return ascending ? -1 : 1;
     if (va > vb) return ascending ? 1 : -1;
-    // Tie on the sorted column: fall back to PF in the same direction as the primary sort.
+    // Tie on the sorted column: fall back to Reg Season Standing (if sorting by Final Standing),
+    // then to PF, in the same direction as the primary sort.
+    if (regIsNumeric && regColIndex !== colIndex) {
+      const regA = parseFloat(cellSortValue(a.cells[regColIndex]));
+      const regB = parseFloat(cellSortValue(b.cells[regColIndex]));
+      if (regA !== regB) return ascending ? regA - regB : regB - regA;
+    }
     if (pfIsNumeric && pfColIndex !== colIndex) {
       const pfA = parseFloat(cellSortValue(a.cells[pfColIndex]));
       const pfB = parseFloat(cellSortValue(b.cells[pfColIndex]));
@@ -789,7 +814,8 @@ document.querySelectorAll("table.sortable").forEach((table) => {
     const btn = wrapHeaderButton(th);
     btn.addEventListener("click", () => {
       // First click sorts high-to-low for numeric columns (best to worst), but A-to-Z for
-      // text columns (e.g. Manager, Team). Click again to flip either way.
+      // text columns (e.g. Manager, Team). Rank-style columns (1 = best) sort low-to-high
+      // on first click instead. Click again to flip either way.
       let ascending;
       if (th.dataset.sortDir === undefined) {
         const rows = Array.from(table.tBodies[0].rows);
@@ -797,7 +823,12 @@ document.querySelectorAll("table.sortable").forEach((table) => {
           const v = cellSortValue(r.cells[colIndex]);
           return v !== "" && !isNaN(parseFloat(v));
         });
-        ascending = !allNumeric;
+        const label = headerLabel(th);
+        if (label === "Reg Season Standing" || label === "Final Standing") {
+          ascending = true;
+        } else {
+          ascending = !allNumeric;
+        }
       } else {
         ascending = th.dataset.sortDir === "desc";
       }
