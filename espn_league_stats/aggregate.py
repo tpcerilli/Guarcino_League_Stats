@@ -386,16 +386,20 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
     who actually won the title each year — plus a few 'fun fact' highlights."""
     completed = team_season_df[team_season_df["final_standing"] > 0].copy()
     completed["pf_rank"] = completed.groupby("year")["points_for"].rank(ascending=False, method="min").astype(int)
+    # Rank 1 = fewest points allowed (best defense), rank 8 = most points allowed.
+    completed["pa_rank"] = completed.groupby("year")["points_against"].rank(ascending=True, method="min").astype(int)
     completed["acquisitions_rank"] = (
         completed.groupby("year")["acquisitions"].rank(ascending=False, method="min").astype(int)
     )
 
     reg_finish_titles = _rank_vs_title_table(completed, "standing", "reg")
     pf_rank_titles = _rank_vs_title_table(completed, "pf_rank", "pf")
+    pa_rank_titles = _rank_vs_title_table(completed, "pa_rank", "pa")
     acquisitions_rank_titles = _rank_vs_title_table(completed, "acquisitions_rank", "acq")
 
     rank_titles = (
         reg_finish_titles.merge(pf_rank_titles, on="rank", how="outer")
+        .merge(pa_rank_titles, on="rank", how="outer")
         .merge(acquisitions_rank_titles, on="rank", how="outer")
         .sort_values("rank")
         .reset_index(drop=True)

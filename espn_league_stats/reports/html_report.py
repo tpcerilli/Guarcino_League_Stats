@@ -145,6 +145,7 @@ def _rank_titles_chart(rank_titles: pd.DataFrame) -> dict:
         "labels": ordered["rank"].tolist(),
         "reg": ordered["reg_championships"].tolist(),
         "pf": ordered["pf_championships"].tolist(),
+        "pa": ordered["pa_championships"].tolist(),
         "acq": ordered["acq_championships"].tolist(),
     }
 

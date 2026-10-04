@@ -511,6 +511,7 @@
         <th>Rank</th>
         <th>Reg Season Standing</th>
         <th>PF</th>
+        <th>PA</th>
         <th>Acquisitions</th>
       </tr>
     </thead>
@@ -520,6 +521,7 @@
       <td>{{ row.rank }}</td>
       <td>{{ row.reg_championships }} ({{ "%.1f"|format(row.reg_win_pct) }}%)</td>
       <td>{{ row.pf_championships }} ({{ "%.1f"|format(row.pf_win_pct) }}%)</td>
+      <td>{{ row.pa_championships }} ({{ "%.1f"|format(row.pa_win_pct) }}%)</td>
       <td>{{ row.acq_championships }} ({{ "%.1f"|format(row.acq_win_pct) }}%)</td>
     </tr>
     {% endfor %}
@@ -630,6 +632,7 @@ if (rankTitlesCanvas) {
     data: { labels: CHARTS.rank_titles.labels, datasets: [
       { label: 'Reg Season Standing', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
       { label: 'PF Rank', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
+      { label: 'PA Rank', data: CHARTS.rank_titles.pa, backgroundColor: palette[3] },
       { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
     ]},
     options: {
