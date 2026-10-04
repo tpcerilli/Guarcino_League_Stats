@@ -9,6 +9,7 @@
   html { color-scheme: dark; }
   body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
   h1, h2 { color: #f8fafc; }
+  h1 { font-size: 3.2rem; font-weight: 800; }
   section { margin-bottom: 3rem; }
   table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
   th, td { border: 1px solid #334155; padding: 6px 10px; text-align: right; }
@@ -97,7 +98,7 @@
   .tab-button { min-height: 28px; }
   @media (max-width: 700px) {
     body { margin: 16px; }
-    h1 { font-size: 26px; }
+    h1 { font-size: 34px; }
     h2 { font-size: 20px; }
     .tabs { gap: 8px; }
     .charts-grid { grid-template-columns: minmax(0, 1fr); }
@@ -126,15 +127,15 @@
   interactive version.
 </div>
 </noscript>
-<h1 style="display: flex; align-items: center; gap: 14px;">
-  {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 56px; width: auto; border-radius: 6px;">{% endif %}
+<h1 style="display: flex; align-items: center; gap: 18px;">
+  {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 72px; width: auto; border-radius: 6px;">{% endif %}
   Guarcino League Stats
 </h1>
 {% if season_scoring_totals %}
-<p style="display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">
+<p style="display: flex; align-items: center; gap: 12px; font-size: 1.6rem; font-weight: 600;">
   <strong>Current Champion ({{ season_scoring_totals[0].year }}):</strong>
   {{ season_scoring_totals[0].winner }} - {{ season_scoring_totals[0].winner_team }}
-  {% if season_scoring_totals[0].winner_logo_url %}<img class="team-logo" src="{{ season_scoring_totals[0].winner_logo_url }}" alt="" style="width: 28px; height: 28px;">{% endif %}
+  {% if season_scoring_totals[0].winner_logo_url %}<img class="team-logo" src="{{ season_scoring_totals[0].winner_logo_url }}" alt="" style="width: 40px; height: 40px;">{% endif %}
 </p>
 {% endif %}
 <p>Current season: {{ current_year }}. Click any table header to sort by that column.</p>
