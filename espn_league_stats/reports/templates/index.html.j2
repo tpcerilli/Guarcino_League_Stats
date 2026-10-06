@@ -14,6 +14,7 @@
   table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
   th, td { border: 1px solid #334155; padding: 6px 10px; text-align: right; }
   th:first-child, td:first-child { text-align: left; }
+  .table-tight th, .table-tight td { padding: 6px 6px; font-size: 0.85rem; }
   .cell-detail { display: block; font-size: 0.75em; color: #94a3b8; margin-top: 2px; font-weight: normal; }
   th { background: #1e293b; }
   tr.finish-gold > td { background: linear-gradient(180deg, #c9a34d 0%, #e9cf83 35%, #fff0b8 48%, #dbbb68 62%, #c9a34d 100%); color: #111827; font-weight: bold; }
@@ -337,7 +338,7 @@
 <section>
   <h2>Playoffs (all-time, real bracket only)</h2>
   <div class="table-wrap">
-  <table class="sortable">
+  <table class="sortable table-tight">
     <thead>
       <tr><th>Manager</th><th>Appearances</th><th>Championships</th><th>Runner-Up</th><th>Byes</th><th>Games</th><th>W</th><th>L</th><th>Win%</th><th>PF</th><th>PA</th><th>Avg PF</th><th>Avg PA</th></tr>
     </thead>
@@ -565,7 +566,7 @@
 <div class="tab-panel" id="tab-secret" role="tabpanel">
 <section style="text-align: center; padding: 3rem 1rem;">
   <h2 style="font-size: 2.5rem;">🏆 SIKE! 🏆</h2>
-  <p style="font-size: 1.3rem;">I would never reveal this.</p>
+  <p style="font-size: 1.3rem;">I would never reveal this! :)</p>
 </section>
 <section class="secret-blur">
   <h3>Championships by Rank</h3>
@@ -596,6 +597,8 @@
   </div>
   <div class="chart-box" style="flex: 1 1 240px; min-width: 0; position: relative;"><canvas id="secretRankTitlesChart"></canvas></div>
   </div>
+  <h3>Secret Trend Analysis</h3>
+  <div class="chart-box" style="min-width: 0; height: 320px; position: relative;"><canvas id="secretTrendChart"></canvas></div>
 </section>
 </div>
 </div>
@@ -702,6 +705,37 @@ if (secretRankTitlesCanvas) {
       maintainAspectRatio: false,
       scales: { x: { title: { display: true, text: 'Rank' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Championships' } } },
       plugins: { title: { display: true, text: 'Championships by Rank', color: '#e2e8f0' } }
+    }
+  }));
+}
+const secretTrendCanvas = document.getElementById('secretTrendChart');
+if (secretTrendCanvas) {
+  const trendLabels = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+  // Seeded PRNG so the jagged walk looks random but is identical on every page load/refresh.
+  function seededRandom(seed) {
+    let state = seed;
+    return () => {
+      state = (state * 1103515245 + 12345) & 0x7fffffff;
+      return state / 0x7fffffff;
+    };
+  }
+  function stockWalk(start, drift, seed) {
+    const rand = seededRandom(seed);
+    let value = start;
+    return trendLabels.map(() => {
+      value += drift + (rand() - 0.5) * drift * 14 + (rand() - 0.5) * 10;
+      return Math.round(value * 10) / 10;
+    });
+  }
+  allCharts.push(new Chart(secretTrendCanvas, {
+    type: 'line',
+    data: { labels: trendLabels, datasets: [
+      { label: 'Definitely Going Up', data: stockWalk(20, 3, 420), borderColor: '#22c55e', backgroundColor: '#22c55e', fill: false, tension: 0, pointRadius: 0 },
+      { label: 'Definitely Going Down', data: stockWalk(100, -3, 420), borderColor: '#ef4444', backgroundColor: '#ef4444', fill: false, tension: 0, pointRadius: 0 }
+    ]},
+    options: {
+      maintainAspectRatio: false,
+      plugins: { title: { display: true, text: 'Secret Trend Analysis', color: '#e2e8f0' } }
     }
   }));
 }
