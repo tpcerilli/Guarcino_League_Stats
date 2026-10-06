@@ -22,26 +22,27 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Skip duplicate DST cron trigger
+        id: dst_guard
         if: github.event_name == 'schedule'
         run: |
           hour=$(TZ=America/New_York date +%H)
           if [ "$hour" != "05" ]; then
             echo "Current Eastern hour is $hour, not 05 — skipping this scheduled run."
-            echo "SKIP=true" >> "$GITHUB_ENV"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Set up Python
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dependencies
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         run: pip install -r requirements.txt
 
       - name: Write .env from secrets
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         run: |
           cat <<EOF > .env
           LEAGUE_ID=${{ secrets.LEAGUE_ID }}
@@ -50,18 +51,18 @@ jobs:
           EOF
 
       - name: Generate HTML dashboard
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         run: python run.py --no-csv
 
       - name: Prepare publish directory
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         run: |
           mkdir -p publish
           cp output/html/Guarcino_Stats.html publish/index.html
           if [ -d output/html/assets ]; then cp -r output/html/assets publish/assets; fi
 
       - name: Deploy to gh-pages
-        if: env.SKIP != 'true'
+        if: steps.dst_guard.outputs.skip != 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
