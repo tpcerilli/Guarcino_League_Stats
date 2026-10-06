@@ -528,8 +528,8 @@ def general_stats(team_season_df: pd.DataFrame, playoffs: pd.DataFrame | None = 
             )
 
     if playoffs is not None and not playoffs.empty:
-        # Unluckiest playoff manager: ran into the toughest opposing performances (highest average
-        # PA) despite scoring well himself and earning the most byes (a reward for a strong
+        # Unluckiest playoff manager: allowed the most points against (highest average PA)
+        # despite scoring well himself and earning the most byes (a reward for a strong
         # regular season) - bad matchup luck rather than being outplayed or underperforming.
         eligible_playoffs = playoffs[playoffs["games"] >= 10]
         if not eligible_playoffs.empty:
@@ -546,8 +546,8 @@ def general_stats(team_season_df: pd.DataFrame, playoffs: pd.DataFrame | None = 
                 else ""
             )
             fun_facts.append(
-                f"Unluckiest in the playoffs: {unlucky['manager_name']} faced the toughest opponents, "
-                f"allowing a league-high {unlucky['avg_points_against']:.1f} points per playoff game"
+                f"Unluckiest in the playoffs: {unlucky['manager_name']} allowed a league-high "
+                f"{unlucky['avg_points_against']:.1f} points per playoff game"
                 f"{margin_note}, despite scoring {unlucky['avg_points_for']:.1f} himself "
                 f"({pf_rank}{pf_rank_suffix}-most in the league) and earning the most byes "
                 f"({int(unlucky['bye_weeks'])}) of anyone."
