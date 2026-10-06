@@ -81,6 +81,10 @@
   #tab-byseason-choice:checked ~ .tabs label[for="tab-byseason-choice"],
   #tab-misc-choice:checked ~ .tabs label[for="tab-misc-choice"],
   #tab-general-choice:checked ~ .tabs label[for="tab-general-choice"] { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+  .tab-button-gold { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; border-color: #f59e0b; font-weight: bold; }
+  .tab-button-gold:hover { background: linear-gradient(135deg, #fef3c7, #fbbf24); }
+  .secret-blur { filter: blur(14px); pointer-events: none; user-select: none; }
+  #tab-secret-choice:checked ~ .tabs label[for="tab-secret-choice"] { background: #78350f; color: #fde68a; border-color: #fde68a; }
   .tab-radio:focus-visible ~ .tabs label { outline: 2px solid #facc15; outline-offset: 2px; }
   .tab-panel { display: none; }
   #tab-current-choice:checked ~ .tab-panels #tab-current,
@@ -91,7 +95,8 @@
   #tab-h2h-choice:checked ~ .tab-panels #tab-h2h,
   #tab-byseason-choice:checked ~ .tab-panels #tab-byseason,
   #tab-misc-choice:checked ~ .tab-panels #tab-misc,
-  #tab-general-choice:checked ~ .tab-panels #tab-general { display: block; }
+  #tab-general-choice:checked ~ .tab-panels #tab-general,
+  #tab-secret-choice:checked ~ .tab-panels #tab-secret { display: block; }
   #tab-general li { margin-bottom: 0.5em; }
 
 </style>
@@ -128,6 +133,7 @@
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-byseason-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-misc-choice">
 <input class="tab-radio" type="radio" name="stats-tab" id="tab-general-choice">
+<input class="tab-radio" type="radio" name="stats-tab" id="tab-secret-choice">
 <nav class="tabs" role="tablist" aria-label="League statistics">
   <label class="tab-button" role="tab" for="tab-current-choice">Current Season</label>
   <label class="tab-button" role="tab" for="tab-alltime-choice">All-Time</label>
@@ -138,6 +144,7 @@
   <label class="tab-button" role="tab" for="tab-byseason-choice">Results By Season</label>
   <label class="tab-button" role="tab" for="tab-misc-choice">Misc</label>
   <label class="tab-button" role="tab" for="tab-general-choice">General</label>
+  <label class="tab-button tab-button-gold" role="tab" for="tab-secret-choice">🏆 Super Secret Stats to Win League</label>
 </nav>
 
 <div class="tab-panels">
@@ -331,7 +338,7 @@
       <td data-sort="1">1</td>
       <td data-sort="2">2</td>
       <td>7</td>
-      <td>8</td><td>0</td>
+      <td>9</td><td>0</td>
     </tr>
     
     </tbody>
@@ -3250,7 +3257,7 @@
       </td>
       <td>766</td>
       <td>51.1</td>
-      <td>785</td><td>5</td>
+      <td>786</td><td>5</td>
     </tr>
     
     <tr>
@@ -3429,10 +3436,10 @@
     
     <tr>
       <td>Joey Testa</td>
-      <td data-sort="nan">
+      <td data-sort="-1">
         -
       </td>
-      <td data-sort="nan">
+      <td data-sort="-1">
         -
       </td>
       <td data-sort="129.42">
@@ -3510,90 +3517,8 @@
   </ul>
   
 
-  <h3>Championships by Rank</h3>
-  <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: stretch;">
-  <div class="table-wrap" style="flex: 2 1 380px; overflow: hidden;">
-  <table class="sortable">
-    <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Reg Season Standing</th>
-        <th>PF</th>
-        <th>PA</th>
-        <th>Acquisitions</th>
-      </tr>
-    </thead>
-    <tbody>
-    
-    <tr>
-      <td>1</td>
-      <td>2 (14.3%)</td>
-      <td>3 (21.4%)</td>
-      <td>3 (21.4%)</td>
-      <td>2 (14.3%)</td>
-    </tr>
-    
-    <tr>
-      <td>2</td>
-      <td>5 (35.7%)</td>
-      <td>3 (21.4%)</td>
-      <td>4 (28.6%)</td>
-      <td>2 (13.3%)</td>
-    </tr>
-    
-    <tr>
-      <td>3</td>
-      <td>4 (28.6%)</td>
-      <td>1 (7.1%)</td>
-      <td>2 (14.3%)</td>
-      <td>2 (14.3%)</td>
-    </tr>
-    
-    <tr>
-      <td>4</td>
-      <td>1 (7.1%)</td>
-      <td>4 (28.6%)</td>
-      <td>1 (7.1%)</td>
-      <td>5 (29.4%)</td>
-    </tr>
-    
-    <tr>
-      <td>5</td>
-      <td>0 (0.0%)</td>
-      <td>2 (14.3%)</td>
-      <td>2 (14.3%)</td>
-      <td>1 (6.2%)</td>
-    </tr>
-    
-    <tr>
-      <td>6</td>
-      <td>2 (14.3%)</td>
-      <td>0 (0.0%)</td>
-      <td>1 (7.1%)</td>
-      <td>0 (0.0%)</td>
-    </tr>
-    
-    <tr>
-      <td>7</td>
-      <td>0 (0.0%)</td>
-      <td>1 (7.7%)</td>
-      <td>0 (0.0%)</td>
-      <td>2 (14.3%)</td>
-    </tr>
-    
-    <tr>
-      <td>8</td>
-      <td>0 (0.0%)</td>
-      <td>0 (0.0%)</td>
-      <td>1 (7.1%)</td>
-      <td>0 (0.0%)</td>
-    </tr>
-    
-    </tbody>
-  </table>
-  </div>
-  <div class="chart-box" style="flex: 1 1 240px; min-width: 0; position: relative;"><canvas id="rankTitlesChart"></canvas></div>
-  </div>
+  
+  
 
   <h3>Season Totals (all teams combined)</h3>
   <div class="table-wrap">
@@ -3728,6 +3653,98 @@
   </div>
 </section>
 </div>
+<div class="tab-panel" id="tab-secret" role="tabpanel">
+<section style="text-align: center; padding: 3rem 1rem;">
+  <h2 style="font-size: 2.5rem;">🏆 SIKE! 🏆</h2>
+  <p style="font-size: 1.3rem;">I would never reveal this.</p>
+</section>
+<section class="secret-blur">
+  <h3>Championships by Rank</h3>
+  <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: stretch;">
+  <div class="table-wrap" style="flex: 2 1 380px; overflow: hidden;">
+  <table class="sortable">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Reg Season Standing</th>
+        <th>PF</th>
+        <th>PA</th>
+        <th>Acquisitions</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>2 (14.3%)</td>
+      <td>3 (21.4%)</td>
+      <td>3 (21.4%)</td>
+      <td>2 (14.3%)</td>
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>5 (35.7%)</td>
+      <td>3 (21.4%)</td>
+      <td>4 (28.6%)</td>
+      <td>2 (13.3%)</td>
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>4 (28.6%)</td>
+      <td>1 (7.1%)</td>
+      <td>2 (14.3%)</td>
+      <td>2 (14.3%)</td>
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>1 (7.1%)</td>
+      <td>4 (28.6%)</td>
+      <td>1 (7.1%)</td>
+      <td>5 (29.4%)</td>
+    </tr>
+    
+    <tr>
+      <td>5</td>
+      <td>0 (0.0%)</td>
+      <td>2 (14.3%)</td>
+      <td>2 (14.3%)</td>
+      <td>1 (6.2%)</td>
+    </tr>
+    
+    <tr>
+      <td>6</td>
+      <td>2 (14.3%)</td>
+      <td>0 (0.0%)</td>
+      <td>1 (7.1%)</td>
+      <td>0 (0.0%)</td>
+    </tr>
+    
+    <tr>
+      <td>7</td>
+      <td>0 (0.0%)</td>
+      <td>1 (7.7%)</td>
+      <td>0 (0.0%)</td>
+      <td>2 (14.3%)</td>
+    </tr>
+    
+    <tr>
+      <td>8</td>
+      <td>0 (0.0%)</td>
+      <td>0 (0.0%)</td>
+      <td>1 (7.1%)</td>
+      <td>0 (0.0%)</td>
+    </tr>
+    
+    </tbody>
+  </table>
+  </div>
+  <div class="chart-box" style="flex: 1 1 240px; min-width: 0; position: relative;"><canvas id="secretRankTitlesChart"></canvas></div>
+  </div>
+</section>
+</div>
 </div>
 </div>
 
@@ -3807,6 +3824,23 @@ if (rankTitlesCanvas) {
     }
   }));
 }
+const secretRankTitlesCanvas = document.getElementById('secretRankTitlesChart');
+if (secretRankTitlesCanvas) {
+  allCharts.push(new Chart(secretRankTitlesCanvas, {
+    type: 'bar',
+    data: { labels: CHARTS.rank_titles.labels, datasets: [
+      { label: 'Reg Season Standing', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
+      { label: 'PF Rank', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
+      { label: 'PA Rank', data: CHARTS.rank_titles.pa, backgroundColor: palette[3] },
+      { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
+    ]},
+    options: {
+      maintainAspectRatio: false,
+      scales: { x: { title: { display: true, text: 'Rank' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Championships' } } },
+      plugins: { title: { display: true, text: 'Championships by Rank', color: '#e2e8f0' } }
+    }
+  }));
+}
 for (const [canvasId, seriesKey, title, unit] of [
   ['pointsCumulative', 'points_cumulative', 'Total Points Over Time', 'Career Points'],
   ['winsCumulative', 'wins_cumulative', 'Total Wins Over Time', 'Career Wins']
@@ -3848,6 +3882,15 @@ function cellSortValue(td) {
   return td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
 }
 
+// Thousands-separator commas (e.g. "1,234.5") make parseFloat stop early (-> 1.234), so strip
+// them before any numeric comparison/validity check. A bare "-" (our placeholder for missing
+// data) sorts as 0 rather than breaking the whole column's numeric detection.
+function parseSortNumber(v) {
+  const s = String(v).trim();
+  if (s === "-") return 0;
+  return parseFloat(s.replace(/,/g, ""));
+}
+
 // Header text with the sort-direction arrow (added before sorting runs) stripped out,
 // so matching against a fixed label (e.g. "PF") still works on the actively sorted column.
 function headerLabel(th) {
@@ -3862,13 +3905,13 @@ function sortTableByColumn(table, colIndex, ascending) {
   const rows = Array.from(tbody.rows);
   const allNumeric = rows.every((r) => {
     const v = cellSortValue(r.cells[colIndex]);
-    return v !== "" && !isNaN(parseFloat(v));
+    return v !== "" && !isNaN(parseSortNumber(v));
   });
   const headerCells = Array.from(table.tHead.rows[0].cells);
   const pfColIndex = headerCells.findIndex((th) => headerLabel(th).toUpperCase() === "PF");
   const pfIsNumeric = pfColIndex >= 0 && rows.every((r) => {
     const v = cellSortValue(r.cells[pfColIndex]);
-    return v !== "" && !isNaN(parseFloat(v));
+    return v !== "" && !isNaN(parseSortNumber(v));
   });
   // When sorting by Final Standing (which is blank for an in-progress season), break ties
   // using Reg Season Standing before falling back to PF.
@@ -3878,14 +3921,14 @@ function sortTableByColumn(table, colIndex, ascending) {
     : -1;
   const regIsNumeric = regColIndex >= 0 && rows.every((r) => {
     const v = cellSortValue(r.cells[regColIndex]);
-    return v !== "" && !isNaN(parseFloat(v));
+    return v !== "" && !isNaN(parseSortNumber(v));
   });
   rows.sort((a, b) => {
     let va = cellSortValue(a.cells[colIndex]);
     let vb = cellSortValue(b.cells[colIndex]);
     if (allNumeric) {
-      va = parseFloat(va);
-      vb = parseFloat(vb);
+      va = parseSortNumber(va);
+      vb = parseSortNumber(vb);
     } else {
       va = va.toLowerCase();
       vb = vb.toLowerCase();
@@ -3895,13 +3938,13 @@ function sortTableByColumn(table, colIndex, ascending) {
     // Tie on the sorted column: fall back to Reg Season Standing (if sorting by Final Standing),
     // then to PF, in the same direction as the primary sort.
     if (regIsNumeric && regColIndex !== colIndex) {
-      const regA = parseFloat(cellSortValue(a.cells[regColIndex]));
-      const regB = parseFloat(cellSortValue(b.cells[regColIndex]));
+      const regA = parseSortNumber(cellSortValue(a.cells[regColIndex]));
+      const regB = parseSortNumber(cellSortValue(b.cells[regColIndex]));
       if (regA !== regB) return ascending ? regA - regB : regB - regA;
     }
     if (pfIsNumeric && pfColIndex !== colIndex) {
-      const pfA = parseFloat(cellSortValue(a.cells[pfColIndex]));
-      const pfB = parseFloat(cellSortValue(b.cells[pfColIndex]));
+      const pfA = parseSortNumber(cellSortValue(a.cells[pfColIndex]));
+      const pfB = parseSortNumber(cellSortValue(b.cells[pfColIndex]));
       if (pfA !== pfB) return ascending ? pfA - pfB : pfB - pfA;
     }
     return 0;
@@ -3989,7 +4032,7 @@ document.querySelectorAll("table.sortable").forEach((table) => {
         const rows = Array.from(table.tBodies[0].rows);
         const allNumeric = rows.every((r) => {
           const v = cellSortValue(r.cells[colIndex]);
-          return v !== "" && !isNaN(parseFloat(v));
+          return v !== "" && !isNaN(parseSortNumber(v));
         });
         const label = headerLabel(th);
         if (label === "Reg Season Standing" || label === "Final Standing") {
