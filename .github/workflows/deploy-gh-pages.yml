@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # 5am US Eastern on Tuesdays. GitHub Actions cron is UTC-only and doesn't observe DST, so both
+    # the EDT (UTC-4) and EST (UTC-5) offsets are scheduled; the guard step below skips the one
+    # that doesn't match the current Eastern time.
+    - cron: "0 9 * * 2"
+    - cron: "0 10 * * 2"
 
 permissions:
   contents: write
@@ -15,15 +21,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Skip duplicate DST cron trigger
+        if: github.event_name == 'schedule'
+        run: |
+          hour=$(TZ=America/New_York date +%H)
+          if [ "$hour" != "05" ]; then
+            echo "Current Eastern hour is $hour, not 05 — skipping this scheduled run."
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          fi
+
       - name: Set up Python
+        if: env.SKIP != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dependencies
+        if: env.SKIP != 'true'
         run: pip install -r requirements.txt
 
       - name: Write .env from secrets
+        if: env.SKIP != 'true'
         run: |
           cat <<EOF > .env
           LEAGUE_ID=${{ secrets.LEAGUE_ID }}
@@ -32,17 +50,21 @@ jobs:
           EOF
 
       - name: Generate HTML dashboard
+        if: env.SKIP != 'true'
         run: python run.py --no-csv
 
       - name: Prepare publish directory
+        if: env.SKIP != 'true'
         run: |
           mkdir -p publish
           cp output/html/Guarcino_Stats.html publish/index.html
           if [ -d output/html/assets ]; then cp -r output/html/assets publish/assets; fi
 
       - name: Deploy to gh-pages
+        if: env.SKIP != 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./publish
           publish_branch: gh-pages
+
