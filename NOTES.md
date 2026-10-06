@@ -1,10 +1,7 @@
 # Things to add with more credits
 
-in reporting points, there should be commas for the thousands (e.g. 2,453 or 23,451 or 1,455,667.) Do not do this for years.
+- make githubpages update every week at 5 AM on Tuesday.
 
-Additionally, take out "Championships" in the column titles of championships by rank. Then go back to how the table and bar chart were formatted, half table and half bar on either side.
-
-Add in historical stats, the highest scoring season of all time. this means everyones points added up, which year has the most.
 
 
 
