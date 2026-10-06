@@ -72,7 +72,7 @@ def main() -> None:
     current_season_activity = current_season_misc(team_season_df, weekly_df, config.current_year)
     season_table = season_by_season(team_season_df)
     h2h = head_to_head(weekly_df)
-    general = general_stats(team_season_df)
+    general = general_stats(team_season_df, playoffs)
     champ_years = championship_years(team_season_df)
     finish_counts = regular_season_finish_counts(team_season_df, config.current_year)
     season_scoring_totals = season_totals(team_season_df)

@@ -381,7 +381,7 @@ def _rank_vs_title_table(df: pd.DataFrame, rank_col: str, prefix: str) -> pd.Dat
     )
 
 
-def general_stats(team_season_df: pd.DataFrame) -> dict:
+def general_stats(team_season_df: pd.DataFrame, playoffs: pd.DataFrame | None = None) -> dict:
     """Cross-references regular season finish, PF ranking, and acquisitions activity against
     who actually won the title each year — plus a few 'fun fact' highlights."""
     completed = team_season_df[team_season_df["final_standing"] > 0].copy()
@@ -525,6 +525,32 @@ def general_stats(team_season_df: pd.DataFrame) -> dict:
                 f"{int(seasons_played.loc[polarized_manager])} seasons "
                 f"({int(top_counts.loc[polarized_manager])} top-third finishes vs. "
                 f"{int(bottom_counts.loc[polarized_manager])} bottom-third finishes)."
+            )
+
+    if playoffs is not None and not playoffs.empty:
+        # Unluckiest playoff manager: ran into the toughest opposing performances (highest average
+        # PA) despite scoring well himself and earning the most byes (a reward for a strong
+        # regular season) - bad matchup luck rather than being outplayed or underperforming.
+        eligible_playoffs = playoffs[playoffs["games"] >= 10]
+        if not eligible_playoffs.empty:
+            unlucky = eligible_playoffs.loc[eligible_playoffs["avg_points_against"].idxmax()]
+            pa_sorted = eligible_playoffs.sort_values("avg_points_against", ascending=False)
+            second_highest_pa = pa_sorted.iloc[1]["avg_points_against"] if len(pa_sorted) > 1 else None
+            pf_rank = int(
+                eligible_playoffs["avg_points_for"].rank(ascending=False, method="min").loc[unlucky.name]
+            )
+            pf_rank_suffix = {1: "st", 2: "nd", 3: "rd"}.get(pf_rank if pf_rank < 20 else pf_rank % 10, "th")
+            margin_note = (
+                f", {unlucky['avg_points_against'] - second_highest_pa:.1f} points higher than anyone else's average"
+                if second_highest_pa is not None
+                else ""
+            )
+            fun_facts.append(
+                f"Unluckiest in the playoffs: {unlucky['manager_name']} faced the toughest opponents, "
+                f"allowing a league-high {unlucky['avg_points_against']:.1f} points per playoff game"
+                f"{margin_note}, despite scoring {unlucky['avg_points_for']:.1f} himself "
+                f"({pf_rank}{pf_rank_suffix}-most in the league) and earning the most byes "
+                f"({int(unlucky['bye_weeks'])}) of anyone."
             )
 
     return {
