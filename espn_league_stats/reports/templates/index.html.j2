@@ -569,17 +569,17 @@
   <p style="font-size: 1.3rem;">I would never reveal this! :)</p>
 </section>
 <section class="secret-blur">
-  <h3>Championships by Rank</h3>
+  <h3>Illuminati Ranking Matrix</h3>
   <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: stretch;">
   <div class="table-wrap" style="flex: 2 1 380px; overflow: hidden;">
   <table class="sortable">
     <thead>
       <tr>
-        <th>Rank</th>
-        <th>Reg Season Standing</th>
-        <th>PF</th>
-        <th>PA</th>
-        <th>Acquisitions</th>
+        <th>Clearance Level</th>
+        <th>Shadow Council Votes</th>
+        <th>Mind Control Units</th>
+        <th>Chemtrail Exposure</th>
+        <th>Bribes Issued</th>
       </tr>
     </thead>
     <tbody>
@@ -696,15 +696,15 @@ if (secretRankTitlesCanvas) {
   allCharts.push(new Chart(secretRankTitlesCanvas, {
     type: 'bar',
     data: { labels: CHARTS.rank_titles.labels, datasets: [
-      { label: 'Reg Season Standing', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
-      { label: 'PF Rank', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
-      { label: 'PA Rank', data: CHARTS.rank_titles.pa, backgroundColor: palette[3] },
-      { label: 'Acquisitions Rank', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
+      { label: 'Shadow Council Votes', data: CHARTS.rank_titles.reg, backgroundColor: palette[0] },
+      { label: 'Mind Control Units', data: CHARTS.rank_titles.pf, backgroundColor: palette[1] },
+      { label: 'Chemtrail Exposure', data: CHARTS.rank_titles.pa, backgroundColor: palette[3] },
+      { label: 'Bribes Issued', data: CHARTS.rank_titles.acq, backgroundColor: palette[2] }
     ]},
     options: {
       maintainAspectRatio: false,
-      scales: { x: { title: { display: true, text: 'Rank' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Championships' } } },
-      plugins: { title: { display: true, text: 'Championships by Rank', color: '#e2e8f0' } }
+      scales: { x: { title: { display: true, text: 'Clearance Level' } }, y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Secret Points' } } },
+      plugins: { title: { display: true, text: 'Illuminati Ranking Matrix', color: '#e2e8f0' } }
     }
   }));
 }
