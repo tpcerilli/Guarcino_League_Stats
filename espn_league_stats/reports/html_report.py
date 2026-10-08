@@ -99,6 +99,17 @@ def _standings_over_time(season_by_season: pd.DataFrame) -> dict:
     return {"labels": years, "datasets": datasets}
 
 
+def _reg_standings_over_time(season_by_season: pd.DataFrame) -> dict:
+    years = sorted(season_by_season["year"].unique().tolist())
+    datasets = []
+    for manager, group in season_by_season.groupby("manager_name"):
+        by_year = group.set_index("year")["standing"].to_dict()
+        datasets.append(
+            {"label": manager, "data": [by_year.get(y) or None for y in years]}
+        )
+    return {"labels": years, "datasets": datasets}
+
+
 def _cumulative_over_time(season_by_season: pd.DataFrame, value_col: str) -> dict:
     """Running career total of `value_col` (e.g. points_for, wins) by year, per manager."""
     years = sorted(season_by_season["year"].unique().tolist())
@@ -234,6 +245,7 @@ def write_html_report(
         "win_pct": _bar(all_time, "win_pct", scale=100),
         "pf_pa": _pf_pa(all_time),
         "standings_over_time": _standings_over_time(season_by_season),
+        "reg_standings_over_time": _reg_standings_over_time(season_by_season),
         "playoffs": _playoffs(all_time),
         "points_cumulative": _cumulative_over_time(season_by_season, "points_for"),
         "wins_cumulative": _cumulative_over_time(season_by_season, "wins"),

@@ -303,7 +303,7 @@
       <td>{{ "%.1f"|format(row.win_pct * 100) }}%</td>
       <td>{{ row.points_for|commas(1) }}</td><td>{{ row.points_against|commas(1) }}</td>
       <td>{{ row.avg_points_for|commas(1) }}</td><td>{{ row.avg_points_against|commas(1) }}</td>
-      <td>{% if row.avg_seed == row.avg_seed %}{{ "%.2f"|format(row.avg_seed) }}{% else %}-{% endif %}</td>
+      <td data-sort="{{ row.avg_seed if row.avg_seed == row.avg_seed else 99 }}">{% if row.avg_seed == row.avg_seed %}{{ "%.2f"|format(row.avg_seed) }}{% else %}-{% endif %}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -369,6 +369,7 @@
     <div class="chart-box"><canvas id="winPct"></canvas></div>
     <div class="chart-box"><canvas id="pfPa"></canvas></div>
     <div class="chart-box"><canvas id="standingsOverTime"></canvas></div>
+    <div class="chart-box"><canvas id="regStandingsOverTime"></canvas></div>
     <div class="chart-box"><canvas id="playoffsChart"></canvas></div>
     <div class="chart-box"><canvas id="pointsCumulative"></canvas></div>
     <div class="chart-box"><canvas id="winsCumulative"></canvas></div>
@@ -665,6 +666,13 @@ allCharts.push(new Chart(document.getElementById('standingsOverTime'), {
              plugins: { title: { display: true, text: 'Standings Over Time', color: '#e2e8f0' } } }
 }));
 
+allCharts.push(new Chart(document.getElementById('regStandingsOverTime'), {
+  type: 'line',
+  data: { labels: CHARTS.reg_standings_over_time.labels, datasets: colorize(CHARTS.reg_standings_over_time.datasets).map(d => ({...d, fill: false, spanGaps: true})) },
+  options: { scales: { y: { reverse: true, title: { display: true, text: 'Reg Season Standing (1 = best)' } } },
+             plugins: { title: { display: true, text: 'Reg Season Standings Over Time', color: '#e2e8f0' } } }
+}));
+
 allCharts.push(new Chart(document.getElementById('playoffsChart'), {
   type: 'bar',
   data: { labels: CHARTS.playoffs.labels, datasets: [
@@ -933,7 +941,7 @@ document.querySelectorAll("table.sortable").forEach((table) => {
           return v !== "" && !isNaN(parseSortNumber(v));
         });
         const label = headerLabel(th);
-        if (label === "Reg Season Standing" || label === "Final Standing") {
+        if (label === "Reg Season Standing" || label === "Final Standing" || label === "Avg Seed") {
           ascending = true;
         } else {
           ascending = !allNumeric;
