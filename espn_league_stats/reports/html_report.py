@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -253,8 +255,13 @@ def write_html_report(
     }
     h2h = _head_to_head_cells(head_to_head)
 
+    # %-d/%-I (no leading zero) aren't portable across platforms, so trim manually instead.
+    now_et = datetime.now(ZoneInfo("America/New_York"))
+    generated_at = f"{now_et.strftime('%b')} {now_et.day}, {now_et.year} {now_et.strftime('%I:%M %p').lstrip('0')} ET"
+
     html = template.render(
         current_year=current_year,
+        generated_at=generated_at,
         crest_data_uri=_crest_data_uri(),
         all_time=all_time.to_dict(orient="records"),
         regular_season=regular_season.to_dict(orient="records"),

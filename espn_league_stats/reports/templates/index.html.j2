@@ -133,10 +133,15 @@
   interactive version.
 </div>
 </noscript>
-<h1 style="display: flex; align-items: center; gap: 18px;">
-  {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 72px; width: auto; border-radius: 6px;">{% endif %}
-  Guarcino League Stats
-</h1>
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+  <h1 style="display: flex; align-items: center; gap: 18px; margin: 0;">
+    {% if crest_data_uri %}<img src="{{ crest_data_uri }}" alt="" style="height: 72px; width: auto; border-radius: 6px;">{% endif %}
+    Guarcino League Stats
+  </h1>
+  {% if generated_at %}
+  <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 0 0; white-space: nowrap;">Last updated: {{ generated_at }}</p>
+  {% endif %}
+</div>
 <!-- GoatCounter: free, privacy-friendly page-view analytics (dashboard at tpcerilli.goatcounter.com). -->
 <script data-goatcounter="https://tpcerilli.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
